@@ -181,6 +181,17 @@ def _ollama_http_error(exc: Exception) -> HTTPException:
     )
 
 
+def _ollama_stream_error_message(exc: httpx.HTTPStatusError) -> str:
+    try:
+        error_data = exc.response.json()
+    except ValueError:
+        error_data = None
+    detail = error_data.get("error") if isinstance(error_data, dict) else None
+    if isinstance(detail, str) and detail.strip():
+        return f"Ollama báo lỗi HTTP {exc.response.status_code}: {detail.strip()[:300]}"
+    return f"Ollama báo lỗi HTTP {exc.response.status_code} khi nạp model."
+
+
 class BirthInput(BaseModel):
     ho_ten: str = Field(default="", max_length=100)
     ngay: int = Field(ge=1, le=31)
@@ -1265,6 +1276,14 @@ async def analyze_stream(
                 generated.append(token_text)
                 yield encode_event("token", chunk)
                 stream_finished = chunk["done"]
+        except httpx.HTTPStatusError as exc:
+            logger.warning(
+                "Ollama stream returned HTTP %s.", exc.response.status_code
+            )
+            yield encode_event(
+                "error", {"message": _ollama_stream_error_message(exc)}
+            )
+            return
         except httpx.HTTPError:
             yield encode_event(
                 "error", {"message": "Không thể kết nối hoặc đọc stream từ Ollama."}

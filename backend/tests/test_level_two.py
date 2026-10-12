@@ -30,7 +30,9 @@ class StreamingClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_generate_stream_decodes_ndjson_chunks(self) -> None:
         def response(request: httpx.Request) -> httpx.Response:
             self.assertEqual(request.url.path, "/api/generate")
-            self.assertTrue(json.loads(request.content)["stream"])
+            payload = json.loads(request.content)
+            self.assertTrue(payload["stream"])
+            self.assertEqual(payload["options"]["num_ctx"], 8192)
             return httpx.Response(
                 200,
                 content=(
@@ -40,6 +42,7 @@ class StreamingClientTests(unittest.IsolatedAsyncioTestCase):
             )
 
         client = OllamaClient(transport=httpx.MockTransport(response))
+        self.assertEqual(client.num_ctx, 8192)
         chunks = [chunk async for chunk in client.generate_stream("prompt")]
         self.assertEqual(chunks, [
             {"token": "xin ", "done": False},
@@ -54,6 +57,10 @@ class StreamingClientTests(unittest.IsolatedAsyncioTestCase):
         client = OllamaClient(transport=httpx.MockTransport(malformed_response))
         with self.assertRaises(ValueError):
             _ = [chunk async for chunk in client.generate_stream("prompt")]
+
+    async def test_generate_stream_rejects_unsafe_context_lengths(self) -> None:
+        with self.assertRaises(ValueError):
+            OllamaClient(num_ctx=262144)
 
 
 class LevelTwoDatabaseTests(unittest.TestCase):
@@ -215,6 +222,22 @@ class TelegramLinkTests(unittest.IsolatedAsyncioTestCase):
 
 
 class StreamingEndpointTests(unittest.TestCase):
+    def test_stream_error_includes_ollama_http_detail(self) -> None:
+        import main
+
+        response = httpx.Response(
+            500,
+            json={"error": "model runner has terminated"},
+            request=httpx.Request("POST", "http://localhost:11434/api/generate"),
+        )
+        error = httpx.HTTPStatusError(
+            "Server error", request=response.request, response=response
+        )
+        self.assertEqual(
+            main._ollama_stream_error_message(error),
+            "Ollama báo lỗi HTTP 500: model runner has terminated",
+        )
+
     def test_stream_endpoint_emits_metadata_tokens_and_saved_result(self) -> None:
         import main
 

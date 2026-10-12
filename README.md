@@ -41,7 +41,7 @@ python -m uvicorn main:app --app-dir backend --reload --port 8000
 
 Mở <http://localhost:8000/> để đăng ký/đăng nhập. Sau khi đăng nhập, các trang chính là `/app`, `/tu-vi` và `/dashboard`. Tài liệu API có tại <http://localhost:8000/docs>. Chạy frontend qua backend cùng origin để token Bearer được gửi đúng cách; không mở các trang HTML trực tiếp từ file.
 
-Cấu hình bằng các biến môi trường `HUYEN_HOC_SECRET_KEY`, `OLLAMA_MODEL`, `OLLAMA_URL`, `CORS_ORIGINS` (origin phân tách bằng dấu phẩy). Không dùng lại JWT secret giữa môi trường hoặc công khai secret; nếu mất secret, token hiện có sẽ không còn hợp lệ.
+Cấu hình bằng các biến môi trường `HUYEN_HOC_SECRET_KEY`, `OLLAMA_MODEL`, `OLLAMA_URL`, `OLLAMA_NUM_CTX` (mặc định 8192, giới hạn 512–32768) và `CORS_ORIGINS` (origin phân tách bằng dấu phẩy). Ứng dụng gửi giới hạn context theo từng request Ollama, thay vì phụ thuộc giá trị context toàn cục lớn của server. Không dùng lại JWT secret giữa môi trường hoặc công khai secret; nếu mất secret, token hiện có sẽ không còn hợp lệ.
 
 Form phân tích hỗ trợ họ tên tùy chọn và giờ sinh địa phương (0–23). Chúng được lưu trong hồ sơ riêng của tài khoản như ngày sinh hiện tại; bỏ trống ở lần phân tích sau sẽ giữ giá trị đã có. Số tên theo bảng chữ cái Latin và Can Chi giờ chỉ là quy ước văn hóa/giải trí, không phải đánh giá tính cách hay dự đoán. Giờ sinh không hiệu chỉnh theo múi giờ/địa điểm; Ngũ cách không được tính từ chữ Latin vì cần dữ liệu nét chữ Hán. Bốn ngôn ngữ `vi`, `en`, `zh`, `ja` hiện áp dụng cho điều hướng và form hồ sơ chính; nội dung các module còn lại có thể vẫn bằng tiếng Việt.
 

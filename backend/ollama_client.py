@@ -7,6 +7,9 @@ import httpx
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
+if not 512 <= OLLAMA_NUM_CTX <= 32768:
+    raise ValueError("OLLAMA_NUM_CTX must be between 512 and 32768.")
 
 
 def build_analysis_prompt(
@@ -74,10 +77,14 @@ class OllamaClient:
         base_url: str = OLLAMA_URL,
         model: str = MODEL,
         transport: httpx.AsyncBaseTransport | None = None,
+        num_ctx: int = OLLAMA_NUM_CTX,
     ) -> None:
+        if not 512 <= num_ctx <= 32768:
+            raise ValueError("num_ctx must be between 512 and 32768.")
         self.base_url = base_url
         self.model = model
         self.transport = transport
+        self.num_ctx = num_ctx
 
     async def generate(
         self,
@@ -91,7 +98,7 @@ class OllamaClient:
             "prompt": prompt,
             "system": system,
             "stream": False,
-            "options": {"temperature": temperature},
+            "options": {"temperature": temperature, "num_ctx": self.num_ctx},
         }
         if json_mode:
             payload["format"] = "json"
@@ -116,7 +123,7 @@ class OllamaClient:
             "prompt": prompt,
             "system": system,
             "stream": True,
-            "options": {"temperature": temperature},
+            "options": {"temperature": temperature, "num_ctx": self.num_ctx},
         }
         if json_mode:
             payload["format"] = "json"
