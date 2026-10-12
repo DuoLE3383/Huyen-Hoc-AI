@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a0b2e">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <title>Huyền Học AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #160a27;
+      color: #e8dff5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px 16px;
+      background: linear-gradient(135deg, #1a0b2e, #2d1b4e 50%, #0f0524);
+    }
+    button, input, select { font: inherit; }
+    .container { width: min(900px, 100%); margin: 0 auto; }
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(1.8rem, 6vw, 2.4rem);
+      background: linear-gradient(90deg, #c4a3ff, #ffd700, #c4a3ff);
+      color: #d7bfff;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle { margin: 8px 0 24px; text-align: center; color: #b6a1d2; }
+    .card {
+      margin-bottom: 18px;
+      padding: 22px;
+      border: 1px solid rgba(196, 163, 255, .2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .055);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .24);
+    }
+    h2 { margin: 0 0 14px; color: #d0b5ff; font-size: 1.25rem; }
+    .form-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 12px; margin-bottom: 16px; }
+    label { display: block; margin-bottom: 5px; color: #b6a1d2; font-size: .84rem; }
+    input, select {
+      min-width: 0;
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid rgba(196, 163, 255, .3);
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(0, 0, 0, .3);
+    }
+    input:focus, select:focus { outline: 2px solid #c4a3ff; outline-offset: 1px; }
+    button {
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 9px;
+      color: #fff;
+      background: linear-gradient(135deg, #7138d6, #a77ce7);
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button:hover:not(:disabled) { filter: brightness(1.12); }
+    button:disabled { opacity: .55; cursor: wait; }
+    .primary { width: 100%; }
+    .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }
+    .stat { padding: 12px; border-left: 3px solid #c4a3ff; border-radius: 8px; background: rgba(0, 0, 0, .22); }
+    .stat-label { color: #b6a1d2; font-size: .75rem; text-transform: uppercase; }
+    .stat-value { margin-top: 4px; color: #ffd700; font-weight: 650; overflow-wrap: anywhere; }
+    .chiso-bar { margin: 10px 0; }
+    .bar-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; font-size: .88rem; }
+    .bar-bg { height: 8px; overflow: hidden; border-radius: 4px; background: rgba(0, 0, 0, .4); }
+    .bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7b3fe4, #ffd700); }
+    .summary { line-height: 1.65; }
+    .strengths { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; line-height: 1.7; }
+    .strengths h3 { margin: 0 0 6px; font-size: 1rem; }
+    .strengths ul, .warnings { margin: 0; padding-left: 21px; }
+    .action { margin-bottom: 11px; padding: 13px; border-left: 3px solid #ffd700; border-radius: 9px; background: rgba(123, 63, 228, .15); }
+    .tag { display: inline-block; margin-bottom: 8px; padding: 3px 9px; border-radius: 12px; background: #7138d6; font-size: .78rem; }
+    .action-text { margin-bottom: 6px; font-weight: 550; color: #fff; line-height: 1.55; }
+    .meta { color: #b6a1d2; font-size: .85rem; line-height: 1.6; }
+    .loading, .center { text-align: center; }
+    .loading { padding: 34px; color: #b6a1d2; }
+    .spinner {
+      width: 42px; height: 42px; margin: 0 auto 14px;
+      border: 4px solid rgba(196, 163, 255, .2); border-top-color: #c4a3ff;
+      border-radius: 50%; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color: #ff9999; overflow-wrap: anywhere; }
+    .disclaimer { color: #c7b8d8; font-size: .85rem; line-height: 1.55; }
+    .fb-row { display: grid; grid-template-columns: minmax(150px, 1fr) 100px 100px auto; gap: 8px; align-items: end; }
+    .fb-row button { padding: 10px 14px; }
+    .feedback-item { margin-top: 5px; padding: 8px 10px; border-radius: 6px; background: rgba(0, 0, 0, .2); font-size: .86rem; }
+    .toast {
+      position: fixed; top: 16px; right: 16px; z-index: 2;
+      max-width: min(420px, calc(100vw - 32px)); padding: 12px 16px;
+      border: 1px solid #c4a3ff; border-radius: 9px; background: #2d1b4e;
+    }
+    .nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-bottom: 18px; }
+    .nav a { padding: 8px 13px; border: 1px solid #c4a3ff; border-radius: 8px; color: #d0b5ff; text-decoration: none; }
+    .calendar-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .calendar-buttons button { flex: 1; min-width: 145px; }
+    .calendar-day { padding: 10px; margin-bottom: 6px; border-left: 3px solid #ffd700; border-radius: 8px; background: rgba(0,0,0,.2); }
+    .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .month-day { min-height: 58px; padding: 5px; border-radius: 6px; background: rgba(123,63,228,.3); font-size: .7rem; overflow-wrap: anywhere; }
+    @media (max-width: 620px) {
+      .form-row { grid-template-columns: repeat(2, 1fr); }
+      .fb-row { grid-template-columns: 1fr 1fr; }
+      .fb-row select { grid-column: 1 / -1; }
+      .strengths { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>🔮 Huyền Học AI</h1>
+    <p class="subtitle">Phân tích bản mệnh · Gợi ý tham khảo · Ghi nhận phản hồi</p>
+    <nav class="nav" aria-label="Điều hướng">
+      <a href="/app">🏠 Tổng quan</a>
+      <a href="/tu-vi">🀄 Tử Vi</a>
+      <a href="/dashboard">📈 Dashboard</a>
+      <a href="/hop-tuoi">🤝 Hợp tuổi &amp; chia sẻ</a>
+      <a href="/tarot">🃏 Tarot</a>
+      <a href="/kinh-dich">☯ Kinh Dịch</a>
+      <a href="/phong-thuy">🏠 Phong thủy</a>
+      <a href="/su-kien">📅 Sự kiện</a>
+      <a href="/timeline-vi-mo">🌏 Timeline</a>
+      <a href="#" id="logout">🚪 Đăng xuất</a>
+    </nav>
+
+    <section class="card" aria-label="Thông tin ngày sinh">
+      <form id="birthForm">
+        <div class="form-row" style="margin-bottom:12px">
+          <div style="grid-column:1/-1">
+            <label for="savedProfiles">Hồ sơ đã lưu</label>
+            <select id="savedProfiles">
+              <option value="">Chọn hồ sơ đã lưu…</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label for="hoTen">Họ tên (không bắt buộc)</label><input id="hoTen" name="ho_ten" maxlength="100" placeholder="Nguyễn Văn A"></div>
+          <div><label for="ngay">Ngày</label><input id="ngay" name="ngay" type="number" value="15" min="1" max="31" required></div>
+          <div><label for="thang">Tháng</label><input id="thang" name="thang" type="number" value="6" min="1" max="12" required></div>
+          <div><label for="nam">Năm</label><input id="nam" name="nam" type="number" value="1995" min="1900" max="2100" required></div>
+        </div>
+        <button class="primary" id="btnAnalyze" type="submit">✨ Phân tích bản mệnh</button>
+        <button id="exportProfilePdf" type="button">📄 Xuất bản mệnh PDF</button>
+        <button id="abAnalyze" type="button">🧪 Phân tích trong thử nghiệm A/B</button>
+      </form>
+      <p class="disclaimer">Thử nghiệm A/B là tùy chọn; kết quả phân tích gắn với phản hồi tương ứng để so sánh biến thể.</p>
+    </section>
+    <section class="card" aria-label="Tùy chọn quyền riêng tư và Telegram">
+      <h2>🔐 Quyền riêng tư &amp; thông báo</h2>
+      <label><input id="trainingConsent" type="checkbox" style="width:auto">
+        Cho phép dùng các mẫu phân tích đã được tôi đồng ý và duyệt thủ công để tạo dataset đã gỡ thông tin nhận diện trực tiếp.
+      </label>
+      <label><input id="notificationsEnabled" type="checkbox" style="width:auto">
+        Nhận lịch tham khảo hằng ngày qua Telegram (cần liên kết bot).
+      </label>
+      <label><input id="analysisNotificationsEnabled" type="checkbox" style="width:auto">
+        Gửi hồ sơ và toàn bộ kết quả diễn giải qua Telegram sau mỗi lần phân tích (có thể chứa ngày sinh và tên).
+      </label>
+      <div class="calendar-buttons">
+        <button id="savePreferences" type="button">Lưu tùy chọn</button>
+        <button id="linkTelegram" type="button">Tạo mã liên kết Telegram</button>
+      </div>
+      <div id="telegramStatus" class="disclaimer" aria-live="polite"></div>
+      <p class="disclaimer">Mã Telegram chỉ dùng một lần và hết hạn sau 10 phút. Tắt đồng ý sẽ gỡ duyệt các mẫu cũ.</p>
+    </section>
+    <div id="output" aria-live="polite"></div>
+  </main>
+  <script>
+    const API = window.location.origin;
+    const token = localStorage.getItem("token");
+    if (!token) window.location.replace("/");
+    document.getElementById("logout").addEventListener("click", event => {
+      event.preventDefault();
+      localStorage.clear();
+      window.location.replace("/");
+    });
+    const EVENT_NAMES = {
+      tai_van: "💰 Tài vận", tinh_duyen: "💕 Tình duyên",
+      su_nghiep: "💼 Sự nghiệp", suc_khoe: "🌿 Sức khỏe",
+      gap_go: "🤝 Gặp gỡ", thay_doi: "🔄 Thay đổi"
+    };
+    let latestScores = {};
+    let latestPredictionId = null;
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    function formatCalendarList(value) {
+      if (Array.isArray(value)) {
+        return value.map(item => typeof item === "string" ? item : JSON.stringify(item)).join(", ");
+      }
+      if (value == null) return "";
+      return typeof value === "string" ? value : JSON.stringify(value);
+    }
+
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.setAttribute("role", "status");
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    async function responseError(response) {
+      const body = await response.json().catch(() => null);
+      return body?.detail || `Yêu cầu thất bại (${response.status}).`;
+    }
+
+    async function apiFetch(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      headers.set("Authorization", `Bearer ${token}`);
+      const response = await fetch(`${API}${path}`, { ...options, headers });
+      if (response.status === 401) {
+        localStorage.clear();
+        window.location.replace("/");
+        throw new Error("Phiên đăng nhập đã hết hạn.");
+      }
+      return response;
+    }
+
+    async function loadPreferences() {
+      try {
+        const response = await apiFetch("/api/auth/preferences");
+        if (!response.ok) throw new Error(await responseError(response));
+        const preferences = await response.json();
+        document.getElementById("trainingConsent").checked = preferences.training_consent;
+        document.getElementById("notificationsEnabled").checked = preferences.notifications_enabled;
+        document.getElementById("analysisNotificationsEnabled").checked =
+          preferences.analysis_notifications_enabled;
+        document.getElementById("analysisNotificationsEnabled").disabled =
+          !preferences.telegram_linked;
+        document.getElementById("telegramStatus").textContent =
+          preferences.telegram_linked ? "Telegram đã được liên kết." :
+            "Telegram chưa được liên kết. Hãy liên kết trước khi bật gửi kết quả.";
+      } catch (error) {
+        document.getElementById("telegramStatus").textContent = `Không tải được tùy chọn: ${error.message}`;
+      }
+    }
+
+    document.getElementById("savePreferences").addEventListener("click", async () => {
+      const status = document.getElementById("telegramStatus");
+      try {
+        const response = await apiFetch("/api/auth/preferences", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            training_consent: document.getElementById("trainingConsent").checked,
+            notifications_enabled: document.getElementById("notificationsEnabled").checked,
+            analysis_notifications_enabled:
+              document.getElementById("analysisNotificationsEnabled").checked
+          })
+        });
+        if (!response.ok) throw new Error(await responseError(response));
+        const saved = await response.json();
+        document.getElementById("notificationsEnabled").checked = saved.notifications_enabled;
+        document.getElementById("analysisNotificationsEnabled").checked =
+          saved.analysis_notifications_enabled;
+        document.getElementById("analysisNotificationsEnabled").disabled =
+          !saved.telegram_linked;
+        status.textContent = saved.telegram_linked ? "Đã lưu tùy chọn; Telegram đã liên kết." :
+          "Đã lưu đồng ý dữ liệu. Hãy liên kết Telegram để bật thông báo.";
+      } catch (error) {
+        status.textContent = `Không lưu được: ${error.message}`;
+      }
+    });
+
+    document.getElementById("linkTelegram").addEventListener("click", async () => {
+      const status = document.getElementById("telegramStatus");
+      try {
+        const response = await apiFetch("/api/telegram/link-code", { method: "POST" });
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        status.textContent = `Mở bot Telegram và gửi: /link ${data.code} (mã hết hạn sau 10 phút).`;
+      } catch (error) {
+        status.textContent = `Không tạo được mã: ${error.message}`;
+      }
+    });
+
+    loadPreferences();
+    window.addEventListener("focus", loadPreferences);
+
+    async function loadSavedProfiles() {
+      const select = document.getElementById("savedProfiles");
+      try {
+        const response = await apiFetch("/api/profiles");
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        select.replaceChildren(new Option("Chọn hồ sơ đã lưu…", ""));
+        for (const item of data.items) {
+          const profile = item.profile;
+          const label = [profile.ho_ten, profile.ngay_sinh].filter(Boolean).join(" · ");
+          select.add(new Option(label || `Hồ sơ #${item.id}`, String(item.id)));
+        }
+        select.dataset.profiles = JSON.stringify(data.items);
+      } catch (error) {
+        select.replaceChildren(new Option(`Không tải được hồ sơ: ${error.message}`, ""));
+      }
+    }
+
+    document.getElementById("savedProfiles").addEventListener("change", event => {
+      if (!event.currentTarget.value) return;
+      const profiles = JSON.parse(event.currentTarget.dataset.profiles || "[]");
+      const saved = profiles.find(item => String(item.id) === event.currentTarget.value);
+      if (!saved) return;
+      const profile = saved.profile;
+      const [day, month, year] = String(profile.ngay_sinh || "").split("/");
+      document.getElementById("hoTen").value = profile.ho_ten || "";
+      document.getElementById("ngay").value = day || "";
+      document.getElementById("thang").value = month || "";
+      document.getElementById("nam").value = year || "";
+      if (saved.latest_prediction) {
+        render({
+          profile,
+          chi_so: saved.latest_prediction.chi_so,
+          phan_tich: saved.latest_prediction.phan_tich,
+          prediction_id: saved.latest_prediction.prediction_id
+        });
+        showToast("Đã nạp hồ sơ và kết quả diễn giải đã lưu.");
+      } else {
+        document.getElementById("output").textContent =
+          "Đã nạp hồ sơ. Chưa có kết quả diễn giải; nhấn Phân tích bản mệnh để tạo.";
+      }
+    });
+
+    loadSavedProfiles();
+
+    document.getElementById("birthForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!event.currentTarget.reportValidity()) return;
+      const form = new FormData(event.currentTarget);
+      const payload = {
+        ho_ten: form.get("ho_ten"),
+        ngay: Number(form.get("ngay")),
+        thang: Number(form.get("thang")),
+        nam: Number(form.get("nam"))
+      };
+      const button = document.getElementById("btnAnalyze");
+      const output = document.getElementById("output");
+      button.disabled = true;
+      output.innerHTML = `<section class="card">
+        <h2>📜 Hồ sơ</h2><div id="streamMeta" class="disclaimer">Đang tính hồ sơ…</div>
+      </section><section class="card">
+        <h2>✨ AI đang phân tích</h2>
+        <pre id="streamRaw" style="white-space:pre-wrap;max-height:320px;overflow:auto"></pre>
+        <div id="streamStatus" class="disclaimer" aria-live="polite">Đang kết nối Ollama…</div>
+      </section><div id="streamResult"></div>`;
+      try {
+        const response = await apiFetch("/api/analyze/stream", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        document.getElementById("exportProfilePdf").addEventListener("click", async () => {
+          const button = document.getElementById("exportProfilePdf");
+          button.disabled = true;
+          try {
+            const form = new FormData(document.getElementById("birthForm"));
+            const response = await apiFetch("/api/analyze/export-pdf", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ho_ten: form.get("ho_ten"),
+                ngay: Number(form.get("ngay")),
+                thang: Number(form.get("thang")),
+                nam: Number(form.get("nam"))
+              })
+            });
+            if (!response.ok) throw new Error(await responseError(response));
+            const url = URL.createObjectURL(await response.blob());
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "ban-menh.pdf";
+            link.click();
+            URL.revokeObjectURL(url);
+          } catch (error) {
+            showToast(`Không xuất được PDF: ${error.message}`);
+          } finally { button.disabled = false; }
+        });
+        if (!response.ok) throw new Error(await responseError(response));
+        if (!response.body) throw new Error("Trình duyệt không hỗ trợ nhận stream.");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let streamMetadata = null;
+        let streamError = null;
+
+        const processEvent = eventText => {
+          let eventName = "";
+          const dataLines = [];
+          for (const line of eventText.split(/\r?\n/)) {
+            if (line.startsWith("event:")) eventName = line.slice(6).trim();
+            else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
+          }
+          if (!dataLines.length) return;
+          let parsed;
+          try {
+            parsed = JSON.parse(dataLines.join("\n"));
+          } catch {
+            throw new Error("Server gửi sự kiện stream không hợp lệ.");
+          }
+          if (eventName === "metadata") {
+            streamMetadata = parsed;
+            const p = parsed.profile || {};
+            document.getElementById("streamMeta").textContent =
+              `${p.ngay_sinh || ""} · ${p.can_chi_nam || ""} · ${p.menh_nap_am || ""} · Số chủ đạo ${p.so_chu_dao ?? ""}`;
+            document.getElementById("streamStatus").textContent = "Ollama đang sinh phản hồi…";
+          } else if (eventName === "token") {
+            const pre = document.getElementById("streamRaw");
+            pre.textContent += parsed.token || "";
+            pre.scrollTop = pre.scrollHeight;
+          } else if (eventName === "error") {
+            streamError = parsed.message || "Phân tích stream thất bại.";
+            document.getElementById("streamStatus").textContent = `❌ ${streamError}`;
+          } else if (eventName === "done") {
+            latestPredictionId = parsed.prediction_id ?? null;
+            document.getElementById("streamStatus").textContent = "✅ Hoàn tất";
+            if (parsed.telegram_notification === "sent") {
+              showToast("Đã lưu kết quả và gửi tệp diễn giải qua Telegram.");
+            } else if (parsed.telegram_notification === "failed") {
+              showToast("Đã lưu kết quả trên web nhưng gửi Telegram thất bại.");
+            } else {
+              showToast("Đã lưu kết quả diễn giải trên web.");
+            }
+            if (streamMetadata && parsed.parsed) {
+              render({
+                ...streamMetadata,
+                phan_tich: parsed.parsed,
+                prediction_id: latestPredictionId
+              }, document.getElementById("streamResult"));
+              loadSavedProfiles();
+            }
+          }
+        };
+
+        while (true) {
+          const { done, value } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          const events = buffer.split(/\r?\n\r?\n/);
+          buffer = events.pop() || "";
+          for (const item of events) processEvent(item);
+          if (done) break;
+        }
+        if (buffer.trim()) processEvent(buffer);
+        if (streamError) throw new Error(streamError);
+      } catch (error) {
+        output.innerHTML = `<section class="card error">❌ ${escapeHtml(error.message)}<p class="disclaimer">Kiểm tra backend ở cổng 8000, Ollama ở cổng 11434 và model đã được tải.</p></section>`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    function render(data, target = document.getElementById("output")) {
+      const profile = data.profile;
+      const analysis = data.phan_tich || {};
+      const scores = data.chi_so || {};
+      latestScores = scores;
+      latestPredictionId = data.prediction_id ?? null;
+      const profileItems = [
+        ["Ngày sinh", profile.ngay_sinh], ["Can Chi", profile.can_chi_nam],
+        ["Con giáp", profile.con_giap], ["Mệnh nạp âm", profile.menh_nap_am],
+        ["Số chủ đạo", profile.so_chu_dao], ["Cung phi", `${profile.cung_phi} - ${profile.bat_quai}`]
+      ];
+      const actions = Array.isArray(analysis.hanh_dong_cu_the) ? analysis.hanh_dong_cu_the : [];
+      const warnings = Array.isArray(analysis.canh_bao) ? analysis.canh_bao : [];
+      target.innerHTML = `
+        <section class="card">
+          <h2>📜 Hồ sơ bản mệnh</h2>
+          <div class="profile-grid">${profileItems.map(([label, value]) => `
+            <div class="stat"><div class="stat-label">${escapeHtml(label)}</div><div class="stat-value">${escapeHtml(value)}</div></div>
+          `).join("")}</div>
+        </section>
+        <section class="card">
+          <h2>📊 Chỉ số tham khảo</h2>
+          ${Object.entries(scores).map(([key, value]) => {
+            const score = Math.max(0, Math.min(100, Number(value) || 0));
+            return `<div class="chiso-bar"><div class="bar-label"><span>${escapeHtml(EVENT_NAMES[key] || key)}</span><span>${score.toFixed(0)}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${score}%"></div></div></div>`;
+          }).join("")}
+        </section>
+        <section class="card">
+          <h2>🌟 Tổng quan</h2>
+          <p class="summary">${escapeHtml(analysis.tom_tat || "")}</p>
+          <div class="strengths">
+            <div><h3 style="color:#7bffa0">✓ Điểm mạnh</h3><ul>${safeList(analysis.diem_manh)}</ul></div>
+            <div><h3 style="color:#ffa07a">⚠ Điểm cần lưu ý</h3><ul>${safeList(analysis.diem_yeu)}</ul></div>
+          </div>
+        </section>
+        <section class="card">
+          <h2>🎯 Gợi ý hành động</h2>
+          ${actions.length ? actions.map(action => `
+            <article class="action">
+              <span class="tag">${escapeHtml(EVENT_NAMES[action.linh_vuc] || action.linh_vuc || "Gợi ý")} · Ưu tiên ${escapeHtml(action.muc_do_uu_tien || "—")}</span>
+              <div class="action-text">${escapeHtml(action.hanh_dong || "")}</div>
+              <div class="meta">
+                ${action.thoi_gian_goi_y ? `<div>⏰ ${escapeHtml(action.thoi_gian_goi_y)}</div>` : ""}
+                ${action.vat_pham_ho_tro ? `<div>🎁 ${escapeHtml(action.vat_pham_ho_tro)}</div>` : ""}
+                ${action.ly_do_huyen_hoc ? `<div>📖 ${escapeHtml(action.ly_do_huyen_hoc)}</div>` : ""}
+              </div>
+            </article>
+          `).join("") : '<p class="disclaimer">Chưa có gợi ý hành động.</p>'}
+        </section>
+        ${warnings.length ? `<section class="card"><h2>⚠️ Điều cần cân nhắc</h2><ul class="warnings">${safeList(warnings)}</ul></section>` : ""}
+        <section class="card center">${escapeHtml(analysis.cau_chuc || "")}</section>
+        <section class="card">
+          <h2>📝 Phản hồi</h2>
+          <p class="disclaimer">Phản hồi có thể làm ngữ cảnh phân tích thay đổi; không tự huấn luyện model. Mẫu chỉ được cân nhắc đưa vào dataset khi bạn bật đồng ý và người vận hành duyệt thủ công.</p>
+          <form id="feedbackForm" class="fb-row">
+            <div><label for="fbLoai">Lĩnh vực</label><select id="fbLoai" name="loai_su_kien">${Object.entries(EVENT_NAMES).map(([key, label]) => `<option value="${key}">${escapeHtml(label)}</option>`).join("")}</select></div>
+            <div><label for="fbDuDoan">Chỉ số</label><input id="fbDuDoan" name="du_doan_score" type="number" min="0" max="100" step="1" placeholder="Tự động"></div>
+            <div><label for="fbThucTe">Đánh giá</label><input id="fbThucTe" name="thuc_te_score" type="number" min="0" max="100" step="1" required></div>
+            <button type="submit">Gửi</button>
+          </form>
+          <div id="history" aria-live="polite" style="margin-top:14px"></div>
+          <button id="btnRelearn" type="button" style="margin-top:12px">Tóm tắt phản hồi (cần ít nhất 3)</button>
+        </section>
+        <section class="card">
+          <h2>📅 Lịch vạn niên</h2>
+          <p class="disclaimer">Điểm và giờ hoàng đạo theo quy tắc truyền thống đơn giản hóa, chỉ mang tính tham khảo.</p>
+          <div class="calendar-buttons">
+            <button id="btnWeek" type="button">📆 7 ngày tới</button>
+            <button id="btnMonth" type="button">🗓️ Cả tháng</button>
+            <button id="btnAiWeek" type="button">🔮 AI diễn giải tuần</button>
+          </div>
+          <div id="lvn" aria-live="polite"></div>
+        </section>
+        <section class="card disclaimer">Nội dung chỉ nhằm mục đích tham khảo và giải trí. Các chỉ số không phải xác suất hay dự đoán khoa học; không thay thế tư vấn chuyên môn, y tế, pháp lý hoặc tài chính.</section>
+      `;
+      document.getElementById("feedbackForm").addEventListener("submit", event => {
+        event.preventDefault();
+        submitFeedback(profile.ngay_sinh);
+      });
+      document.getElementById("btnRelearn").addEventListener("click", () => summarizeFeedback(profile.ngay_sinh));
+      document.getElementById("btnWeek").addEventListener("click", loadWeek);
+      document.getElementById("btnMonth").addEventListener("click", loadMonth);
+      document.getElementById("btnAiWeek").addEventListener("click", loadAiWeek);
+      loadHistory(profile.ngay_sinh);
+    }
+
+    document.getElementById("abAnalyze").addEventListener("click", async () => {
+      const button = document.getElementById("abAnalyze");
+      if (!document.getElementById("birthForm").reportValidity()) return;
+      const form = new FormData(document.getElementById("birthForm"));
+      const target = document.getElementById("output");
+      button.disabled = true;
+      target.textContent = "Đang chạy thử nghiệm A/B…";
+      try {
+        const response = await apiFetch("/api/analyze/ab", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ho_ten: form.get("ho_ten"),
+            ngay: Number(form.get("ngay")),
+            thang: Number(form.get("thang")),
+            nam: Number(form.get("nam"))
+          })
+        });
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        render(data, target);
+        const note = document.createElement("p");
+        note.className = "disclaimer";
+        note.textContent = `Đã gán biến thể ${data.variant}. ${data.ghi_chu}`;
+        target.prepend(note);
+      } catch (error) {
+        target.textContent = `Không chạy được thử nghiệm: ${error.message}`;
+      } finally { button.disabled = false; }
+    });
+
+    function safeList(items) {
+      return (Array.isArray(items) ? items : []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    }
+
+    async function submitFeedback(birthDate) {
+      const form = document.getElementById("feedbackForm");
+      if (!form.reportValidity()) return;
+      const values = new FormData(form);
+      const category = values.get("loai_su_kien");
+      const enteredPrediction = values.get("du_doan_score");
+      const prediction = enteredPrediction === "" ? Number(latestScores[category] ?? 50) : Number(enteredPrediction);
+      try {
+        const response = await apiFetch("/api/feedback", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ngay_sinh: birthDate,
+            prediction_id: latestPredictionId,
+            loai_su_kien: category,
+            du_doan_score: prediction,
+            thuc_te_score: Number(values.get("thuc_te_score"))
+          })
+        });
+        if (!response.ok) throw new Error(await responseError(response));
+        showToast("Đã ghi nhận phản hồi.");
+        form.reset();
+        loadHistory(birthDate);
+      } catch (error) {
+        showToast(`Lỗi: ${error.message}`);
+      }
+    }
+
+    async function loadHistory(birthDate) {
+      const element = document.getElementById("history");
+      try {
+        const response = await apiFetch(`/api/history/${encodeURIComponent(birthDate)}`);
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        if (!data.items.length) {
+          element.innerHTML = '<div class="disclaimer">Chưa có phản hồi.</div>';
+          return;
+        }
+        element.innerHTML = `<div class="disclaimer">Phản hồi gần đây (${data.items.length}):</div>` +
+          data.items.map(item => {
+            const difference = Number(item.chenh_lech) || 0;
+            const color = Math.abs(difference) < 15 ? "#7bffa0" : difference > 0 ? "#ffd700" : "#ff8080";
+            return `<div class="feedback-item">${escapeHtml(EVENT_NAMES[item.loai_su_kien] || item.loai_su_kien)}: chỉ số ${Number(item.du_doan).toFixed(0)} / đánh giá ${Number(item.thuc_te).toFixed(0)} <span style="color:${color}">(${difference > 0 ? "+" : ""}${difference.toFixed(0)})</span></div>`;
+          }).join("");
+      } catch (error) {
+        element.textContent = `Không tải được lịch sử: ${error.message}`;
+      }
+    }
+
+    async function summarizeFeedback(birthDate) {
+      const button = document.getElementById("btnRelearn");
+      button.disabled = true;
+      try {
+        const response = await apiFetch(`/api/relearn/${encodeURIComponent(birthDate)}`, { method: "POST" });
+        if (!response.ok) throw new Error(await responseError(response));
+        const result = await response.json();
+        if (result.dieu_chinh) {
+          showToast(result.dieu_chinh.nhan_xet || "Đã tóm tắt feedback.");
+        } else {
+          showToast(result.message || "Chưa đủ feedback.");
+        }
+      } catch (error) {
+        showToast(`Lỗi: ${error.message}`);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function calendarElement() {
+      return document.getElementById("lvn");
+    }
+
+    async function loadWeek() {
+      const output = calendarElement();
+      output.textContent = "Đang tải lịch tuần…";
+      try {
+        const response = await apiFetch("/api/lich-van-nien/tuan");
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        output.innerHTML = `<p><strong>Điểm tham khảo trung bình: ${Number(data.diem_trung_binh).toFixed(1)}</strong></p>` +
+          data.danh_sach.map(item => `<article class="calendar-day">
+            <strong>${escapeHtml(item.thu)} · ${escapeHtml(item.ngay)} · ${Number(item.diem_tong_hop)}%</strong>
+            <div class="meta">${escapeHtml(item.can_chi_ngay)} · ${escapeHtml(item.tiet_khi)} · ${escapeHtml(item.quan_he_ngu_hanh)} · ${escapeHtml(item.quan_he_chi.join(", "))}</div>
+            <div class="meta">Giờ hoàng đạo (tham khảo): ${escapeHtml(item.gio_hoang_dao.join(", "))}</div>
+          </article>`).join("");
+      } catch (error) {
+        output.textContent = `Không tải được lịch tuần: ${error.message}`;
+      }
+    }
+
+    async function loadMonth() {
+      const output = calendarElement();
+      output.textContent = "Đang tải lịch tháng…";
+      const now = new Date();
+      try {
+        const response = await apiFetch(`/api/lich-van-nien/thang?year=${now.getFullYear()}&month=${now.getMonth() + 1}`);
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        const firstWeekday = (new Date(now.getFullYear(), now.getMonth(), 1).getDay() + 6) % 7;
+        const cells = Array(firstWeekday).fill('<div aria-hidden="true"></div>');
+        for (const item of data.danh_sach) {
+          const dayNumber = Number(item.ngay.slice(-2));
+          const score = Number(item.diem_tong_hop);
+          const color = score >= 65 ? "rgba(40,130,65,.5)" : score >= 45 ? "rgba(140,120,30,.45)" : "rgba(140,45,55,.45)";
+          cells.push(`<div class="month-day" style="background:${color}" title="${escapeHtml(item.can_chi_ngay)}">
+            <strong>${dayNumber}</strong><br>${score}%<br>${escapeHtml(item.can_chi_ngay)}
+          </div>`);
+        }
+        output.innerHTML = `<p>Trung bình tham khảo tháng: <strong>${Number(data.diem_trung_binh).toFixed(1)}</strong></p>
+          <div class="month-grid">${["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map(day => `<strong class="center">${day}</strong>`).join("")}${cells.join("")}</div>`;
+      } catch (error) {
+        output.textContent = `Không tải được lịch tháng: ${error.message}`;
+      }
+    }
+
+    async function loadAiWeek() {
+      const output = calendarElement();
+      output.textContent = "Đang chờ Ollama diễn giải tuần…";
+      try {
+        const response = await apiFetch("/api/lich-van-nien/llm-tuan", { method: "POST" });
+        if (!response.ok) throw new Error(await responseError(response));
+        const data = await response.json();
+        const days = Array.isArray(data.lich_hanh_dong) ? data.lich_hanh_dong : [];
+        output.innerHTML = `<h3>${escapeHtml(data.tom_tat_tuan || "Diễn giải tuần")}</h3>
+          ${days.map(item => `<article class="calendar-day"><strong>${escapeHtml(item.ngay || "")}</strong>
+            <div class="meta">Nên làm: ${escapeHtml(formatCalendarList(item.viec_nen_lam))}</div>
+            <div class="meta">Cân nhắc tránh: ${escapeHtml(formatCalendarList(item.viec_nen_tranh))}</div>
+            <div class="meta">Giờ gợi ý: ${escapeHtml(item.gio_tot || "—")}</div></article>`).join("")}
+          <p>${escapeHtml(data.loi_khuyen_tuan || "")}</p><p class="disclaimer">${escapeHtml(data.ghi_chu || "")}</p>`;
+      } catch (error) {
+        output.textContent = `Không thể phân tích tuần: ${error.message}`;
+      }
+    }
+
+    if ("serviceWorker" in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register("/sw.js").catch(error => {
+        console.warn("Không đăng ký được service worker:", error);
+      });
+    }
+  </script>
+</body>
+</html>

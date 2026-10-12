@@ -1,0 +1,9 @@
+.venv/
+.env.local
+__pycache__/
+*.py[cod]
+backend/huyen_hoc.db
+/finetune/dataset/
+/finetune/output/
+/deploy/.env.prod
+/data/

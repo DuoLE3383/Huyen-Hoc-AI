@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sự kiện cá nhân — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}
+  main{max-width:800px;margin:auto}nav{display:flex;gap:14px;flex-wrap:wrap}a{color:#d0b5ff}
+  section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  label{display:block;margin:12px 0 5px;color:#b6a1d2}input,select,button{font:inherit;padding:10px;border-radius:7px}
+  input,select{background:#201432;color:white;border:1px solid #705d83}button{background:#7138d6;color:white;border:0;cursor:pointer}
+  li{margin:8px 0}.note{color:#b6a1d2}#error{color:#ffaaaa}
+</style></head>
+<body><main><h1>📅 Sự kiện & kế hoạch</h1>
+  <nav><a href="/app">Tổng quan</a><a href="/phong-thuy">Phong thủy</a><a href="/timeline-vi-mo">Timeline vĩ mô</a></nav>
+  <p class="note">Các mục là lịch do bạn nhập. Không dự đoán biến cố hoặc xác suất tác động tới cuộc sống.</p>
+  <section><h2>Thêm sự kiện</h2><form id="eventForm">
+    <label>Loại sự kiện<select id="kind" name="loai" required></select></label>
+    <label>Ngày<input name="ngay" type="date" required></label>
+    <label>Ghi chú (không bắt buộc)<input name="ghi_chu" maxlength="500"></label>
+    <button type="submit">Lưu sự kiện riêng tư</button>
+  </form><p id="error" role="alert"></p></section>
+  <section><h2>Timeline cá nhân</h2><button id="reload" type="button">Tải lại</button><ul id="events"></ul></section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  async function api(path,options={}){const response=await fetch(path,{...options,headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json",...(options.headers||{})}});const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.detail||`Lỗi ${response.status}`);return body}
+  async function refresh(){
+    const data=await api("/api/su-kien");const list=document.getElementById("events");list.replaceChildren();
+    if(!data.items.length){const empty=document.createElement("li");empty.textContent="Chưa có sự kiện được lưu.";list.append(empty);return}
+    for(const item of data.items){const li=document.createElement("li");li.textContent=`${item.ngay} · ${item.ten||item.loai} · ${item.ghi_chu||""} `;
+      const button=document.createElement("button");button.textContent="Xóa";button.addEventListener("click",async()=>{try{await api(`/api/su-kien/${item.id}`,{method:"DELETE"});await refresh()}catch(e){document.getElementById("error").textContent=e.message}});li.append(button);list.append(li)}
+  }
+  document.getElementById("eventForm").addEventListener("submit",async event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget));try{await api("/api/su-kien",{method:"POST",body:JSON.stringify(data)});event.currentTarget.reset();document.getElementById("error").textContent="";await refresh()}catch(e){document.getElementById("error").textContent=e.message}});
+  document.getElementById("reload").addEventListener("click",()=>refresh().catch(e=>document.getElementById("error").textContent=e.message));
+  api("/api/su-kien/danh-muc").then(categories=>{const select=document.getElementById("kind");for(const group of Object.values(categories))for(const item of group.items){const option=document.createElement("option");option.value=item.id;option.textContent=`${group.ten} — ${item.ten}`;select.append(option)};refresh()}).catch(e=>document.getElementById("error").textContent=e.message);
+</script></body></html>

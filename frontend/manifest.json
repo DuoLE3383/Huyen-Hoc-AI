@@ -1,0 +1,19 @@
+{
+  "name": "Huyền Học AI",
+  "short_name": "Huyền Học AI",
+  "description": "Ứng dụng tham khảo lịch vạn niên và huyền học.",
+  "lang": "vi",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#160a27",
+  "theme_color": "#1a0b2e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phong thủy & môi trường — Huyền Học AI</title>
+  <style>
+    :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}
+    main{max-width:850px;margin:auto}nav,.row{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+    a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+    label{display:block;margin:12px 0 5px;color:#b6a1d2}input,select,button{font:inherit;padding:10px;border-radius:7px}
+    input,select{max-width:100%;background:#201432;color:white;border:1px solid #705d83}button{background:#7138d6;color:white;border:0;cursor:pointer}
+    .row>label{flex:1;min-width:130px}pre{white-space:pre-wrap;overflow-wrap:anywhere}.note{color:#b6a1d2}
+  </style>
+</head>
+<body><main>
+  <h1>🏠 Phong thủy & môi trường</h1>
+  <nav><a href="/app">Tổng quan</a><a href="/su-kien">Sự kiện cá nhân</a><a href="/timeline-vi-mo">Timeline vĩ mô</a></nav>
+  <p class="note">Phong thủy là diễn giải văn hóa tham khảo, không phải dự báo khoa học hay căn cứ cho quyết định y tế, pháp lý, tài chính.</p>
+  <section><h2>Thông tin phân tích</h2>
+    <form id="analysis">
+      <div class="row">
+        <label>Ngày sinh<input name="ngay" type="number" min="1" max="31" value="15" required></label>
+        <label>Tháng<input name="thang" type="number" min="1" max="12" value="6" required></label>
+        <label>Năm<input name="nam" type="number" min="1900" max="2100" value="1995" required></label>
+        <label>Giới tính<input name="gioi_tinh" value="nam" pattern="nam|nu" title="Nhập nam hoặc nu" required></label>
+      </div>
+      <div class="row">
+        <label>Hướng nhà<select name="huong_nha"></select></label>
+        <label>Hướng bếp (không bắt buộc)<select name="huong_bep"></select></label>
+        <label>Hướng phòng ngủ (không bắt buộc)<select name="huong_phong_ngu"></select></label>
+      </div>
+      <label>Mục đích tham khảo<select name="muc_dich">
+        <option value="tai_van">Tài vận</option><option value="suc_khoe">Sức khỏe</option>
+        <option value="tinh_cam">Tình cảm</option><option value="su_nghiep">Sự nghiệp</option>
+        <option value="hoc_tap">Học tập</option><option value="tam_linh">Tâm linh</option>
+      </select></label>
+      <details><summary>Dữ liệu môi trường hiện tại (tùy chọn)</summary>
+        <p class="note">Nếu nhập tọa độ, ứng dụng sẽ gửi chúng qua máy chủ tới OpenWeather để lấy thời tiết/AQI; không lưu tọa độ. Cần máy chủ cấu hình OPENWEATHER_API_KEY.</p>
+        <div class="row"><label>Vĩ độ<input name="lat" type="number" min="-90" max="90" step="any"></label>
+          <label>Kinh độ<input name="lon" type="number" min="-180" max="180" step="any"></label></div>
+        <label><input id="locationConsent" type="checkbox"> Tôi đồng ý gửi tọa độ đã nhập tới nhà cung cấp thời tiết.</label>
+      </details>
+      <button type="submit">Phân tích và tổng hợp</button>
+    </form>
+  </section>
+  <section aria-live="polite"><h2>Kết quả</h2><pre id="result">Chưa có kết quả.</pre></section>
+</main>
+<script>
+  const token=localStorage.getItem("token");
+  if(!token) location.replace("/");
+  const directions=["","Bắc","Đông Bắc","Đông","Đông Nam","Nam","Tây Nam","Tây","Tây Bắc"];
+  for(const select of document.querySelectorAll('select[name="huong_nha"],select[name="huong_bep"],select[name="huong_phong_ngu"]')){
+    for(const direction of directions.slice(1)){const option=document.createElement("option");option.value=direction;option.textContent=direction;select.append(option)}
+    if(select.name==="huong_nha")select.value="Nam";
+  }
+  document.getElementById("analysis").addEventListener("submit",async event=>{
+    event.preventDefault();
+    const form=Object.fromEntries(new FormData(event.currentTarget));
+    const payload={...form,ngay:Number(form.ngay),thang:Number(form.thang),nam:Number(form.nam)};
+    for(const key of ["huong_bep","huong_phong_ngu"])if(!payload[key])delete payload[key];
+    const hasCoordinates=form.lat!==""||form.lon!=="";
+    if(hasCoordinates){
+      if(!form.lat||!form.lon){document.getElementById("result").textContent="Cần nhập cả vĩ độ và kinh độ.";return}
+      if(!document.getElementById("locationConsent").checked){document.getElementById("result").textContent="Cần đồng ý gửi tọa độ trước khi truy vấn thời tiết.";return}
+      payload.lat=Number(form.lat);payload.lon=Number(form.lon);
+    }
+    const output=document.getElementById("result");output.textContent="Đang phân tích…";
+    try{
+      const response=await fetch("/api/tong-the",{method:"POST",headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      const data=await response.json();if(!response.ok)throw new Error(data.detail||`Lỗi ${response.status}`);
+      output.textContent=JSON.stringify(data,null,2);
+    }catch(error){output.textContent=`Không thể hoàn tất: ${error.message}`}
+  });
+</script>
+</body></html>

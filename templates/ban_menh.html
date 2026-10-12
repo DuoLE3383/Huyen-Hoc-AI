@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Bản mệnh tham khảo - {{ user_name }}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: "DejaVu Sans", sans-serif; color: #2d1b4e; font-size: 10pt; line-height: 1.55; }
+    h1, h2 { color: #6533ad; }
+    header { border-bottom: 2px solid #c4a3ff; margin-bottom: 18px; padding-bottom: 10px; }
+    .facts, .action { background: #f5f0ff; padding: 10px; margin: 8px 0; }
+    .disclaimer { margin-top: 18px; padding: 10px; background: #fff5e6; }
+    .muted { color: #666; font-size: 8pt; }
+  </style>
+</head>
+<body>
+  <header><h1>Bản mệnh &amp; gợi ý hành động</h1><div>{{ brand }} · {{ user_name }}</div></header>
+  <section class="facts">
+    <div>Can Chi: {{ profile.can_chi_nam }} · Mệnh nạp âm: {{ profile.menh_nap_am }}</div>
+    <div>Con giáp: {{ profile.con_giap }} · Số chủ đạo: {{ profile.so_chu_dao }}</div>
+  </section>
+  <h2>Chỉ số tham khảo</h2>
+  <ul>{% for name, value in chi_so.items() %}<li>{{ name }}: {{ "%.1f"|format(value) }}</li>{% endfor %}</ul>
+  {% if phan_tich.tom_tat %}<h2>Tổng quan</h2><p>{{ phan_tich.tom_tat }}</p>{% endif %}
+  {% if phan_tich.hanh_dong_cu_the %}
+  <h2>Gợi ý hành động</h2>
+  {% for item in phan_tich.hanh_dong_cu_the %}
+  <article class="action"><strong>{{ item.linh_vuc }}</strong><div>{{ item.hanh_dong }}</div><div class="muted">{{ item.thoi_gian_goi_y }}</div></article>
+  {% endfor %}
+  {% endif %}
+  <div class="disclaimer">
+    Nội dung mang tính tham khảo văn hóa và giải trí; các chỉ số không phải xác suất dự đoán.
+    Không thay thế tư vấn y tế, pháp lý hoặc tài chính.
+  </div>
+  <footer class="muted">{{ brand }} · Xuất {{ ngay_xuat }}</footer>
+</body>
+</html>

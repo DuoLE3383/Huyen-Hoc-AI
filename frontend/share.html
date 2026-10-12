@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#1a0b2e">
+  <title>Lá số được chia sẻ · Huyền Học AI</title>
+  <style>
+    body { margin:0; padding:24px 14px; color:#e8dff5; background:#0f0524; font:16px system-ui,sans-serif; }
+    main { width:min(850px,100%); margin:auto; } h1,h2,h3 { color:#c4a3ff; }
+    .card { margin:10px 0; padding:14px; border:1px solid #c4a3ff55; border-radius:10px; background:#ffffff0b; }
+    .muted { color:#b6a1d2; font-size:.9rem; } .error { color:#ff9999; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; }
+  </style>
+</head>
+<body><main>
+  <h1>🔮 Lá số được chia sẻ</h1>
+  <p class="muted">Thông tin đã được lược bỏ tên và ngày sinh. Nội dung chỉ để tham khảo, giải trí.</p>
+  <section id="content" aria-live="polite"><p>Đang tải liên kết…</p></section>
+</main>
+<script>
+  const content = document.getElementById("content");
+  function text(parent, tag, value, className) {
+    const node = document.createElement(tag); node.textContent = value ?? "";
+    if (className) node.className = className;
+    parent.append(node); return node;
+  }
+  async function load() {
+    const token = window.location.pathname.split("/").filter(Boolean).pop();
+    const response = await fetch(`/api/share/${encodeURIComponent(token)}`, { cache: "no-store" });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.detail || "Liên kết không tồn tại hoặc đã hết hạn.");
+    const profile = result.profile || {};
+    content.replaceChildren();
+    const overview = document.createElement("section"); overview.className = "card";
+    text(overview, "h2", "Thông tin tham khảo");
+    for (const [label, value] of [["Mệnh nạp âm", profile.menh_nap_am], ["Can Chi", profile.can_chi_nam], ["Con giáp", profile.con_giap], ["Số chủ đạo", profile.so_chu_dao], ["Cung phi", profile.cung_phi]]) {
+      if (value !== undefined && value !== null) text(overview, "p", `${label}: ${value}`);
+    }
+    text(overview, "p", profile.ghi_chu, "muted"); content.append(overview);
+    if (profile.la_so) {
+      const chart = document.createElement("section"); chart.className = "card";
+      text(chart, "h2", `Lá số giản lược · ${profile.la_so.can_chi_nam}`);
+      text(chart, "p", `Cục ${profile.la_so.cuc} · Mệnh ${profile.la_so.menh_chi} · Thân ${profile.la_so.than_chi} · Tử Vi tại ${profile.la_so.tu_vi_tai}`);
+      const grid = document.createElement("div"); grid.className = "grid";
+      for (const palace of profile.la_so.cung || []) {
+        const cell = document.createElement("article"); cell.className = "card";
+        text(cell, "strong", `${palace.cung} · ${palace.dia_chi}${palace.la_menh ? " ★" : ""}${palace.la_than ? " ●" : ""}`);
+        for (const star of palace.chinh_tinh || []) text(cell, "div", `${star.sao} [${star.trang_thai}]`);
+        text(cell, "p", (palace.phu_tinh || []).join(" · "), "muted");
+        grid.append(cell);
+      }
+      chart.append(grid); content.append(chart);
+    }
+    text(content, "p", `Liên kết hết hạn: ${new Date(result.expires_at).toLocaleString()}`, "muted");
+  }
+  load().catch(error => { content.replaceChildren(); text(content, "p", error.message, "error"); });
+</script></body></html>

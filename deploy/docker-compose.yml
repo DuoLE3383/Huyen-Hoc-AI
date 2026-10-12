@@ -1,0 +1,59 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      HUYEN_HOC_DATABASE_URL: sqlite:////app/data/huyen_hoc.db
+      OLLAMA_URL: http://ollama:11434
+      APP_ENV: production
+    volumes:
+      - huyen_data:/app/data
+    expose:
+      - "8000"
+    networks:
+      - huyen_net
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    expose:
+      - "11434"
+    networks:
+      - huyen_net
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in deploy/.env.prod}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - huyen_net
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  huyen_data:
+  ollama_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  huyen_net:
+    driver: bridge

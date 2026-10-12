@@ -1,0 +1,2080 @@
+# 🌏 Mở Rộng Quy Mô: Phong Thủy & Sự Kiện Ảnh Hưởng
+
+Mở rộng từ "cá nhân" → "không gian sống" → "sự kiện vĩ mô" — kết nối mệnh chủ với môi trường xung quanh.
+
+```
+huyen-hoc-app/
+├── backend/
+│   ├── phong_thuy.py          # ✨ MỚI - Bát trạch, Huyền không
+│   ├── su_kien.py             # ✨ MỚI - Sự kiện trực tiếp/gián tiếp
+│   ├── moi_truong.py          # ✨ MỚI - Môi trường, thời tiết
+│   ├── vi_mo.py               # ✨ MỚI - Vĩ mô: tiết khí, sao hạn
+│   ├── ket_noi.py             # ✨ MỚI - Kết nối mệnh chủ ↔ sự kiện
+│   └── ... (các file cũ)
+├── frontend/
+│   ├── phong-thuy.html        # ✨ MỚI - Nhập sơ đồ nhà
+│   ├── su-kien.html           # ✨ MỚI - Timeline sự kiện
+│   ├── timeline-vi-mo.html    # ✨ MỚI - Sự kiện vĩ mô
+│   └── ...
+```
+
+---
+
+## 🏠 MODULE 1: Phong Thủy Toàn Diện — `phong_thuy.py`
+
+```python
+"""
+Phong Thủy module: Bát Trạch (8 hướng tốt/xấu), Huyền Không Phi Tinh,
+Dương Trạch Tam Yếu, hợp hướng nhà với mệnh chủ.
+"""
+import math
+from datetime import date, datetime
+from typing import Dict, List, Tuple
+
+# ============ BÁT TRẠCH ============
+# 8 hướng
+HUONG = ["Bắc", "Đông Bắc", "Đông", "Đông Nam",
+         "Nam", "Tây Nam", "Tây", "Tây Bắc"]
+HUONG_ANH_XA = {
+    "Bắc": "N", "Đông Bắc": "NE", "Đông": "E", "Đông Nam": "SE",
+    "Nam": "S", "Tây Nam": "SW", "Tây": "W", "Tây Bắc": "NW",
+}
+HUONG_GOC = {
+    "Bắc": 0, "Đông Bắc": 45, "Đông": 90, "Đông Nam": 135,
+    "Nam": 180, "Tây Nam": 225, "Tây": 270, "Tây Bắc": 315,
+}
+
+# Bát quái theo Cung Phi
+CUNG_PHI_QUAI = {
+    1: "Khảm", 2: "Khôn", 3: "Chấn", 4: "Tốn",
+    5: "Trung", 6: "Càn", 7: "Đoài", 8: "Cấn", 9: "Ly",
+}
+
+# Bảng Đông/Tây tứ mệnh
+DONG_TU_MENH = {1, 3, 4, 9}  # Khảm, Chấn, Tốn, Ly
+TAY_TU_MENH = {2, 6, 7, 8}   # Khôn, Càn, Đoài, Cấn
+
+# Bảng Bát Trạch — 8 hướng cho mỗi cung phi
+# Sinh Khí, Thiên Y, Diên Niên, Phục Vị (tốt)
+# Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại (xấu)
+BAT_TRACH_TABLE = {
+    1: {  # Khảm
+        "Sinh Khí": "Đông Nam", "Thiên Y": "Đông",
+        "Diên Niên": "Nam", "Phục Vị": "Bắc",
+        "Tuyệt Mệnh": "Tây Nam", "Ngũ Quỷ": "Đông Bắc",
+        "Lục Sát": "Tây Bắc", "Họa Hại": "Tây",
+    },
+    2: {  # Khôn
+        "Sinh Khí": "Đông Bắc", "Thiên Y": "Tây",
+        "Diên Niên": "Tây Bắc", "Phục Vị": "Tây Nam",
+        "Tuyệt Mệnh": "Bắc", "Ngũ Quỷ": "Đông Nam",
+        "Lục Sát": "Nam", "Họa Hại": "Đông",
+    },
+    3: {  # Chấn
+        "Sinh Khí": "Nam", "Thiên Y": "Bắc",
+        "Diên Niên": "Đông Nam", "Phục Vị": "Đông",
+        "Tuyệt Mệnh": "Tây", "Ngũ Quỷ": "Tây Bắc",
+        "Lục Sát": "Đông Bắc", "Họa Hại": "Tây Nam",
+    },
+    4: {  # Tốn
+        "Sinh Khí": "Bắc", "Thiên Y": "Đông",
+        "Diên Niên": "Đông", "Phục Vị": "Đông Nam",
+        "Tuyệt Mệnh": "Đông Bắc", "Ngũ Quỷ": "Tây Nam",
+        "Lục Sát": "Tây", "Họa Hại": "Tây Bắc",
+    },
+    5: {  # Trung cung — quy về Khôn cho nữ, Cấn cho nam
+        "Sinh Khí": "Đông Bắc", "Thiên Y": "Tây",
+        "Diên Niên": "Tây Bắc", "Phục Vị": "Tây Nam",
+        "Tuyệt Mệnh": "Bắc", "Ngũ Quỷ": "Đông Nam",
+        "Lục Sát": "Nam", "Họa Hại": "Đông",
+    },
+    6: {  # Càn
+        "Sinh Khí": "Tây", "Thiên Y": "Đông Bắc",
+        "Diên Niên": "Tây Nam", "Phục Vị": "Tây Bắc",
+        "Tuyệt Mệnh": "Nam", "Ngũ Quỷ": "Đông",
+        "Lục Sát": "Bắc", "Họa Hại": "Đông Nam",
+    },
+    7: {  # Đoài
+        "Sinh Khí": "Tây Bắc", "Thiên Y": "Tây Nam",
+        "Diên Niên": "Đông Bắc", "Phục Vị": "Tây",
+        "Tuyệt Mệnh": "Đông", "Ngũ Quỷ": "Nam",
+        "Lục Sát": "Đông Nam", "Họa Hại": "Bắc",
+    },
+    8: {  # Cấn
+        "Sinh Khí": "Tây Nam", "Thiên Y": "Tây Bắc",
+        "Diên Niên": "Tây", "Phục Vị": "Đông Bắc",
+        "Tuyệt Mệnh": "Đông Nam", "Ngũ Quỷ": "Bắc",
+        "Lục Sát": "Đông", "Họa Hại": "Nam",
+    },
+    9: {  # Ly
+        "Sinh Khí": "Đông", "Thiên Y": "Đông Nam",
+        "Diên Niên": "Bắc", "Phục Vị": "Nam",
+        "Tuyệt Mệnh": "Tây Bắc", "Ngũ Quỷ": "Tây",
+        "Lục Sát": "Tây Nam", "Họa Hại": "Đông Bắc",
+    },
+}
+
+# Ý nghĩa các cung vị
+CUNG_Vi_Y_NGHIA = {
+    "Sinh Khí": "💰 Tài lộc, thăng tiến, con cái",
+    "Thiên Y": "🌿 Sức khỏe, chữa bệnh, trường thọ",
+    "Diên Niên": "💕 Hôn nhân, gia đình hòa thuận",
+    "Phục Vị": "🧘 Bình an, tĩnh tại, tu tập",
+    "Tuyệt Mệnh": "☠️ Bệnh tật, tai nạn, phá sản",
+    "Ngũ Quỷ": "🔥 Khẩu thiệt, thị phi, trộm cắp",
+    "Lục Sát": "⚔️ Kiện tụng, bất hòa, mất mát",
+    "Họa Hại": "💔 Đổ vỡ, cô đơn, thất bại",
+}
+
+# Hướng tốt theo mục đích
+HUONG_THEO_MUC_DICH = {
+    "tai_van": ["Sinh Khí", "Diên Niên"],
+    "suc_khoe": ["Thiên Y", "Diên Niên"],
+    "tinh_cam": ["Diên Niên", "Phục Vị"],
+    "su_nghiep": ["Sinh Khí", "Thiên Y"],
+    "hoc_tap": ["Thiên Y", "Phục Vị"],
+    "tam_linh": ["Phục Vị", "Sinh Khí"],
+}
+
+
+def tinh_cung_phi_gioi_tinh(day: int, month: int, year: int, gioi_tinh: str) -> int:
+    """
+    Tính Cung Phi (Bát Trạch) theo năm sinh + giới tính.
+    Nam và nữ có công thức khác nhau.
+    """
+    # Rút gọn năm sinh
+    y = year
+    while y > 9:
+        y = sum(int(d) for d in str(y))
+
+    if gioi_tinh == "nam":
+        cung = 11 - y
+        if cung > 9:
+            cung -= 9
+        # Nếu năm sinh sau 2000, cộng thêm 1
+        if year >= 2000:
+            cung = cung - 1 if cung > 1 else 9
+    else:  # nữ
+        cung = y + 4
+        if cung > 9:
+            cung -= 9
+        if year >= 2000:
+            cung = cung + 1 if cung < 9 else 1
+
+    # Trung cung (5) → Nam về Khôn (2), Nữ về Cấn (8)
+    if cung == 5:
+        cung = 2 if gioi_tinh == "nam" else 8
+
+    return cung
+
+
+def huong_tot_xau(cung_phi: int) -> Dict:
+    """Trả về 8 hướng với ý nghĩa cho cung phi"""
+    table = BAT_TRACH_TABLE.get(cung_phi, BAT_TRACH_TABLE[1])
+    tot = ["Sinh Khí", "Thiên Y", "Diên Niên", "Phục Vị"]
+    xau = ["Tuyệt Mệnh", "Ngũ Quỷ", "Lục Sát", "Họa Hại"]
+
+    huong_tot = [{
+        "cung": c, "huong": table[c], "y_nghia": CUNG_Vi_Y_NGHIA[c],
+        "loai": "tốt",
+    } for c in tot]
+
+    huong_xau = [{
+        "cung": c, "huong": table[c], "y_nghia": CUNG_Vi_Y_NGHIA[c],
+        "loai": "xấu",
+    } for c in xau]
+
+    return {
+        "cung_phi": cung_phi,
+        "quai": CUNG_PHI_QUAI[cung_phi],
+        "nhom": "Đông tứ mệnh" if cung_phi in DONG_TU_MENH else "Tây tứ mệnh",
+        "huong_tot": huong_tot,
+        "huong_xau": huong_xau,
+    }
+
+
+def hop_huong_nha(cung_phi: int, huong_nha: str) -> Dict:
+    """Đánh giá hướng nhà có hợp với mệnh chủ không"""
+    table = BAT_TRACH_TABLE.get(cung_phi, BAT_TRACH_TABLE[1])
+    for cung, huong in table.items():
+        if huong == huong_nha:
+            tot = cung in ["Sinh Khí", "Thiên Y", "Diên Niên", "Phục Vị"]
+            return {
+                "huong_nha": huong_nha,
+                "cung": cung,
+                "y_nghia": CUNG_Vi_Y_NGHIA[cung],
+                "tot": tot,
+                "diem": 90 if cung == "Sinh Khí" else
+                        80 if cung == "Thiên Y" else
+                        75 if cung == "Diên Niên" else
+                        70 if cung == "Phục Vị" else
+                        30 if cung == "Họa Hại" else
+                        20 if cung == "Lục Sát" else
+                        10 if cung == "Ngũ Quỷ" else 5,
+            }
+    return {"error": "Hướng không hợp lệ"}
+
+
+# ============ HUYỀN KHÔNG PHI TINH ============
+# Sao số 1-9 theo Cửu Tinh
+CUU_TINH = {
+    1: {"ten": "Nhất Bạch", "hanh": "Thủy", "cat_hung": "Cát", "y_nghia": "Quan lộc, danh tiếng"},
+    2: {"ten": "Nhị Hắc", "hanh": "Thổ", "cat_hung": "Hung", "y_nghia": "Bệnh tật, ô uế"},
+    3: {"ten": "Tam Bích", "hanh": "Mộc", "cat_hung": "Hung", "y_nghia": "Khẩu thiệt, thị phi"},
+    4: {"ten": "Tứ Lục", "hanh": "Mộc", "cat_hung": "Cát", "y_nghia": "Văn chương, học vấn"},
+    5: {"ten": "Ngũ Hoàng", "hanh": "Thổ", "cat_hung": "Đại Hung", "y_nghia": "Tai họa, đại nạn"},
+    6: {"ten": "Lục Bạch", "hanh": "Kim", "cat_hung": "Cát", "y_nghia": "Quyền quý, uy vọng"},
+    7: {"ten": "Thất Xích", "hanh": "Kim", "cat_hung": "Hung", "y_nghia": "Trộm cắp, thất thoát"},
+    8: {"ten": "Bát Bạch", "hanh": "Thổ", "cat_hung": "Đại Cát", "y_nghia": "Tài lộc, thịnh vượng"},
+    9: {"ten": "Cửu Tử", "hanh": "Hỏa", "cat_hung": "Cát (sắp suy)", "y_nghia": "Hỷ sự, khai sáng"},
+}
+
+# Lường thiên xích — 9 cung phi tinh
+LO_SHU = [
+    [4, 9, 2],
+    [3, 5, 7],
+    [8, 1, 6],
+]
+
+# 8 hướng + trung cung
+PHI_TINH_POSITIONS = {
+    "Đông Nam": (0, 0), "Nam": (0, 1), "Tây Nam": (0, 2),
+    "Đông": (1, 0), "Trung cung": (1, 1), "Tây": (1, 2),
+    "Đông Bắc": (2, 0), "Bắc": (2, 1), "Tây Bắc": (2, 2),
+}
+
+
+def tinh_nien_phi_tinh(nam: int) -> int:
+    """Sao nhập trung cung của năm (Niên Tinh)"""
+    # Công thức: (11 - (năm rút gọn)) mod 9, cộng 1
+    y = nam
+    while y > 9:
+        y = sum(int(d) for d in str(y))
+    sao = 11 - y
+    if sao > 9: sao -= 9
+    if sao < 1: sao += 9
+    return sao
+
+
+def tinh_nguyet_phi_tinh(nam: int, thang: int) -> int:
+    """Sao nhập trung cung của tháng"""
+    nien = tinh_nien_phi_tinh(nam)
+    # Bảng: tháng 1 âm = sao tháng theo năm
+    # Đơn giản hóa: dùng công thức xấp xỉ
+    return ((nien + thang - 1) % 9) or 9
+
+
+def tinh_nhat_phi_tinh(nam: int, thang: int, ngay: int) -> int:
+    """Sao nhập trung cung của ngày"""
+    nguyet = tinh_nguyet_phi_tinh(nam, thang)
+    return ((nguyet + ngay - 1) % 9) or 9
+
+
+def phi_tinh_bay_cung(sao_trung_cung: int) -> Dict:
+    """
+    Lường Thiên Xích: bay 9 sao từ trung cung ra 8 hướng.
+    """
+    # Thứ tự bay: Trung cung → Tây Bắc → Tây → Đông Bắc → Nam →
+    # Bắc → Tây Nam → Đông → Đông Nam
+    duong_bay = [
+        "Trung cung", "Tây Bắc", "Tây", "Đông Bắc",
+        "Nam", "Bắc", "Tây Nam", "Đông", "Đông Nam",
+    ]
+    ket_qua = {}
+    for i, huong in enumerate(duong_bay):
+        sao = ((sao_trung_cung - 1 + i) % 9) + 1
+        ket_qua[huong] = {
+            "sao": sao,
+            "ten": CUU_TINH[sao]["ten"],
+            "hanh": CUU_TINH[sao]["hanh"],
+            "cat_hung": CUU_TINH[sao]["cat_hung"],
+            "y_nghia": CUU_TINH[sao]["y_nghia"],
+        }
+    return ket_qua
+
+
+def phi_tinh_ngay(d: date) -> Dict:
+    """Phi tinh ngày hiện tại"""
+    am_year = d.year
+    sao_ngay = tinh_nhat_phi_tinh(am_year, d.month, d.day)
+    return {
+        "ngay": d.isoformat(),
+        "sao_trung_cung": sao_ngay,
+        "sao_info": CUU_TINH[sao_ngay],
+        "bay_cung": phi_tinh_bay_cung(sao_ngay),
+    }
+
+
+# ============ DƯƠNG TRẠCH TAM YẾU ============
+def danh_gia_dai_van(huong_nha: str, sao_van: int) -> Dict:
+    """
+    Đại Vận: đánh giá cửa/hướng theo vận 8 (2024-2043), vận 9 (2024+).
+    """
+    # Vận 9 (2024-2043) — Hỏa vượng
+    huong_vuong_van9 = ["Nam", "Đông Nam", "Đông"]  # Hỏa + Mộc sinh Hỏa
+    huong_suy_van9 = ["Tây Bắc", "Tây"]  # Kim bị Hỏa khắc
+
+    if huong_nha in huong_vuong_van9:
+        return {"danh_gia": "vượng", "diem": 85,
+                "ly_do": f"Hướng {huong_nha} được Vận 9 (Hỏa) sinh vượng"}
+    elif huong_nha in huong_suy_van9:
+        return {"danh_gia": "suy", "diem": 35,
+                "ly_do": f"Hướng {huong_nha} bị Vận 9 khắc"}
+    return {"danh_gia": "trung bình", "diem": 60,
+            "ly_do": f"Hướng {huong_nha} không vượng không suy"}
+
+
+def danh_gia_toa_huong(huong_toa: str, huong_huong: str,
+                        cung_phi: int) -> Dict:
+    """
+    Tọa Cát / Hướng Cát theo Bát Trạch + Huyền Không.
+    """
+    hop_toa = hop_huong_nha(cung_phi, huong_toa)
+    hop_huong = hop_huong_nha(cung_phi, huong_huong)
+
+    tong_diem = (hop_toa.get("diem", 50) * 0.4 +
+                  hop_huong.get("diem", 50) * 0.6)
+
+    return {
+        "toa": hop_toa, "huong": hop_huong,
+        "diem_tong_hop": round(tong_diem, 1),
+        "nhan_xet": "Tọa Cát Hướng Cát — đại cát" if tong_diem >= 75 else
+                    "Tọa/Hướng trung bình" if tong_diem >= 50 else
+                    "Tọa Hướng xấu — nên hóa giải",
+    }
+
+
+def phan_tich_toan_dien(day: int, month: int, year: int,
+                         gioi_tinh: str = "nam",
+                         huong_nha: str = "Nam",
+                         huong_bep: str = None,
+                         huong_phong_ngu: str = None) -> Dict:
+    """Phân tích phong thủy toàn diện cho 1 người + nhà ở"""
+    cung_phi = tinh_cung_phi_gioi_tinh(day, month, year, gioi_tinh)
+    huong = huong_tot_xau(cung_phi)
+    nha = hop_huong_nha(cung_phi, huong_nha)
+
+    ket_qua = {
+        "cung_phi": cung_phi,
+        "quai": CUNG_PHI_QUAI[cung_phi],
+        "nhom": huong["nhom"],
+        "huong_tot": huong["huong_tot"],
+        "huong_xau": huong["huong_xau"],
+        "huong_nha": nha,
+    }
+
+    if huong_bep:
+        ket_qua["huong_bep"] = hop_huong_nha(cung_phi, huong_bep)
+    if huong_phong_ngu:
+        ket_qua["huong_phong_ngu"] = hop_huong_nha(cung_phi, huong_phong_ngu)
+
+    # Phi tinh hôm nay
+    ket_qua["phi_tinh_hom_nay"] = phi_tinh_ngay(date.today())
+
+    # Đại vận
+    ket_qua["dai_van"] = danh_gia_dai_van(huong_nha,
+                                            tinh_nien_phi_tinh(year))
+
+    return ket_qua
+
+
+def goi_y_hoa_giai(huong_xau: str, cung: str) -> Dict:
+    """Gợi ý hóa giải cho hướng xấu"""
+    bang_hoa_giai = {
+        "Tuyệt Mệnh": {
+            "vat_pham": ["Hồ lô đồng", "Tượng Quan Âm", "Chuông gió kim loại"],
+            "mau_sac": "Vàng, trắng (Kim)",
+            "cay_trong": ["Kim ngân", "Bạch đàn"],
+            "hanh_dong": ["Đặt hồ lô đồng ở hướng xấu",
+                           "Treo gương bát quái lồi",
+                           "Trồng cây xanh che chắn"],
+        },
+        "Ngũ Quỷ": {
+            "vat_pham": ["Đá thạch anh trắng", "Tượng Kỳ Lân", "Bùa bình an"],
+            "mau_sac": "Trắng, xám (Kim)",
+            "cay_trong": ["Vạn niên thanh", "Trúc"],
+            "hanh_dong": ["Đặt thạch anh trắng", "Tránh mở cửa hướng này",
+                           "Đặt bể cá nhỏ"],
+        },
+        "Lục Sát": {
+            "vat_pham": ["Tượng Tỳ Hưu", "Hồ lô gỗ", "Đèn muối Himalaya"],
+            "mau_sac": "Xanh lá, xanh dương",
+            "cay_trong": ["Lưỡi hổ", "Kim tiền"],
+            "hanh_dong": ["Đặt cây xanh hướng xấu", "Bố trí gương phản chiếu"],
+        },
+        "Họa Hại": {
+            "vat_pham": ["Tượng Phật Di Lặc", "Chuông bạc", "Cây phong thủy"],
+            "mau_sac": "Đỏ, hồng (Hỏa)",
+            "cay_trong": ["Cây kim ngân", "Cây phát tài"],
+            "hanh_dong": ["Trồng cây cảnh hướng xấu", "Đặt đèn sáng"],
+        },
+    }
+    info = bang_hoa_giai.get(cung, {})
+    return {
+        "cung_xau": cung,
+        "huong": huong_xau,
+        **info,
+    }
+```
+
+### Endpoints Phong Thủy
+
+```python
+# main.py
+from phong_thuy import (tinh_cung_phi_gioi_tinh, huong_tot_xau,
+                          hop_huong_nha, phan_tich_toan_dien,
+                          phi_tinh_ngay, danh_gia_toa_huong,
+                          goi_y_hoa_giai, HUONG_THEO_MUC_DICH)
+
+class PhongThuyInput(BaseModel):
+    ngay: int
+    thang: int
+    nam: int
+    gioi_tinh: str = "nam"
+    huong_nha: str = "Nam"
+    huong_bep: str = None
+    huong_phong_ngu: str = None
+    muc_dich: str = "tai_van"  # để gợi ý hướng tốt
+
+
+@app.post("/api/phong-thuy/phan-tich")
+def api_phong_thuy(data: PhongThuyInput,
+                     user: User = Depends(get_current_user)):
+    kq = phan_tich_toan_dien(
+        data.ngay, data.thang, data.nam,
+        gioi_tinh=data.gioi_tinh,
+        huong_nha=data.huong_nha,
+        huong_bep=data.huong_bep,
+        huong_phong_ngu=data.huong_phong_ngu,
+    )
+
+    # Gợi ý hướng theo mục đích
+    cung_phi = kq["cung_phi"]
+    huong_theo_muc_dich = []
+    for cung_can in HUONG_THEO_MUC_DICH.get(data.muc_dich, []):
+        for h in kq["huong_tot"]:
+            if h["cung"] == cung_can:
+                huong_theo_muc_dich.append(h)
+    kq["huong_theo_muc_dich"] = huong_theo_muc_dich
+
+    # Hóa giải nếu hướng nhà xấu
+    if not kq["huong_nha"].get("tot", True):
+        kq["hoa_giai"] = goi_y_hoa_giai(
+            kq["huong_nha"]["huong_nha"], kq["huong_nha"]["cung"]
+        )
+
+    return kq
+
+
+@app.get("/api/phong-thuy/phi-tinh")
+def api_phi_tinh(d: str = None, user: User = Depends(get_current_user)):
+    target = date.fromisoformat(d) if d else date.today()
+    return phi_tinh_ngay(target)
+
+
+@app.post("/api/phong-thuy/llm-tu-van")
+async def api_phong_thuy_llm(data: PhongThuyInput,
+                              user: User = Depends(get_current_user),
+                              db: Session = Depends(get_db)):
+    """LLM tư vấn phong thủy cá nhân hóa"""
+    kq = phan_tich_toan_dien(
+        data.ngay, data.thang, data.nam,
+        gioi_tinh=data.gioi_tinh, huong_nha=data.huong_nha,
+        huong_bep=data.huong_bep, huong_phong_ngu=data.huong_phong_ngu,
+    )
+
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    profile = json.loads(prof.profile_json) if prof else None
+
+    prompt = f"""Tư vấn phong thủy cá nhân hóa:
+
+Mệnh chủ:
+- Ngày sinh: {data.ngay:02d}/{data.thang:02d}/{data.nam}
+- Giới tính: {data.gioi_tinh}
+- Cung phi: {kq['cung_phi']} ({kq['quai']}) — {kq['nhom']}
+{'- Mệnh nạp âm: ' + profile['menh_nap_am'] if profile else ''}
+
+Nhà ở:
+- Hướng nhà: {data.huong_nha} → {kq['huong_nha'].get('cung')} ({kq['huong_nha'].get('y_nghia')})
+{'- Hướng bếp: ' + data.huong_bep + ' → ' + kq.get('huong_bep',{}).get('cung','') if data.huong_bep else ''}
+{'- Hướng phòng ngủ: ' + data.huong_phong_ngu + ' → ' + kq.get('huong_phong_ngu',{}).get('cung','') if data.huong_phong_ngu else ''}
+
+Phi tinh hôm nay:
+- Sao trung cung: {kq['phi_tinh_hom_nay']['sao_info']['ten']} ({kq['phi_tinh_hom_nay']['sao_info']['y_nghia']})
+
+Đại vận: {kq['dai_van']['ly_do']}
+
+YÊU CẦU: Trả về JSON:
+{{
+  "danh_gia_tong_quan": "nhận định ngắn về phong thủy hiện tại",
+  "diem_manh": ["..."],
+  "van_de_can_khac_phuc": ["..."],
+  "bo_tri_cu_the": [
+    {{"khu_vuc": "cửa chính|bếp|phòng ngủ|bàn làm việc|phòng khách",
+      "huong_tot_nhat": "...", "vat_pham_nen_dat": ["..."],
+      "mau_sac_phu_hop": ["..."], "cay_canh_goi_y": ["..."],
+      "ly_do": "..."}}
+  ],
+  "hoa_giai_huong_xau": [
+    {{"huong": "...", "cung_xau": "...", "cach_hoa_giai": ["..."]}}
+  ],
+  "viec_nen_lam_ngay": ["3-5 việc có thể làm trong tuần này"],
+  "canh_bao": ["..."]
+}}"""
+
+    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
+    try:
+        tu_van = json.loads(raw)
+    except Exception:
+        tu_van = {"raw": raw}
+
+    return {"so_lieu": kq, "tu_van_llm": tu_van}
+```
+
+---
+
+## 📅 MODULE 2: Sự Kiện Trực Tiếp/Gián Tiếp — `su_kien.py`
+
+```python
+"""
+Module theo dõi & dự đoán sự kiện ảnh hưởng đến mệnh chủ.
+Phân loại:
+- Trực tiếp: sinh nhật, ký hợp đồng, phẫu thuật, cưới hỏi...
+- Gián tiếp: kinh tế vĩ mô, thiên tai, dịch bệnh, chính trị...
+"""
+from datetime import date, datetime, timedelta
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+import hashlib
+
+
+@dataclass
+class SuKien:
+    id: str
+    ten: str
+    loai: str  # "ca_nhan" | "gia_dinh" | "cong_viec" | "xa_hoi" | "vi_mo"
+    muc_do: str  # "trực tiếp" | "gián tiếp"
+    thoi_gian: str  # ISO date
+    anh_huong_toi: List[str]  # các lĩnh vực
+    trong_so: float  # 0-1, độ quan trọng
+    metadata: Dict
+
+
+# ============ LOẠI SỰ KIỆN ============
+LOAI_SU_KIEN = {
+    "ca_nhan": {
+        "ten": "Sự kiện cá nhân",
+        "items": [
+            {"id": "sinh_nhat", "ten": "Sinh nhật", "muc_do": "trực tiếp",
+             "anh_huong": ["tinh_than", "tai_van"], "trong_so": 0.6},
+            {"id": "ky_hop_dong", "ten": "Ký hợp đồng", "muc_do": "trực tiếp",
+             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.9},
+            {"id": "phau_thuat", "ten": "Phẫu thuật", "muc_do": "trực tiếp",
+             "anh_huong": ["suc_khoe"], "trong_so": 1.0},
+            {"id": "cuoi_hoi", "ten": "Cưới hỏi", "muc_do": "trực tiếp",
+             "anh_huong": ["tinh_duyen", "gia_dinh"], "trong_so": 1.0},
+            {"id": "chuyen_nha", "ten": "Chuyển nhà", "muc_do": "trực tiếp",
+             "anh_huong": ["phong_thuy", "tai_van"], "trong_so": 0.8},
+            {"id": "khoi_nghiep", "ten": "Khởi nghiệp", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.9},
+            {"id": "thi_cu", "ten": "Thi cử", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep", "hoc_tap"], "trong_so": 0.85},
+            {"id": "dau_tu", "ten": "Đầu tư lớn", "muc_do": "trực tiếp",
+             "anh_huong": ["tai_van"], "trong_so": 0.9},
+        ],
+    },
+    "gia_dinh": {
+        "ten": "Sự kiện gia đình",
+        "items": [
+            {"id": "them_thanh_vien", "ten": "Sinh con", "muc_do": "trực tiếp",
+             "anh_huong": ["gia_dinh", "tai_van"], "trong_so": 0.9},
+            {"id": "nguoi_than_mat", "ten": "Người thân mất", "muc_do": "trực tiếp",
+             "anh_huong": ["tinh_than", "gia_dinh"], "trong_so": 1.0},
+            {"id": "gia_dinh_ly_tan", "ten": "Ly hôn/ly thân", "muc_do": "trực tiếp",
+             "anh_huong": ["tinh_duyen", "tinh_than"], "trong_so": 1.0},
+        ],
+    },
+    "cong_viec": {
+        "ten": "Sự kiện công việc",
+        "items": [
+            {"id": "thang_chuc", "ten": "Thăng chức", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.85},
+            {"id": "mat_viec", "ten": "Mất việc", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep", "tai_van", "tinh_than"], "trong_so": 0.9},
+            {"id": "chuyen_viec", "ten": "Chuyển việc", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep"], "trong_so": 0.7},
+            {"id": "du_an_lon", "ten": "Dự án lớn", "muc_do": "trực tiếp",
+             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.75},
+        ],
+    },
+    "xa_hoi": {
+        "ten": "Sự kiện xã hội",
+        "items": [
+            {"id": "dich_benh", "ten": "Dịch bệnh", "muc_do": "gián tiếp",
+             "anh_huong": ["suc_khoe", "tai_van", "tinh_than"], "trong_so": 0.8},
+            {"id": "thien_tai", "ten": "Thiên tai", "muc_do": "gián tiếp",
+             "anh_huong": ["suc_khoe", "tai_van", "phong_thuy"], "trong_so": 0.75},
+            {"id": "chinh_tri", "ten": "Biến động chính trị", "muc_do": "gián tiếp",
+             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.7},
+            {"id": "kinh_te", "ten": "Khủng hoảng kinh tế", "muc_do": "gián tiếp",
+             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.85},
+            {"id": "cong_nghe", "ten": "Đột phá công nghệ", "muc_do": "gián tiếp",
+             "anh_huong": ["su_nghiep", "hoc_tap"], "trong_so": 0.6},
+            {"id": "thoi_tiet_cuc_doan", "ten": "Thời tiết cực đoan", "muc_do": "gián tiếp",
+             "anh_huong": ["suc_khoe", "tinh_than"], "trong_so": 0.5},
+        ],
+    },
+}
+
+
+# ============ CHU KỲ ============
+CHU_KY = {
+    "sinh_nhat": {"period": 365, "type": "annual"},
+    "tet": {"period": 365, "type": "annual"},
+    "trung_nguyen": {"period": 365, "type": "annual"},  # 15/7 âm
+    "thanh_minh": {"period": 365, "type": "annual"},
+    "doan_ngo": {"period": 365, "type": "annual"},
+    "vu_lan": {"period": 365, "type": "annual"},
+}
+
+
+# ============ DỰ ĐOÁN ============
+def _seeded_random(seed: str):
+    import random
+    h = int(hashlib.sha256(seed.encode()).hexdigest(), 16)
+    return random.Random(h)
+
+
+def tinh_chi_so_su_kien(profile: Dict, ngay: date,
+                         loai: str, su_kien_id: str) -> Dict:
+    """
+    Tính chỉ số ảnh hưởng (0-100) của 1 sự kiện tới mệnh chủ.
+    Dựa trên:
+    - Ngày sinh mệnh chủ vs ngày sự kiện
+    - Can Chi của ngày sự kiện
+    - Mệnh nạp âm
+    - Loại sự kiện (trực tiếp cao hơn gián tiếp)
+    """
+    from lich_van_nien import ngay_can_chi, CAN_NGU_HANH, quan_he_ngu_hanh
+    from astrology import tinh_chi_so_su_kien as tinh_cs_base
+
+    can, chi = ngay_can_chi(ngay)
+    ngu_hanh_ngay = CAN_NGU_HANH[can]
+    menh = profile["menh_nap_am"]
+    quan_he = quan_he_ngu_hanh(menh, ngu_hanh_ngay)
+
+    # Base score
+    base = tinh_cs_base(profile)
+    linh_vuc_chinh = {
+        "sinh_nhat": "tinh_than", "ky_hop_dong": "tai_van",
+        "phau_thuat": "suc_khoe", "cuoi_hoi": "tinh_duyen",
+        "chuyen_nha": "tai_van", "khoi_nghiep": "su_nghiep",
+        "thi_cu": "su_nghiep", "dau_tu": "tai_van",
+        "them_thanh_vien": "tai_van", "nguoi_than_mat": "suc_khoe",
+        "thang_chuc": "su_nghiep", "mat_viec": "su_nghiep",
+        "dich_benh": "suc_khoe", "thien_tai": "suc_khoe",
+        "kinh_te": "tai_van", "chinh_tri": "su_nghiep",
+        "cong_nghe": "su_nghiep", "thoi_tiet_cuc_doan": "suc_khoe",
+    }.get(su_kien_id, "gap_go")
+
+    diem_base = base.get(linh_vuc_chinh, 50)
+
+    # Modifier từ ngày
+    modifier = {"tương sinh": 15, "tỷ hòa": 10, "trung tính": 0, "tương khắc": -15}[quan_he]
+
+    # Trực tiếp impact mạnh hơn gián tiếp
+    loai_info = next(
+        (s for cat in LOAI_SU_KIEN.values() for s in cat["items"]
+         if s["id"] == su_kien_id), None
+    )
+    trong_so = loai_info["trong_so"] if loai_info else 0.5
+    muc_do = loai_info["muc_do"] if loai_info else "trực tiếp"
+
+    # Sự kiện gián tiếp → ảnh hưởng giảm nhưng phạm vi rộng
+    he_so = 1.0 if muc_do == "trực tiếp" else 0.7
+
+    diem_cuoi = (diem_base + modifier) * he_so
+    diem_cuoi = max(0, min(100, diem_cuoi))
+
+    return {
+        "su_kien_id": su_kien_id,
+        "ten": loai_info["ten"] if loai_info else su_kien_id,
+        "ngay": ngay.isoformat(),
+        "can_chi_ngay": f"{can} {chi}",
+        "quan_he_ngu_hanh": quan_he,
+        "linh_vuc_chinh": linh_vuc_chinh,
+        "muc_do": muc_do,
+        "trong_so": trong_so,
+        "diem_anh_huong": round(diem_cuoi, 1),
+        "du_bao": "tích cực" if diem_cuoi >= 65 else
+                   "trung tính" if diem_cuoi >= 45 else "tiêu cực",
+        "loai_anh_huong": "trực tiếp" if muc_do == "trực tiếp"
+                            else "gián tiếp (lan tỏa)",
+    }
+
+
+def quet_su_kien_tuan(profile: Dict, start: date = None,
+                        su_kien_ca_nhan: List[Dict] = None) -> Dict:
+    """
+    Quét tất cả sự kiện trong tuần tới:
+    - Sự kiện cá nhân user khai báo
+    - Sự kiện xã hội (dự đoán từ dữ liệu mẫu)
+    - Sự kiện chu kỳ (sinh nhật, lễ tết)
+    """
+    start = start or date.today()
+    end = start + timedelta(days=7)
+
+    tat_ca = []
+
+    # 1. Sự kiện cá nhân user khai báo
+    if su_kien_ca_nhan:
+        for sk in su_kien_ca_nhan:
+            ngay_sk = date.fromisoformat(sk["ngay"])
+            if start <= ngay_sk <= end:
+                ket_qua = tinh_chi_so_su_kien(
+                    profile, ngay_sk, "ca_nhan", sk["loai"]
+                )
+                ket_qua["custom_note"] = sk.get("note", "")
+                tat_ca.append(ket_qua)
+
+    # 2. Sinh nhật (nếu trong tuần)
+    ngay_sinh = profile["ngay_sinh"]  # "DD/MM/YYYY"
+    d, m, _ = map(int, ngay_sinh.split("/"))
+    for i in range(7):
+        check = start + timedelta(days=i)
+        if check.day == d and check.month == m:
+            ket_qua = tinh_chi_so_su_kien(profile, check, "ca_nhan", "sinh_nhat")
+            tat_ca.append(ket_qua)
+
+    # 3. Sự kiện xã hội mẫu (trong thực tế sẽ call API)
+    # Đây là placeholder — production sẽ fetch từ news API
+    su_kien_xa_hoi_mau = _lay_su_kien_xa_hoi_mau(start, end)
+    for sk in su_kien_xa_hoi_mau:
+        ket_qua = tinh_chi_so_su_kien(profile, date.fromisoformat(sk["ngay"]),
+                                        "xa_hoi", sk["id"])
+        ket_qua["mo_ta"] = sk["mo_ta"]
+        tat_ca.append(ket_qua)
+
+    # Sắp xếp theo ngày + điểm ảnh hưởng
+    tat_ca.sort(key=lambda x: (x["ngay"], -x["diem_anh_huong"]))
+
+    # Tổng hợp
+    return {
+        "tu_ngay": start.isoformat(),
+        "den_ngay": end.isoformat(),
+        "tong_su_kien": len(tat_ca),
+        "su_kien": tat_ca,
+        "diem_tuan": round(sum(x["diem_anh_huong"] for x in tat_ca) /
+                            len(tat_ca), 1) if tat_ca else 50,
+        "su_kien_trong_diem": [x for x in tat_ca if x["diem_anh_huong"] >= 70],
+        "su_kien_can_chu_y": [x for x in tat_ca if x["diem_anh_huong"] <= 35],
+    }
+
+
+def _lay_su_kien_xa_hoi_mau(start: date, end: date) -> List[Dict]:
+    """
+    Placeholder — production thay bằng:
+    - News API (NewsAPI, GNews)
+    - Lịch kinh tế (investing.com)
+    - Lịch âm (ngày rằm, mùng 1, tiết khí)
+    """
+    su_kien = []
+    # Các ngày rằm, mùng 1 âm lịch
+    from lich_van_nien import AmLich
+    d = start
+    while d <= end:
+        try:
+            ngay_am, thang_am, _, _ = AmLich.solar_to_lunar(d)
+            if ngay_am in (1, 15):
+                su_kien.append({
+                    "id": "ram_mung_mot",
+                    "ngay": d.isoformat(),
+                    "mo_ta": f"Ngày {'rằm' if ngay_am == 15 else 'mùng 1'} "
+                              f"tháng {thang_am} âm lịch",
+                })
+        except Exception:
+            pass
+        d += timedelta(days=1)
+
+    # Có thể thêm: ngày lễ VN, sự kiện kinh tế, v.v.
+    return su_kien
+
+
+def du_bao_dai_han(profile: Dict, nam: int = None) -> Dict:
+    """
+    Dự đoán sự kiện lớn trong năm — chia theo 4 quý.
+    """
+    nam = nam or date.today().year
+    quy = []
+    for q in range(1, 5):
+        thang_bat_dau = (q - 1) * 3 + 1
+        su_kien_quan_trong = []
+
+        # Sự kiện trọng đại của năm
+        for sk_id in ["ky_hop_dong", "dau_tu", "chuyen_viec",
+                       "thang_chuc", "khoi_nghiep"]:
+            # Điểm dự đoán cho tháng giữa quý
+            mid_month = thang_bat_dau + 1
+            ngay_test = date(nam, mid_month, 15)
+            kq = tinh_chi_so_su_kien(profile, ngay_test, "ca_nhan", sk_id)
+            if kq["diem_anh_huong"] >= 60:
+                su_kien_quan_trong.append(kq)
+
+        quy.append({
+            "quy": q,
+            "thang": f"{thang_bat_dau}-{thang_bat_dau + 2}",
+            "su_kien_nen_lap_ke_hoach": su_kien_quan_trong,
+        })
+
+    return {"nam": nam, "quy": quy}
+```
+
+### Endpoints Sự Kiện
+
+```python
+# main.py
+from su_kien import (quet_su_kien_tuan, tinh_chi_so_su_kien,
+                       du_bao_dai_han, LOAI_SU_KIEN)
+
+class SuKienInput(BaseModel):
+    ngay: str  # ISO date
+    loai: str  # "ky_hop_dong", "cuoi_hoi"...
+    note: str = ""
+
+
+class QuetSuKienInput(BaseModel):
+    start: str = None  # ISO date
+    su_kien_ca_nhan: List[SuKienInput] = []
+
+
+@app.post("/api/su-kien/quet-tuan")
+def api_quet_tuan(data: QuetSuKienInput,
+                    user: User = Depends(get_current_user),
+                    db: Session = Depends(get_db)):
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    if not prof:
+        raise HTTPException(400, "Chưa có hồ sơ")
+    profile = json.loads(prof.profile_json)
+
+    start = date.fromisoformat(data.start) if data.start else date.today()
+    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
+                    for s in data.su_kien_ca_nhan]
+
+    return quet_su_kien_tuan(profile, start, sk_ca_nhan)
+
+
+@app.get("/api/su-kien/du-bao-nam")
+def api_du_bao_nam(nam: int = None,
+                     user: User = Depends(get_current_user),
+                     db: Session = Depends(get_db)):
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    if not prof:
+        raise HTTPException(400, "Chưa có hồ sơ")
+    profile = json.loads(prof.profile_json)
+    return du_bao_dai_han(profile, nam)
+
+
+@app.get("/api/su-kien/loai")
+def api_loai_su_kien():
+    """Trả về danh mục sự kiện để user chọn"""
+    return LOAI_SU_KIEN
+
+
+@app.post("/api/su-kien/llm-tu-van")
+async def api_su_kien_llm(data: QuetSuKienInput,
+                            user: User = Depends(get_current_user),
+                            db: Session = Depends(get_db)):
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    if not prof:
+        raise HTTPException(400, "Chưa có hồ sơ")
+    profile = json.loads(prof.profile_json)
+
+    start = date.fromisoformat(data.start) if data.start else date.today()
+    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
+                    for s in data.su_kien_ca_nhan]
+
+    kq = quet_su_kien_tuan(profile, start, sk_ca_nhan)
+
+    prompt = f"""Tư vấn về các sự kiện sắp tới ảnh hưởng đến mệnh chủ:
+
+Hồ sơ: {profile['ngay_sinh']} — Mệnh {profile['menh_nap_am']} — {profile['con_giap']}
+
+Sự kiện trong tuần tới:
+{json.dumps(kq, ensure_ascii=False, indent=2)}
+
+Trả về JSON:
+{{
+  "tom_tat_tuan": "nhận định tổng quan về tuần",
+  "su_kien_trong_diem": [
+    {{"su_kien": "...", "ngay": "...", "muc_do_anh_huong": "...",
+      "nen_lam_gi": ["..."], "nen_tranh_gi": ["..."]}}
+  ],
+  "su_kien_gian_tiep_lan_toa": [
+    {{"su_kien": "...", "tac_dong": "...", "cach_thich_ung": ["..."]}}
+  ],
+  "lich_hanh_dong": [
+    {{"ngay": "YYYY-MM-DD", "hanh_dong": ["..."], "gio_tot": "..."}}
+  ],
+  "loi_khuyen_tong_the": "..."
+}}"""
+
+    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
+    try:
+        tu_van = json.loads(raw)
+    except Exception:
+        tu_van = {"raw": raw}
+
+    return {"so_lieu": kq, "tu_van_llm": tu_van}
+```
+
+---
+
+## 🌍 MODULE 3: Môi Trường & Thời Tiết — `moi_truong.py`
+
+```python
+"""
+Module kết nối phong thủy với môi trường thực tế:
+- Thời tiết (temperature, humidity, air quality)
+- Vị trí địa lý (longitude/latitude)
+- Ảnh hưởng môi trường đến mệnh chủ
+"""
+import os
+import httpx
+from datetime import date, datetime
+from typing import Dict, Optional
+
+
+OPENWEATHER_KEY = os.getenv("OPENWEATHER_API_KEY", "")
+
+
+async def lay_thoi_tiet(lat: float, lon: float) -> Dict:
+    """Lấy thời tiết hiện tại từ OpenWeather"""
+    if not OPENWEATHER_KEY:
+        return {"error": "Chưa cấu hình OPENWEATHER_API_KEY"}
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(url, params={
+            "lat": lat, "lon": lon,
+            "appid": OPENWEATHER_KEY, "units": "metric", "lang": "vi",
+        })
+        if r.status_code != 200:
+            return {"error": r.text}
+        d = r.json()
+        return {
+            "nhiet_do": d["main"]["temp"],
+            "do_am": d["main"]["humidity"],
+            "mo_ta": d["weather"][0]["description"],
+            "icon": d["weather"][0]["icon"],
+            "gio": d["wind"]["speed"],
+            "may": d["clouds"]["all"],
+            "thanh_pho": d.get("name", ""),
+        }
+
+
+async def lay_chat_luong_khong_khi(lat: float, lon: float) -> Dict:
+    """AQI từ OpenWeather"""
+    if not OPENWEATHER_KEY:
+        return {"error": "Chưa cấu hình"}
+    url = "https://api.openweathermap.org/data/2.5/air_pollution"
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(url, params={
+            "lat": lat, "lon": lon, "appid": OPENWEATHER_KEY,
+        })
+        if r.status_code != 200:
+            return {"error": r.text}
+        d = r.json()["list"][0]
+        aqi = d["main"]["aqi"]  # 1-5
+        return {
+            "aqi": aqi,
+            "muc_do": ["Tốt", "Khá", "Trung bình", "Kém", "Nguy hại"][aqi-1],
+            "pm2_5": d["components"]["pm2_5"],
+            "pm10": d["components"]["pm10"],
+            "o3": d["components"]["o3"],
+            "no2": d["components"]["no2"],
+            "so2": d["components"]["so2"],
+            "co": d["components"]["co"],
+        }
+
+
+# ============ ẢNH HƯỞNG MÔI TRƯỜNG → MỆNH CHỦ ============
+def danh_gia_anh_huong_moi_truong(profile: Dict,
+                                    thoi_tiet: Dict,
+                                    aqi: Dict) -> Dict:
+    """
+    Đánh giá môi trường hiện tại ảnh hưởng thế nào đến mệnh chủ.
+    """
+    menh = profile["menh_nap_am"]
+    ket_qua = {"diem_tong_hop": 50, "nhan_xet": [], "hanh_dong": []}
+
+    # 1. Ngũ hành môi trường vs mệnh
+    # Nhiệt độ cao → Hỏa vượng; thấp → Thủy vượng
+    if "nhiet_do" in thoi_tiet:
+        t = thoi_tiet["nhiet_do"]
+        if t > 35:
+            hanh_mt = "Hỏa"
+            ket_qua["nhan_xet"].append(f"Nhiệt độ cao {t}°C — Hỏa vượng")
+        elif t < 15:
+            hanh_mt = "Thủy"
+            ket_qua["nhan_xet"].append(f"Nhiệt độ thấp {t}°C — Thủy vượng")
+        else:
+            hanh_mt = None
+            ket_qua["nhan_xet"].append(f"Nhiệt độ dễ chịu {t}°C")
+
+        if hanh_mt:
+            from lich_van_nien import quan_he_ngu_hanh
+            qh = quan_he_ngu_hanh(menh, hanh_mt)
+            if qh == "tương sinh":
+                ket_qua["diem_tong_hop"] += 10
+                ket_qua["nhan_xet"].append(f"{menh} tương sinh {hanh_mt} — thuận")
+            elif qh == "tương khắc":
+                ket_qua["diem_tong_hop"] -= 10
+                ket_qua["nhan_xet"].append(f"{menh} khắc {hanh_mt} — cần chú ý")
+                ket_qua["hanh_dong"].append(
+                    f"Hạn chế ra ngoài giờ cao điểm, uống nhiều nước"
+                )
+
+    # 2. Độ ẩm
+    if "do_am" in thoi_tiet:
+        h = thoi_tiet["do_am"]
+        if h > 85:
+            ket_qua["diem_tong_hop"] -= 5
+            ket_qua["nhan_xet"].append(f"Độ ẩm cao {h}% — Thủy khí nặng")
+            ket_qua["hanh_dong"].append("Dùng máy hút ẩm, tránh ẩm mốc")
+        elif h < 30:
+            ket_qua["diem_tong_hop"] -= 5
+            ket_qua["nhan_xet"].append(f"Không khí khô {h}% — Kim/Hỏa khô")
+            ket_qua["hanh_dong"].append("Uống đủ nước, dùng máy tạo ẩm")
+
+    # 3. Chất lượng không khí
+    if "aqi" in aqi:
+        aqi_val = aqi["aqi"]
+        if aqi_val >= 4:
+            ket_qua["diem_tong_hop"] -= 20
+            ket_qua["nhan_xet"].append(
+                f"Không khí {aqi['muc_do']} (PM2.5: {aqi['pm2_5']}) — nguy hiểm"
+            )
+            ket_qua["hanh_dong"].extend([
+                "Đeo khẩu trang N95 khi ra ngoài",
+                "Đóng cửa sổ, dùng máy lọc không khí",
+                "Hạn chế tập thể dục ngoài trời",
+            ])
+        elif aqi_val == 3:
+            ket_qua["diem_tong_hop"] -= 10
+            ket_qua["nhan_xet"].append(f"Không khí {aqi['muc_do']} — nhạy cảm")
+            ket_qua["hanh_dong"].append("Người có bệnh hô hấp nên ở trong nhà")
+
+    # 4. Mưa / gió
+    if thoi_tiet.get("mo_ta"):
+        mt = thoi_tiet["mo_ta"].lower()
+        if "mưa" in mt or "rain" in mt:
+            ket_qua["nhan_xet"].append("Có mưa — Thủy khí vượng")
+            ket_qua["hanh_dong"].append("Mang áo mưa, tránh đi xa giờ mưa lớn")
+        if thoi_tiet.get("gio", 0) > 10:
+            ket_qua["nhan_xet"].append(f"Gió mạnh {thoi_tiet['gio']} m/s — Phong khí")
+            ket_qua["hanh_dong"].append("Tránh đứng dưới cây lớn, biển hiệu")
+
+    ket_qua["diem_tong_hop"] = max(0, min(100, ket_qua["diem_tong_hop"]))
+    return ket_qua
+
+
+# ============ VỊ TRÍ PHONG THỦY ============
+def goi_y_vi_tri_tot(profile: Dict, huong_tot: List[str]) -> Dict:
+    """
+    Gợi ý vị trí địa lý có phong thủy tốt cho mệnh chủ.
+    Trong thực tế sẽ kết hợp bản đồ + các yếu tố địa lý.
+    """
+    menh = profile["menh_nap_am"]
+    # Hướng theo ngũ hành
+    huong_theo_menh = {
+        "Kim": ["Tây", "Tây Bắc"],
+        "Mộc": ["Đông", "Đông Nam"],
+        "Thủy": ["Bắc"],
+        "Hỏa": ["Nam"],
+        "Thổ": ["Đông Bắc", "Tây Nam"],
+    }
+    return {
+        "menh": menh,
+        "huong_hop_tu_nhien": huong_theo_menh.get(menh, []),
+        "huong_bat_trach": [h["huong"] for h in huong_tot
+                              if h["cung"] in ("Sinh Khí", "Thiên Y")],
+        "goi_y_di_chuyen": [
+            "Chọn nhà hướng " + h for h in huong_theo_menh.get(menh, [])
+        ],
+        "dia_hinh_tot": [
+            "Gần sông/hồ" if menh in ("Thủy", "Mộc") else
+            "Gần núi/cao" if menh in ("Thổ", "Kim") else
+            "Vùng nắng ấm" if menh == "Hỏa" else "Vùng cây xanh"
+        ],
+    }
+```
+
+### Endpoints Môi Trường
+
+```python
+# main.py
+from moi_truong import (lay_thoi_tiet, lay_chat_luong_khong_khi,
+                          danh_gia_anh_huong_moi_truong, goi_y_vi_tri_tot)
+
+class ViTriInput(BaseModel):
+    lat: float
+    lon: float
+
+
+@app.post("/api/moi-truong/hien-tai")
+async def api_moi_truong(data: ViTriInput,
+                           user: User = Depends(get_current_user),
+                           db: Session = Depends(get_db)):
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    if not prof:
+        raise HTTPException(400, "Chưa có hồ sơ")
+    profile = json.loads(prof.profile_json)
+
+    thoi_tiet = await lay_thoi_tiet(data.lat, data.lon)
+    aqi = await lay_chat_luong_khong_khi(data.lat, data.lon)
+    anh_huong = danh_gia_anh_huong_moi_truong(profile, thoi_tiet, aqi)
+    return {"thoi_tiet": thoi_tiet, "aqi": aqi, "anh_huong": anh_huong}
+
+
+@app.post("/api/moi-truong/goi-y-vi-tri")
+def api_goi_y_vi_tri(data: PhongThuyInput,
+                       user: User = Depends(get_current_user)):
+    from phong_thuy import tinh_cung_phi_gioi_tinh, huong_tot_xau
+    cung_phi = tinh_cung_phi_gioi_tinh(data.ngay, data.thang, data.nam,
+                                         data.gioi_tinh)
+    huong = huong_tot_xau(cung_phi)
+    profile = {"menh_nap_am": "Thổ"}  # Sẽ lấy từ DB
+    return goi_y_vi_tri_tot(profile, huong["huong_tot"])
+```
+
+---
+
+## 🔗 MODULE 4: Kết Nối Mệnh Chủ ↔ Sự Kiện — `ket_noi.py`
+
+```python
+"""
+Module kết nối tất cả: mệnh chủ + phong thủy + sự kiện + môi trường
+→ Bức tranh tổng thể + dự đoán cascade (domino effect)
+"""
+from datetime import date, timedelta
+from typing import Dict, List
+import json
+
+
+def buc_tranh_tong_the(profile: Dict, phong_thuy: Dict,
+                         su_kien_tuan: Dict,
+                         moi_truong: Dict = None) -> Dict:
+    """
+    Tạo bức tranh tổng thể: mọi yếu tố ảnh hưởng đến mệnh chủ trong tuần.
+    """
+    # 1. Điểm nền từ mệnh
+    from astrology import tinh_chi_so_su_kien as cs_base
+    diem_nen = cs_base(profile)
+
+    # 2. Phong thủy modifier
+    phong_thuy_modifier = 0
+    if phong_thuy.get("huong_nha", {}).get("tot"):
+        phong_thuy_modifier += 10
+    else:
+        phong_thuy_modifier -= 10
+
+    # 3. Sự kiện modifier
+    su_kien_modifier = 0
+    if su_kien_tuan.get("su_kien_trong_diem"):
+        su_kien_modifier += len(su_kien_tuan["su_kien_trong_diem"]) * 5
+    if su_kien_tuan.get("su_kien_can_chu_y"):
+        su_kien_modifier -= len(su_kien_tuan["su_kien_can_chu_y"]) * 5
+
+    # 4. Môi trường modifier
+    moi_truong_modifier = 0
+    if moi_truong:
+        mt_score = moi_truong.get("anh_huong", {}).get("diem_tong_hop", 50)
+        moi_truong_modifier = (mt_score - 50) * 0.3
+
+    # 5. Tổng hợp
+    diem_cuoi = {}
+    for linh_vuc, base_score in diem_nen.items():
+        final = (base_score +
+                  phong_thuy_modifier * 0.3 +
+                  su_kien_modifier * 0.4 +
+                  moi_truong_modifier * 0.3)
+        diem_cuoi[linh_vuc] = round(max(0, min(100, final)), 1)
+
+    return {
+        "ngay": date.today().isoformat(),
+        "diem_tong_hop": diem_cuoi,
+        "diem_trung_binh": round(sum(diem_cuoi.values()) / len(diem_cuoi), 1),
+        "yeu_to_anh_huong": {
+            "phong_thuy_modifier": phong_thuy_modifier,
+            "su_kien_modifier": su_kien_modifier,
+            "moi_truong_modifier": round(moi_truong_modifier, 1),
+        },
+        "canh_bao_cascade": phat_hien_cascade(diem_cuoi, su_kien_tuan),
+    }
+
+
+def phat_hien_cascade(diem: Dict, su_kien_tuan: Dict) -> List[Dict]:
+    """
+    Phát hiện domino effect: 1 sự kiện xấu có thể kéo theo nhiều hệ quả.
+    """
+    canh_bao = []
+
+    # Nếu sức khỏe yếu → ảnh hưởng tài vận, sự nghiệp
+    if diem.get("suc_khoe", 50) < 40:
+        canh_bao.append({
+            "loai": "cascade_suc_khoe",
+            "mo_ta": "Sức khỏe yếu có thể kéo theo sự nghiệp và tài vận suy giảm",
+            "doi_tuong_anh_huong": ["su_nghiep", "tai_van"],
+            "hanh_dong": [
+                "Ưu tiên nghỉ ngơi, khám sức khỏe",
+                "Trì hoãn quyết định lớn về tài chính",
+            ],
+        })
+
+    # Tài vận yếu + sự nghiệp yếu → nguy cơ mất việc
+    if diem.get("tai_van", 50) < 40 and diem.get("su_nghiep", 50) < 40:
+        canh_bao.append({
+            "loai": "cascade_tai_chinh_su_nghiep",
+            "mo_ta": "Tài chính + sự nghiệp đồng thời yếu — nguy cơ khủng hoảng",
+            "doi_tuong_anh_huong": ["tinh_than", "gia_dinh"],
+            "hanh_dong": [
+                "Cắt giảm chi tiêu không cần thiết",
+                "Không vay nợ mới",
+                "Tìm nguồn thu nhập dự phòng",
+            ],
+        })
+
+    # Tình duyên + tinh thần yếu → nguy cơ trầm cảm
+    if diem.get("tinh_duyen", 50) < 40 and diem.get("tinh_than", 50) < 40:
+        canh_bao.append({
+            "loai": "cascade_tinh_cam",
+            "mo_ta": "Tình cảm + tinh thần yếu — cần chăm sóc bản thân",
+            "doi_tuong_anh_huong": ["suc_khoe", "cong_viec"],
+            "hanh_dong": [
+                "Chia sẻ với người tin tưởng",
+                "Thiền/tập thể dục đều đặn",
+                "Tránh quyết định lớn về tình cảm lúc này",
+            ],
+        })
+
+    # Sự kiện lớn sắp tới + điểm nền thấp
+    for sk in su_kien_tuan.get("su_kien", []):
+        if sk["diem_anh_huong"] < 35 and sk["trong_so"] >= 0.8:
+            canh_bao.append({
+                "loai": "su_kien_quan_trong_diem_thap",
+                "mo_ta": f"Sự kiện '{sk['ten']}' ngày {sk['ngay']} có điểm thấp",
+                "doi_tuong_anh_huong": [sk["linh_vuc_chinh"]],
+                "hanh_dong": [
+                    f"Chuẩn bị kỹ cho sự kiện, có phương án B",
+                    "Tránh quyết định quan trọng đúng ngày này",
+                ],
+            })
+
+    return canh_bao
+
+
+def tao_lich_hanh_dong(profile: Dict, su_kien_tuan: Dict,
+                         phong_thuy: Dict) -> List[Dict]:
+    """
+    Tạo lịch hành động chi tiết từng ngày trong tuần.
+    """
+    lich = []
+    for sk in su_kien_tuan.get("su_kien", []):
+        ngay = sk["ngay"]
+        diem = sk["diem_anh_huong"]
+
+        hanh_dong = {
+            "ngay": ngay,
+            "su_kien": sk["ten"],
+            "diem": diem,
+            "muc_do": sk["muc_do"],
+        }
+
+        if diem >= 70:
+            hanh_dong["nen_lam"] = [
+                f"Triển khai {sk['ten']} — thời điểm tốt",
+                "Ký kết, giao dịch quan trọng",
+                "Gặp gỡ đối tác",
+            ]
+            hanh_dong["tranh"] = ["Trì hoãn vô cớ", "Bỏ lỡ cơ hội"]
+        elif diem >= 50:
+            hanh_dong["nen_lam"] = [
+                "Chuẩn bị kỹ, không vội",
+                "Tham khảo ý kiến người có kinh nghiệm",
+            ]
+            hanh_dong["tranh"] = ["Quyết định bốc đồng"]
+        else:
+            hanh_dong["nen_lam"] = [
+                "Trì hoãn nếu có thể",
+                "Chỉ làm việc nhỏ, an toàn",
+                "Nghỉ ngơi, tĩnh tâm",
+            ]
+            hanh_dong["tranh"] = [
+                "Ký kết hợp đồng lớn",
+                "Đầu tư rủi ro",
+                "Tranh cãi",
+                "Đi xa nếu không cần",
+            ]
+
+        lich.append(hanh_dong)
+
+    return lich
+```
+
+### Endpoint tổng hợp
+
+```python
+# main.py
+from ket_noi import buc_tranh_tong_the, tao_lich_hanh_dong
+
+class TongTheInput(BaseModel):
+    # Profile
+    ngay: int
+    thang: int
+    nam: int
+    gioi_tinh: str = "nam"
+    # Phong thủy
+    huong_nha: str = "Nam"
+    huong_bep: str = None
+    huong_phong_ngu: str = None
+    # Vị trí
+    lat: float = None
+    lon: float = None
+    # Sự kiện
+    su_kien_ca_nhan: List[SuKienInput] = []
+    start: str = None
+
+
+@app.post("/api/tong-the")
+async def api_tong_the(data: TongTheInput,
+                         user: User = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    """Bức tranh tổng thể — gộp mọi yếu tố"""
+    prof = db.query(Profile).filter_by(user_id=user.id).first()
+    if not prof:
+        # Tạo profile mới
+        prof = _get_or_create_profile(db, user, "", data.ngay, data.thang, data.nam)
+    profile = json.loads(prof.profile_json)
+
+    # 1. Phong thủy
+    from phong_thuy import phan_tich_toan_dien
+    phong_thuy = phan_tich_toan_dien(
+        data.ngay, data.thang, data.nam,
+        gioi_tinh=data.gioi_tinh,
+        huong_nha=data.huong_nha,
+        huong_bep=data.huong_bep,
+        huong_phong_ngu=data.huong_phong_ngu,
+    )
+
+    # 2. Sự kiện
+    from su_kien import quet_su_kien_tuan
+    start = date.fromisoformat(data.start) if data.start else date.today()
+    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
+                    for s in data.su_kien_ca_nhan]
+    su_kien_tuan = quet_su_kien_tuan(profile, start, sk_ca_nhan)
+
+    # 3. Môi trường (nếu có lat/lon)
+    moi_truong = None
+    if data.lat and data.lon:
+        tt = await lay_thoi_tiet(data.lat, data.lon)
+        aqi = await lay_chat_luong_khong_khi(data.lat, data.lon)
+        anh_huong = danh_gia_anh_huong_moi_truong(profile, tt, aqi)
+        moi_truong = {"thoi_tiet": tt, "aqi": aqi, "anh_huong": anh_huong}
+
+    # 4. Bức tranh tổng thể
+    tong_the = buc_tranh_tong_the(profile, phong_thuy, su_kien_tuan, moi_truong)
+
+    # 5. Lịch hành động
+    lich = tao_lich_hanh_dong(profile, su_kien_tuan, phong_thuy)
+
+    # 6. LLM tư vấn cuối
+    prompt = f"""Đưa ra nhận định TỔNG THỂ cho mệnh chủ dựa trên mọi yếu tố:
+
+HỒ SƠ: {profile['ngay_sinh']} — {profile['menh_nap_am']} — {profile['con_giap']}
+
+PHONG THỦY:
+- Cung phi: {phong_thuy['cung_phi']} ({phong_thuy['quai']})
+- Hướng nhà: {data.huong_nha} → {phong_thuy['huong_nha'].get('cung')}
+
+SỰ KIỆN TUẦN:
+{json.dumps(su_kien_tuan['su_kien'], ensure_ascii=False, indent=2)}
+
+MÔI TRƯỜNG: {json.dumps(moi_truong, ensure_ascii=False) if moi_truong else 'Không có dữ liệu'}
+
+ĐIỂM TỔNG HỢP: {json.dumps(tong_the['diem_tong_hop'], ensure_ascii=False)}
+CẢNH BÁO CASCADE: {json.dumps(tong_the['canh_bao_cascade'], ensure_ascii=False)}
+
+Trả về JSON:
+{{
+  "nhan_dinh_tong_quan": "1 đoạn văn tổng hợp mọi yếu tố",
+  "3_dieu_quan_trong_nhat": ["...", "...", "..."],
+  "lich_hanh_dong_7_ngay": [
+    {{"ngay": "YYYY-MM-DD", "trong_tam": "...", "hanh_dong": ["..."], "tranh": ["..."]}}
+  ],
+  "cascade_can_chu_y": ["các domino effect có thể xảy ra"],
+  "phong_thuy_can_chinh": ["nếu có"],
+  "cau_chuc": "..."
+}}"""
+
+    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
+    try:
+        tu_van = json.loads(raw)
+    except Exception:
+        tu_van = {"raw": raw}
+
+    return {
+        "profile": profile,
+        "phong_thuy": phong_thuy,
+        "su_kien_tuan": su_kien_tuan,
+        "moi_truong": moi_truong,
+        "tong_the": tong_the,
+        "lich_hanh_dong": lich,
+        "tu_van_llm": tu_van,
+    }
+```
+
+---
+
+## 🎨 Frontend: `frontend/phong-thuy.html`
+
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><title>Phong Thủy · Huyền Học AI</title>
+<style>
+  body { font-family: system-ui; background: linear-gradient(135deg,#1a0b2e,#0f0524);
+         color: #e8dff5; padding: 20px; min-height: 100vh; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { color: #c4a3ff; text-align: center; }
+  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  input, select {
+    width: 100%; padding: 10px; border-radius: 8px; font-size: 0.95rem;
+    background: rgba(0,0,0,0.3); color: #fff;
+    border: 1px solid rgba(196,163,255,0.3);
+  }
+  button { padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer;
+           background: linear-gradient(135deg, #7b3fe4, #c4a3ff); color: #fff;
+           font-weight: 600; margin-top: 12px; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,163,255,0.2);
+          border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  /* Bát trạch grid 3x3 */
+  .bat-trach {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    max-width: 600px; margin: 20px auto;
+  }
+  .huong-cell {
+    aspect-ratio: 1; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 12px; border-radius: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 2px solid transparent;
+    text-align: center;
+    transition: 0.3s;
+  }
+  .huong-cell.tot {
+    border-color: #7bffa0;
+    background: linear-gradient(135deg, rgba(123,255,160,0.15), rgba(0,0,0,0.3));
+  }
+  .huong-cell.xau {
+    border-color: #ff8080;
+    background: linear-gradient(135deg, rgba(255,128,128,0.15), rgba(0,0,0,0.3));
+  }
+  .huong-cell .huong { font-size: 0.85rem; color: #a890c9; }
+  .huong-cell .cung { font-size: 1rem; font-weight: 700; color: #ffd700; margin: 4px 0; }
+  .huong-cell .y_nghia { font-size: 0.7rem; color: #e8dff5; }
+  .huong-cell.trung-cung {
+    background: linear-gradient(135deg, #7b3fe4, #1a0b2e);
+    color: #fff;
+  }
+  .hoa-giai { background: rgba(255,215,0,0.1); border-left: 3px solid #ffd700;
+              padding: 16px; border-radius: 10px; margin-top: 16px; }
+  .hoa-giai h4 { color: #ffd700; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏠 Phong Thủy Cá Nhân</h1>
+
+  <div class="card">
+    <h2 style="color:#c4a3ff;margin-bottom:12px">📝 Nhập thông tin</h2>
+    <div class="form-grid">
+      <div><label>Ngày sinh</label><input id="ngay" type="number" value="15"></div>
+      <div><label>Tháng</label><input id="thang" type="number" value="6"></div>
+      <div><label>Năm</label><input id="nam" type="number" value="1995"></div>
+      <div>
+        <label>Giới tính</label>
+        <select id="gioiTinh">
+          <option value="nam">Nam</option><option value="nu">Nữ</option>
+        </select>
+      </div>
+      <div>
+        <label>Hướng nhà</label>
+        <select id="huongNha">
+          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
+          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
+          <option>Tây</option><option>Tây Bắc</option>
+        </select>
+      </div>
+      <div>
+        <label>Hướng bếp</label>
+        <select id="huongBep"><option value="">— Không rõ —</option>
+          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
+          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
+          <option>Tây</option><option>Tây Bắc</option>
+        </select>
+      </div>
+      <div>
+        <label>Hướng phòng ngủ</label>
+        <select id="huongPhongNgu"><option value="">— Không rõ —</option>
+          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
+          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
+          <option>Tây</option><option>Tây Bắc</option>
+        </select>
+      </div>
+      <div>
+        <label>Mục đích chính</label>
+        <select id="mucDich">
+          <option value="tai_van">💰 Tài vận</option>
+          <option value="suc_khoe">🌿 Sức khỏe</option>
+          <option value="tinh_cam">💕 Tình cảm</option>
+          <option value="su_nghiep">💼 Sự nghiệp</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="phanTich()">🔮 Phân tích phong thủy</button>
+    <button onclick="tuVanLLM()" style="background:linear-gradient(135deg,#ffd700,#c4a3ff);color:#1a0b2e">
+      🧠 Tư vấn bằng AI
+    </button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const API = "http://localhost:8000";
+const token = localStorage.getItem('token');
+if (!token) location.href = '/';
+
+function getInput() {
+  return {
+    ngay: +document.getElementById('ngay').value,
+    thang: +document.getElementById('thang').value,
+    nam: +document.getElementById('nam').value,
+    gioi_tinh: document.getElementById('gioiTinh').value,
+    huong_nha: document.getElementById('huongNha').value,
+    huong_bep: document.getElementById('huongBep').value || null,
+    huong_phong_ngu: document.getElementById('huongPhongNgu').value || null,
+    muc_dich: document.getElementById('mucDich').value,
+  };
+}
+
+async function phanTich() {
+  const out = document.getElementById('result');
+  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">Đang phân tích...</div>';
+  const r = await fetch(`${API}/api/phong-thuy/phan-tich`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify(getInput())
+  });
+  const d = await r.json();
+  renderPhongThuy(d);
+}
+
+async function tuVanLLM() {
+  const out = document.getElementById('result');
+  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">🧠 AI đang tư vấn (30-60s)...</div>';
+  const r = await fetch(`${API}/api/phong-thuy/llm-tu-van`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify(getInput())
+  });
+  const d = await r.json();
+  renderPhongThuy(d.so_lieu, d.tu_van_llm);
+}
+
+function renderPhongThuy(kq, tuVan) {
+  const posMap = {
+    "Đông Nam": [0,0], "Nam": [0,1], "Tây Nam": [0,2],
+    "Đông": [1,0], "Trung cung": [1,1], "Tây": [1,2],
+    "Đông Bắc": [2,0], "Bắc": [2,1], "Tây Bắc": [2,2]
+  };
+
+  // Map hướng → cung
+  const huongMap = {};
+  kq.huong_tot.forEach(h => huongMap[h.huong] = {...h, tot: true});
+  kq.huong_xau.forEach(h => huongMap[h.huong] = {...h, tot: false});
+
+  const grid = Array(3).fill().map(() => Array(3).fill(null));
+  for (const [h, [r, c]] of Object.entries(posMap)) {
+    grid[r][c] = { huong: h, info: huongMap[h] };
+  }
+
+  let batTrachHtml = '<div class="bat-trach">';
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const cell = grid[r][c];
+      if (!cell) continue;
+      if (cell.huong === 'Trung cung') {
+        batTrachHtml += `<div class="huong-cell trung-cung">
+          <div class="huong">${kq.cung_phi} — ${kq.quai}</div>
+          <div style="font-size:1.2rem;color:#ffd700;font-weight:700">${kq.nhom}</div>
+        </div>`;
+      } else if (cell.info) {
+        const cls = cell.info.tot ? 'tot' : 'xau';
+        batTrachHtml += `<div class="huong-cell ${cls}">
+          <div class="huong">${cell.huong}</div>
+          <div class="cung">${cell.info.cung}</div>
+          <div class="y_nghia">${cell.info.y_nghia}</div>
+        </div>`;
+      } else {
+        batTrachHtml += '<div></div>';
+      }
+    }
+  }
+  batTrachHtml += '</div>';
+
+  let html = `
+    <div class="card">
+      <h2 style="color:#c4a3ff;text-align:center">🧭 Bát Trạch Bát Cung</h2>
+      ${batTrachHtml}
+      <p style="text-align:center;color:#a890c9;margin-top:12px">
+        Cung phi: <b style="color:#ffd700">${kq.cung_phi}</b> ·
+        Quẻ: <b>${kq.quai}</b> ·
+        Nhóm: <b>${kq.nhom}</b>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 style="color:#c4a3ff">🏠 Hướng nhà: ${kq.huong_nha.huong_nha}</h2>
+      <div style="font-size:1.1rem;margin:12px 0">
+        Cung: <b style="color:#ffd700">${kq.huong_nha.cung}</b>
+        — ${kq.huong_nha.y_nghia}
+      </div>
+      <div style="padding:12px;border-radius:8px;background:${
+        kq.huong_nha.tot ? 'rgba(123,255,160,0.15)' : 'rgba(255,128,128,0.15)'
+      }">
+        <b>${kq.huong_nha.tot ? '✅ Tốt' : '❌ Xấu'}</b> — Điểm: ${kq.huong_nha.diem}/100
+      </div>
+      ${kq.hoa_giai ? `
+        <div class="hoa-giai">
+          <h4>🔮 Hóa giải hướng ${kq.hoa_giai.huong} (${kq.hoa_giai.cung_xau})</h4>
+          <div style="margin:8px 0">
+            <b>Vật phẩm:</b> ${(kq.hoa_giai.vat_pham||[]).join(', ')}<br>
+            <b>Màu sắc:</b> ${kq.hoa_giai.mau_sac||''}<br>
+            <b>Cây trồng:</b> ${(kq.hoa_giai.cay_trong||[]).join(', ')}
+          </div>
+          <div><b>Hành động:</b></div>
+          <ul>${(kq.hoa_giai.hanh_dong||[]).map(x => `<li>${x}</li>`).join('')}</ul>
+        </div>` : ''}
+    </div>
+
+    <div class="card">
+      <h2 style="color:#c4a3ff">🌟 Phi Tinh hôm nay</h2>
+      <div style="text-align:center;margin:16px 0">
+        <div style="font-size:2.5rem;color:#ffd700;font-weight:700">
+          ${kq.phi_tinh_hom_nay.sao_info.ten}
+        </div>
+        <div style="color:#c4a3ff">${kq.phi_tinh_hom_nay.sao_info.hanh} —
+          ${kq.phi_tinh_hom_nay.sao_info.cat_hung}</div>
+        <div style="color:#a890c9;margin-top:8px">${kq.phi_tinh_hom_nay.sao_info.y_nghia}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:400px;margin:0 auto">
+        ${Object.entries(kq.phi_tinh_hom_nay.bay_cung).map(([h, s]) => `
+          <div style="padding:8px;background:rgba(0,0,0,0.25);border-radius:6px;text-align:center;
+                      border:1px solid ${s.cat_hung.includes('Cát')?'#7bffa0':
+                                        s.cat_hung.includes('Hung')?'#ff8080':'#ffd700'}">
+            <div style="font-size:0.7rem;color:#a890c9">${h}</div>
+            <div style="color:#ffd700;font-size:1.1rem;font-weight:700">${s.sao}</div>
+            <div style="font-size:0.75rem">${s.ten}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="color:#c4a3ff">📊 Đại Vận</h2>
+      <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px">
+        <b style="color:#ffd700">${kq.dai_van.danh_gia.toUpperCase()}</b>
+        — Điểm: ${kq.dai_van.diem}/100<br>
+        <div style="margin-top:6px;color:#a890c9">${kq.dai_van.ly_do}</div>
+      </div>
+    </div>
+  `;
+
+  if (tuVan) {
+    html += `
+      <div class="card">
+        <h2 style="color:#ffd700">🧠 AI Tư Vấn</h2>
+        <p style="line-height:1.6">${tuVan.danh_gia_tong_quan || ''}</p>
+
+        ${tuVan.diem_manh?.length ? `
+          <h3 style="color:#7bffa0;margin-top:16px">✨ Điểm mạnh</h3>
+          <ul>${tuVan.diem_manh.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
+
+        ${tuVan.van_de_can_khac_phuc?.length ? `
+          <h3 style="color:#ff8080;margin-top:16px">⚠️ Vấn đề cần khắc phục</h3>
+          <ul>${tuVan.van_de_can_khac_phuc.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
+
+        ${tuVan.bo_tri_cu_the?.length ? `
+          <h3 style="color:#c4a3ff;margin-top:16px">🏠 Bố trí cụ thể</h3>
+          ${tuVan.bo_tri_cu_the.map(b => `
+            <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px;margin:8px 0">
+              <b style="color:#ffd700">${b.khu_vuc}</b>
+              ${b.huong_tot_nhat ? `<div style="margin-top:6px">→ Hướng tốt: ${b.huong_tot_nhat}</div>` : ''}
+              ${b.vat_pham_nen_dat?.length ? `<div>→ Vật phẩm: ${b.vat_pham_nen_dat.join(', ')}</div>` : ''}
+              ${b.mau_sac_phu_hop?.length ? `<div>→ Màu: ${b.mau_sac_phu_hop.join(', ')}</div>` : ''}
+              ${b.cay_canh_goi_y?.length ? `<div>→ Cây: ${b.cay_canh_goi_y.join(', ')}</div>` : ''}
+              ${b.ly_do ? `<div style="color:#a890c9;font-size:0.85rem;margin-top:6px">${b.ly_do}</div>` : ''}
+            </div>`).join('')}` : ''}
+
+        ${tuVan.viec_nen_lam_ngay?.length ? `
+          <h3 style="color:#7bffa0;margin-top:16px">✅ Việc nên làm ngay</h3>
+          <ul>${tuVan.viec_nen_lam_ngay.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
+
+        ${tuVan.canh_bao?.length ? `
+          <h3 style="color:#ff8080;margin-top:16px">⚠️ Cảnh báo</h3>
+          <ul>${tuVan.canh_bao.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
+      </div>`;
+  }
+
+  document.getElementById('result').innerHTML = html;
+}
+</script>
+</body>
+</html>
+```
+
+### `frontend/su-kien.html` — Rút gọn
+
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><title>Sự Kiện · Huyền Học AI</title>
+<style>
+  body { font-family: system-ui; background: linear-gradient(135deg,#1a0b2e,#0f0524);
+         color: #e8dff5; padding: 20px; min-height: 100vh; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { color: #c4a3ff; text-align: center; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,163,255,0.2);
+          border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  input, select { padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3);
+                  color: #fff; border: 1px solid rgba(196,163,255,0.3); margin-right: 8px; }
+  button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
+           background: linear-gradient(135deg, #7b3fe4, #c4a3ff); color: #fff; font-weight: 600; }
+  .sk-item {
+    padding: 14px; margin-bottom: 10px; border-radius: 10px;
+    background: rgba(0,0,0,0.25);
+    border-left: 4px solid;
+  }
+  .sk-item.tot { border-color: #7bffa0; }
+  .sk-item.tb { border-color: #ffd700; }
+  .sk-item.xau { border-color: #ff8080; }
+  .sk-head { display: flex; justify-content: space-between; align-items: center; }
+  .sk-name { font-weight: 700; color: #fff; }
+  .sk-badge {
+    padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .sk-badge.truc-tiep { background: #7b3fe4; color: #fff; }
+  .sk-badge.gian-tiep { background: #a890c9; color: #1a0b2e; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📅 Sự Kiện Ảnh Hưởng</h1>
+
+  <div class="card">
+    <h2 style="color:#c4a3ff;margin-bottom:12px">➕ Thêm sự kiện cá nhân</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <input type="date" id="skNgay">
+      <select id="skLoai">
+        <option value="ky_hop_dong">Ký hợp đồng</option>
+        <option value="cuoi_hoi">Cưới hỏi</option>
+        <option value="chuyen_nha">Chuyển nhà</option>
+        <option value="khoi_nghiep">Khởi nghiệp</option>
+        <option value="thi_cu">Thi cử</option>
+        <option value="dau_tu">Đầu tư</option>
+        <option value="phau_thuat">Phẫu thuật</option>
+      </select>
+      <input type="text" id="skNote" placeholder="Ghi chú (tuỳ chọn)" style="flex:1;min-width:200px">
+      <button onclick="themSuKien()">Thêm</button>
+    </div>
+    <div id="listSuKien"></div>
+    <button onclick="quetTuan()" style="margin-top:12px">🔮 Quét sự kiện tuần tới</button>
+    <button onclick="tuVanLLM()" style="margin-top:12px;background:linear-gradient(135deg,#ffd700,#c4a3ff);color:#1a0b2e">
+      🧠 AI tư vấn
+    </button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const API = "http://localhost:8000";
+const token = localStorage.getItem('token');
+if (!token) location.href = '/';
+
+let suKienCaNhan = [];
+
+function themSuKien() {
+  const ngay = document.getElementById('skNgay').value;
+  const loai = document.getElementById('skLoai').value;
+  const note = document.getElementById('skNote').value;
+  if (!ngay) return alert('Chọn ngày');
+  suKienCaNhan.push({ngay, loai, note});
+  renderList();
+  document.getElementById('skNote').value = '';
+}
+
+function renderList() {
+  document.getElementById('listSuKien').innerHTML = suKienCaNhan.map((s, i) => `
+    <div style="padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:6px;margin:6px 0;
+                display:flex;justify-content:space-between;align-items:center">
+      <span><b>${s.ngay}</b> — ${s.loai}${s.note ? ' · ' + s.note : ''}</span>
+      <button onclick="xoaSk(${i})" style="padding:4px 10px;font-size:0.8rem">×</button>
+    </div>`).join('');
+}
+
+function xoaSk(i) { suKienCaNhan.splice(i, 1); renderList(); }
+
+async function quetTuan() {
+  const out = document.getElementById('result');
+  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">Đang quét...</div>';
+  const r = await fetch(`${API}/api/su-kien/quet-tuan`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify({su_kien_ca_nhan: suKienCaNhan})
+  });
+  const d = await r.json();
+  renderSuKien(d);
+}
+
+async function tuVanLLM() {
+  const out = document.getElementById('result');
+  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">🧠 AI đang tư vấn...</div>';
+  const r = await fetch(`${API}/api/su-kien/llm-tu-van`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body: JSON.stringify({su_kien_ca_nhan: suKienCaNhan})
+  });
+  const d = await r.json();
+  renderSuKien(d.so_lieu, d.tu_van_llm);
+}
+
+function renderSuKien(kq, tuVan) {
+  let html = `
+    <div class="card">
+      <h2 style="color:#c4a3ff">📊 Tổng quan tuần</h2>
+      <div style="display:flex;gap:20px;justify-content:center;margin-top:16px">
+        <div style="text-align:center">
+          <div style="font-size:2.5rem;color:#ffd700;font-weight:700">${kq.diem_tuan}</div>
+          <div style="color:#a890c9">Điểm TB</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:2.5rem;color:#7bffa0;font-weight:700">${kq.su_kien_trong_diem.length}</div>
+          <div style="color:#a890c9">Sự kiện tốt</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:2.5rem;color:#ff8080;font-weight:700">${kq.su_kien_can_chu_y.length}</div>
+          <div style="color:#a890c9">Cần chú ý</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="color:#c4a3ff">📅 ${kq.tong_su_kien} sự kiện</h2>
+      ${kq.su_kien.map(sk => {
+        const cls = sk.diem_anh_huong >= 65 ? 'tot' :
+                    sk.diem_anh_huong >= 45 ? 'tb' : 'xau';
+        const badge = sk.muc_do === 'trực tiếp' ? 'truc-tiep' : 'gian-tiep';
+        return `
+          <div class="sk-item ${cls}">
+            <div class="sk-head">
+              <div>
+                <span class="sk-name">${sk.ten}</span>
+                ${sk.mo_ta ? `<span style="color:#a890c9;font-size:0.85rem"> · ${sk.mo_ta}</span>` : ''}
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <span class="sk-badge ${badge}">${sk.muc_do}</span>
+                <b style="color:#ffd700;font-size:1.2rem">${sk.diem_anh_huong}</b>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:0.85rem;color:#a890c9">
+              📅 ${sk.ngay} · Can Chi: ${sk.can_chi_ngay} · ${sk.quan_he_ngu_hanh}
+              · Dự báo: <b style="color:${
+                sk.du_bao === 'tích cực' ? '#7bffa0' :
+                sk.du_bao === 'trung tính' ? '#ffd700' : '#ff8080'}">${sk.du_bao}</b>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  if (tuVan) {
+    html += `
+      <div class="card">
+        <h2 style="color:#ffd700">🧠 AI Tư Vấn</h2>
+        <p style="line-height:1.6">${tuVan.tom_tat_tuan || ''}</p>
+
+        ${tuVan.su_kien_trong_diem?.length ? `
+          <h3 style="color:#7bffa0;margin-top:16px">🎯 Sự kiện trọng điểm</h3>
+          ${tuVan.su_kien_trong_diem.map(sk => `
+            <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px;margin:8px 0;
+                        border-left:3px solid #7bffa0">
+              <b>${sk.su_kien} — ${sk.ngay}</b>
+              <div style="margin-top:6px;color:#7bffa0">✓ Nên: ${(sk.nen_lam_gi||[]).join(', ')}</div>
+              <div style="color:#ff8080;margin-top:4px">✗ Tránh: ${(sk.nen_tranh_gi||[]).join(', ')}</div>
+            </div>`).join('')}` : ''}
+
+        ${tuVan.su_kien_gian_tiep_lan_toa?.length ? `
+          <h3 style="color:#c4a3ff;margin-top:16px">🌊 Sự kiện gián tiếp lan toả</h3>
+          ${tuVan.su_kien_gian_tiep_lan_toa.map(sk => `
+            <div style="padding:12px;background:rgba(123,63,228,0.15);border-radius:8px;margin:8px 0">
+              <b>${sk.su_kien}</b>
+              <div style="margin-top:6px">${sk.tac_dong}</div>
+              <div style="margin-top:6px;color:#7bffa0">→ ${(sk.cach_thich_ung||[]).join(', ')}</div>
+            </div>`).join('')}` : ''}
+
+        ${tuVan.lich_hanh_dong?.length ? `
+          <h3 style="color:#ffd700;margin-top:16px">📋 Lịch hành động</h3>
+          ${tuVan.lich_hanh_dong.map(d => `
+            <div style="padding:12px;background:rgba(255,215,0,0.1);border-radius:8px;margin:8px 0">
+              <b>${d.ngay}</b>${d.gio_tot ? ` · Giờ tốt: ${d.gio_tot}` : ''}
+              <ul style="margin-top:6px">
+                ${(d.hanh_dong||[]).map(x => `<li>${x}</li>`).join('')}
+              </ul>
+            </div>`).join('')}` : ''}
+
+        ${tuVan.loi_khuyen_tong_the ? `
+          <div style="margin-top:16px;padding:12px;background:rgba(196,163,255,0.15);border-radius:8px">
+            💡 <b>${tuVan.loi_khuyen_tong_the}</b>
+          </div>` : ''}
+      </div>`;
+  }
+
+  document.getElementById('result').innerHTML = html;
+}
+
+// Set ngày mặc định hôm nay
+document.getElementById('skNgay').valueAsDate = new Date();
+</script>
+</body>
+</html>
+```
+
+### Route serve
+
+```python
+@app.get("/phong-thuy", response_class=HTMLResponse)
+def phong_thuy_page():
+    return FileResponse("../frontend/phong-thuy.html")
+
+@app.get("/su-kien", response_class=HTMLResponse)
+def su_kien_page():
+    return FileResponse("../frontend/su-kien.html")
+```
+
+---
+
+## 🎯 Kiến trúc "Vũ trụ huyền học" hoàn chỉnh
+
+```
+                    ┌────────────────────────────────────────┐
+                    │           VŨ TRỤ HUYỀN HỌC             │
+                    └────────────────┬───────────────────────┘
+                                     │
+        ┌────────────────────────────┼───────────────────────────┐
+        │                            │                           │
+        ▼                            ▼                           ▼
+┌───────────────┐         ┌──────────────────┐         ┌──────────────┐
+│  VĨ MÔ        │         │  MỆNH CHỦ         │         │  MÔI TRƯỜNG  │
+│  (Vũ trụ)     │         │  (Cá nhân)        │         │  (Xung quanh)│
+├───────────────┤         ├──────────────────┤         ├──────────────┤
+│ • Tiết khí    │         │ • Can Chi         │         │ • Thời tiết  │
+│ • Vận 9       │         │ • Bát tự          │         │ • Không khí  │
+│ • Niên tinh   │◄────────┤ • Cung phi        │────────►│ • Địa lý     │
+│ • Sao hạn     │ kết hợp │ • Số chủ đạo      │ ảnh     │ • Vị trí     │
+│ • Lịch vạn    │         │ • Tử Vi 12 cung   │ hưởng   │ • Phương vị  │
+│   niên        │         │ • Tarot, Dịch     │         │              │
+└───────────────┘         └─────────┬────────┘         └──────────────┘
+                                    │
+                                    │ Tương tác
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │      SỰ KIỆN TRỰC TIẾP        │
+                    ├───────────────────────────────┤
+                    │ • Sinh nhật, ký HĐ, cưới hỏi  │
+                    │ • Phẫu thuật, chuyển nhà      │
+                    │ • Khởi nghiệp, thi cử         │
+                    └───────────────┬───────────────┘
+                                    │
+                                    │ Lan tỏa / Đón nhận
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │      SỰ KIỆN GIÁN TIẾP        │
+                    ├───────────────────────────────┤
+                    │ • Kinh tế, chính trị          │
+                    │ • Dịch bệnh, thiên tai        │
+                    │ • Công nghệ, văn hóa          │
+                    │ • Ngày rằm/mùng 1, tiết khí   │
+                    └───────────────┬───────────────┘
+                                    │
+                                    │ Cộng hưởng
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │       CASCADE EFFECT          │
+                    ├───────────────────────────────┤
+                    │ Sức khỏe ↓ → Sự nghiệp ↓      │
+                    │ Tài vận ↓ + CV ↓ → Tinh thần ↓│
+                    │ ...                            │
+                    └───────────────────────────────┘
+```
+
+---
+
+## 📋 Tóm tắt 4 module mới
+
+| Module | File chính | Nội dung |
+|--------|-----------|----------|
+| 🏠 **Phong Thủy** | `phong_thuy.py` | Bát trạch 8 hướng, Huyền không phi tinh, Dương trạch tam yếu, hóa giải |
+| 📅 **Sự Kiện** | `su_kien.py` | Sự kiện trực tiếp (cá nhân) + gián tiếp (xã hội), chu kỳ, dự báo năm |
+| 🌍 **Môi Trường** | `moi_truong.py` | Thời tiết, AQI, vị trí, ảnh hưởng ngũ hành |
+| 🔗 **Kết Nối** | `ket_noi.py` | Bức tranh tổng thể, cascade effect, lịch hành động |
+
+---
+
+## ⚙️ API endpoint mới
+
+```
+POST /api/phong-thuy/phan-tich         — Bát trạch + phi tinh
+POST /api/phong-thuy/llm-tu-van        — AI tư vấn phong thủy
+GET  /api/phong-thuy/phi-tinh          — Phi tinh ngày
+
+POST /api/su-kien/quet-tuan            — Quét sự kiện tuần
+POST /api/su-kien/llm-tu-van           — AI tư vấn sự kiện
+GET  /api/su-kien/du-bao-nam           — Dự báo năm
+GET  /api/su-kien/loai                 — Danh mục sự kiện
+
+POST /api/moi-truong/hien-tai          — Thời tiết + AQI
+POST /api/moi-truong/goi-y-vi-tri      — Gợi ý vị trí
+
+POST /api/tong-the                     — Bức tranh tổng thể (gộp tất cả)
+```
+
+---
+
+## 🌟 Điểm đột phá của mở rộng này
+
+1. **Từ cá nhân → hệ sinh thái**: Mệnh chủ không đứng một mình — chịu ảnh hưởng từ nhà, khu vực, xã hội, vũ trụ.
+
+2. **Cascade effect (domino)**: Phát hiện chuỗi hệ quả — sức khỏe yếu → sự nghiệp trì trệ → tài vận sa sút. Cảnh báo sớm.
+
+3. **Trực tiếp vs Gián tiếp**: Phân biệt rõ — sự kiện cá nhân (điểm cao) vs sự kiện xã hội (điểm thấp nhưng lan tỏa rộng).
+
+4. **Phong thủy động**: Kết hợp Bát trạch tĩnh (cung phi) + Huyền không động (phi tinh thay đổi theo ngày/tháng/năm).
+
+5. **Môi trường realtime**: Thời tiết + AQI ảnh hưởng ngũ hành mệnh chủ → khuyến nghị cụ thể từng ngày.
+
+6. **LLM tổng hợp**: AI không chỉ luận từng phần mà kết nối mọi yếu tố → nhận định holistic + lịch hành động 7 ngày.
+
+---

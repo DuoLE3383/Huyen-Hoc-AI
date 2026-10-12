@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập · Huyền Học AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { display: grid; min-height: 100vh; place-items: center; margin: 0; padding: 18px; color: #eee4ff; font: 16px system-ui,sans-serif; background: linear-gradient(135deg,#1a0b2e,#2d1b4e,#0f0524); }
+    .box { width: min(430px,100%); padding: 30px; border: 1px solid #ffffff2b; border-radius: 18px; background: #ffffff0b; }
+    h1 { margin: 0; color: #d0b5ff; text-align: center; }
+    .sub { margin: 8px 0 22px; color: #b6a1d2; text-align: center; font-size: .9rem; }
+    .tabs { display: flex; gap: 5px; padding: 4px; border-radius: 9px; background: #0005; }
+    .tabs button { flex: 1; border: 0; padding: 9px; border-radius: 7px; color: #c9b7df; background: transparent; cursor: pointer; }
+    .tabs button[aria-pressed="true"] { color: white; background: #7138d6; }
+    label { display: block; margin: 14px 0 5px; color: #c7b8d8; font-size: .85rem; }
+    input { width: 100%; padding: 11px; border: 1px solid #c4a3ff55; border-radius: 8px; color: white; background: #0005; }
+    .submit { width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 8px; color: white; background: #7138d6; font-weight: 650; cursor: pointer; }
+    .submit:disabled { opacity: .55; }
+    #message { min-height: 1.4em; margin-top: 12px; color: #ff9999; text-align: center; font-size: .9rem; }
+    .note { color: #b6a1d2; font-size: .78rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <main class="box">
+    <h1>🔮 Huyền Học AI</h1>
+    <p class="sub">Đăng nhập để lưu hồ sơ riêng tư và xem lịch sử</p>
+    <div class="tabs" role="group" aria-label="Chọn thao tác">
+      <button type="button" id="loginTab" aria-pressed="true">Đăng nhập</button>
+      <button type="button" id="registerTab" aria-pressed="false">Đăng ký</button>
+    </div>
+    <form id="authForm">
+      <div id="registerFields" hidden>
+        <label for="email">Email</label>
+        <input id="email" type="email" maxlength="254" autocomplete="email">
+        <label for="fullName">Họ tên (không bắt buộc)</label>
+        <input id="fullName" maxlength="100" autocomplete="name">
+      </div>
+      <label for="username">Tên đăng nhập</label>
+      <input id="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+" autocomplete="username">
+      <label for="password">Mật khẩu (ít nhất 12 ký tự)</label>
+      <input id="password" type="password" required minlength="12" maxlength="72" autocomplete="current-password">
+      <button class="submit" id="submit" type="submit">Đăng nhập</button>
+    </form>
+    <div id="message" role="status" aria-live="polite"></div>
+    <p class="note">Nội dung chỉ mang tính tham khảo và giải trí. Tài khoản không nên dùng lại mật khẩu từ dịch vụ khác.</p>
+  </main>
+  <script>
+    const API = window.location.origin;
+    const form = document.getElementById("authForm");
+    const message = document.getElementById("message");
+    const submitButton = document.getElementById("submit");
+    let mode = "login";
+
+    function switchMode(nextMode) {
+      mode = nextMode;
+      const registering = mode === "register";
+      document.getElementById("registerFields").hidden = !registering;
+      document.getElementById("loginTab").setAttribute("aria-pressed", String(!registering));
+      document.getElementById("registerTab").setAttribute("aria-pressed", String(registering));
+      document.getElementById("password").autocomplete = registering ? "new-password" : "current-password";
+      document.getElementById("submit").textContent = registering ? "Tạo tài khoản" : "Đăng nhập";
+      message.textContent = "";
+    }
+
+    document.getElementById("loginTab").addEventListener("click", () => switchMode("login"));
+    document.getElementById("registerTab").addEventListener("click", () => switchMode("register"));
+
+    async function parseResponse(response) {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = Array.isArray(data.detail) ? data.detail.map(item => item.msg).join("; ") : data.detail;
+        throw new Error(detail || `Yêu cầu thất bại (${response.status}).`);
+      }
+      return data;
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      message.textContent = "";
+      submitButton.disabled = true;
+      try {
+        if (mode === "register") {
+          const response = await fetch(`${API}/api/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: document.getElementById("username").value,
+              email: document.getElementById("email").value,
+              full_name: document.getElementById("fullName").value,
+              password: document.getElementById("password").value
+            })
+          });
+          await parseResponse(response);
+          switchMode("login");
+          message.style.color = "#7bffa0";
+          message.textContent = "Đăng ký thành công. Hãy đăng nhập.";
+          return;
+        }
+        const body = new URLSearchParams();
+        body.set("username", document.getElementById("username").value);
+        body.set("password", document.getElementById("password").value);
+        const response = await fetch(`${API}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body
+        });
+        const data = await parseResponse(response);
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.assign("/app");
+      } catch (error) {
+        message.style.color = "#ff9999";
+        message.textContent = error.message;
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Lá số Tử Vi - {{ user_name }}</title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    body { font-family: "DejaVu Sans", sans-serif; color: #2d1b4e; font-size: 10pt; }
+    h1, h2 { color: #6533ad; }
+    header { border-bottom: 2px solid #c4a3ff; margin-bottom: 16px; padding-bottom: 10px; text-align: center; }
+    .facts { background: #f5f0ff; padding: 12px; line-height: 1.7; }
+    .palaces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 15px; }
+    .palace { border: 1px solid #d6c5ef; border-radius: 5px; padding: 7px; break-inside: avoid; }
+    .palace strong { color: #6533ad; }
+    .muted { color: #666; font-size: 8pt; }
+    .disclaimer { margin-top: 18px; padding: 10px; background: #fff5e6; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lá Số Tử Vi</h1>
+    <div>Lập cho <strong>{{ user_name }}</strong> · {{ brand }}</div>
+  </header>
+  <section class="facts">
+    <div>Dương lịch: {{ la_so.duong_lich }} · Âm lịch: {{ la_so.am_lich }}</div>
+    <div>Can Chi: {{ la_so.can_chi_nam }} · Giờ sinh: {{ la_so.gio_sinh }}</div>
+    <div>Cục: {{ la_so.cuc }} · Mệnh: {{ la_so.menh_chi }} · Thân: {{ la_so.than_chi }}</div>
+  </section>
+  <section class="palaces">
+    {% for cung in la_so.cung %}
+    <article class="palace">
+      <strong>{{ cung.cung }}{% if cung.la_menh %} ★{% endif %}{% if cung.la_than %} ●{% endif %}</strong>
+      <div class="muted">{{ cung.dia_chi }}</div>
+      {% for sao in cung.chinh_tinh %}<div>{{ sao.sao }} [{{ sao.trang_thai }}]</div>{% endfor %}
+      {% if cung.phu_tinh %}<div class="muted">{{ cung.phu_tinh | join(" · ") }}</div>{% endif %}
+    </article>
+    {% endfor %}
+  </section>
+  {% if luan_giai %}
+  <h2>Luận giải tham khảo</h2>
+  <p>{{ luan_giai.tong_quan }}</p>
+  {% if luan_giai.diem_manh %}<h3>Điểm mạnh</h3><ul>{% for item in luan_giai.diem_manh %}<li>{{ item }}</li>{% endfor %}</ul>{% endif %}
+  {% if luan_giai.diem_can_luu_y %}<h3>Điểm cần lưu ý</h3><ul>{% for item in luan_giai.diem_can_luu_y %}<li>{{ item }}</li>{% endfor %}</ul>{% endif %}
+  {% if luan_giai.loi_khuyen_tong_the %}<h3>Lời khuyên</h3><p>{{ luan_giai.loi_khuyen_tong_the }}</p>{% endif %}
+  {% endif %}
+  <div class="disclaimer">
+    Nội dung mang tính tham khảo văn hóa và giải trí, không thay thế tư vấn y tế, pháp lý hoặc tài chính.
+  </div>
+  <footer class="muted">{{ brand }} · Xuất {{ ngay_xuat }}</footer>
+</body>
+</html>
