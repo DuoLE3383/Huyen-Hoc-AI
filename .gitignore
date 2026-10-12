@@ -7,3 +7,5 @@ backend/huyen_hoc.db
 /finetune/output/
 /deploy/.env.prod
 /data/
+task.txt
+temp.txt
