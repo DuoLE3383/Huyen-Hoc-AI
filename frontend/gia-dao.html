@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gia đạo — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}main{max-width:760px;margin:auto}
+  nav{display:flex;gap:12px;flex-wrap:wrap}a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  label{display:block;margin:12px 0 5px}textarea{width:100%;min-height:210px;padding:12px;border-radius:7px;background:#201432;color:white;border:1px solid #705d83}
+  button{font:inherit;padding:10px;border-radius:7px;background:#7138d6;color:white;border:0;cursor:pointer}.note{color:#b6a1d2}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body><main>
+  <h1>👨‍👩‍👧‍👦 Gia đạo</h1><nav><a href="/app">Tổng quan</a><a href="/ban-do">Bản đồ</a><a href="/trach-cat">Trạch cát</a></nav>
+  <p class="note">Tên/ngày sinh chỉ được dùng trong yêu cầu, không lưu. Kết quả chỉ nhóm hướng truyền thống; không xếp hạng quan hệ, xung đột hay cách phân phòng.</p>
+  <section><form id="form"><label>Thành viên (1–10), JSON: tên, vai_trò, ngày_sinh YYYY-MM-DD, giới_tính nam/nu</label>
+    <textarea id="members">[
+  {"ten":"Người thân 1","vai_tro":"thành viên","ngay_sinh":"1990-01-01","gioi_tinh":"nam"},
+  {"ten":"Người thân 2","vai_tro":"thành viên","ngay_sinh":"1992-01-01","gioi_tinh":"nu"}
+]</textarea>
+    <button type="submit">Tổng hợp hướng tham khảo</button></form><p id="error" role="alert"></p><pre id="result"></pre>
+  </section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  document.getElementById("form").addEventListener("submit",async event=>{
+    event.preventDefault();const error=document.getElementById("error"),output=document.getElementById("result");error.textContent="";output.textContent="Đang phân tích…";
+    try{
+      const body={thanh_vien:JSON.parse(document.getElementById("members").value)};
+      const response=await fetch("/api/gia-dao/phan-tich",{method:"POST",headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(body)});
+      const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==="string"?data.detail:JSON.stringify(data.detail));
+      output.textContent=JSON.stringify(data,null,2);
+    }catch(e){output.textContent="";error.textContent=e.message}
+  });
+</script></body></html>

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Path as ApiPath, Query, status
+from fastapi import Depends, FastAPI, HTTPException, Path as ApiPath, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -74,6 +74,13 @@ from su_kien import EVENTS, danh_muc_su_kien, du_bao_dai_han, quet_su_kien_tuan
 from moi_truong import WeatherProviderError, danh_gia_anh_huong_moi_truong, lay_du_lieu_moi_truong
 from vi_mo import timeline_vi_mo
 from ket_noi import buc_tranh_tong_the
+from ban_do_phong_thuy import lay_elevation, phan_tich_dia_hinh, tinh_phuong_vi_tu_toa_do
+from gia_dao import phan_tich_nhom_gia_dinh
+from kinh_te_vi_mo import lay_du_lieu_thi_truong
+from trach_cat import ACTIVITIES as TRACH_CAT_ACTIVITIES, tim_ngay_dep
+from tam_linh import tao_thoi_khoa_tam_linh
+from tu_vi_tay_phuong import lap_natal_chart, so_sanh_dong_tay
+from i18n import LANG_SUPPORTED, TRANSLATIONS, detect_lang
 
 
 @asynccontextmanager
@@ -179,6 +186,12 @@ class BirthInput(BaseModel):
     ngay: int = Field(ge=1, le=31)
     thang: int = Field(ge=1, le=12)
     nam: int = Field(ge=1900, le=2100)
+    gio_sinh: int | None = Field(default=None, ge=0, le=23)
+
+    @model_validator(mode="after")
+    def normalize_name(self) -> "BirthInput":
+        self.ho_ten = self.ho_ten.strip()
+        return self
 
     @model_validator(mode="after")
     def validate_calendar_date(self) -> "BirthInput":
@@ -328,6 +341,56 @@ class CombinedInput(FengShuiInput):
         return self
 
 
+class MapAnalysisInput(BaseModel):
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    huong_dat: Literal["Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc"]
+    truy_van_do_cao: bool = False
+
+
+class HouseholdMemberInput(BaseModel):
+    ten: str = Field(min_length=1, max_length=60)
+    vai_tro: str = Field(min_length=1, max_length=32)
+    ngay_sinh: date
+    gioi_tinh: Literal["nam", "nu"]
+
+    @model_validator(mode="after")
+    def trim_text(self) -> "HouseholdMemberInput":
+        self.ten = self.ten.strip()
+        self.vai_tro = self.vai_tro.strip()
+        if not self.ten or not self.vai_tro:
+            raise ValueError("Tên và vai trò không được để trống.")
+        return self
+
+
+class HouseholdInput(BaseModel):
+    thanh_vien: list[HouseholdMemberInput] = Field(min_length=1, max_length=10)
+
+
+class TrachCatInput(BaseModel):
+    loai_viec: Literal[
+        "cuoi_hoi", "khai_truong", "ky_ket", "xuat_hanh", "dong_tho",
+        "nhap_hoc", "giao_dich", "gap_go", "chuyen_nha",
+    ]
+    tu_ngay: date | None = None
+    so_ngay_tim: int = Field(default=60, ge=1, le=90)
+    so_ket_qua: int = Field(default=5, ge=1, le=20)
+
+
+class WesternChartInput(BaseModel):
+    ngay: int = Field(ge=1, le=31)
+    thang: int = Field(ge=1, le=12)
+    nam: int = Field(ge=1900, le=2100)
+
+    @model_validator(mode="after")
+    def validate_calendar_date(self) -> "WesternChartInput":
+        try:
+            date(self.nam, self.thang, self.ngay)
+        except ValueError as exc:
+            raise ValueError("Ngày sinh không hợp lệ.") from exc
+        return self
+
+
 @app.get("/")
 def login_page() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "login.html", media_type="text/html")
@@ -384,6 +447,41 @@ def timeline_vi_mo_page() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "timeline-vi-mo.html", media_type="text/html")
 
 
+@app.get("/ban-do")
+def ban_do_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "ban-do.html", media_type="text/html")
+
+
+@app.get("/gia-dao")
+def gia_dao_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "gia-dao.html", media_type="text/html")
+
+
+@app.get("/kinh-te")
+def kinh_te_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "kinh-te.html", media_type="text/html")
+
+
+@app.get("/trach-cat")
+def trach_cat_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "trach-cat.html", media_type="text/html")
+
+
+@app.get("/tam-linh")
+def tam_linh_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "tam-linh.html", media_type="text/html")
+
+
+@app.get("/video")
+def video_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "video.html", media_type="text/html")
+
+
+@app.get("/so-sanh")
+def so_sanh_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "so-sanh.html", media_type="text/html")
+
+
 @app.get("/share/{token}")
 def share_page(token: str = ApiPath(min_length=20, max_length=100)) -> FileResponse:
     del token
@@ -416,6 +514,28 @@ def service_worker() -> FileResponse:
 @app.get("/icon.svg")
 def pwa_icon() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "icon.svg", media_type="image/svg+xml")
+
+
+@app.get("/i18n.js")
+def i18n_script() -> FileResponse:
+    return FileResponse(
+        FRONTEND_DIR / "i18n.js",
+        media_type="application/javascript",
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
+
+
+@app.get("/api/i18n")
+def api_i18n_detect(request: Request) -> dict[str, Any]:
+    lang = detect_lang(request)
+    return {"lang": lang, "translations": TRANSLATIONS[lang]}
+
+
+@app.get("/api/i18n/{lang}")
+def api_i18n(lang: str) -> dict[str, Any]:
+    if lang not in LANG_SUPPORTED:
+        raise HTTPException(status_code=404, detail="Ngôn ngữ không được hỗ trợ.")
+    return {"lang": lang, "translations": TRANSLATIONS[lang]}
 
 
 @app.get("/health")
@@ -615,6 +735,140 @@ def list_saved_profiles(
             ),
         })
     return {"items": items}
+
+
+@app.post("/api/ban-do/phan-tich")
+async def api_ban_do(
+    data: MapAnalysisInput,
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    result: dict[str, Any] = {
+        "toa_do": tinh_phuong_vi_tu_toa_do(data.lat, data.lon),
+        "huong_dat_do_nguoi_dung_cung_cap": data.huong_dat,
+        "duong_dan_ban_do": (
+            "https://www.openstreetmap.org/?mlat="
+            f"{data.lat:.6f}&mlon={data.lon:.6f}#map=16/{data.lat:.6f}/{data.lon:.6f}"
+        ),
+        "dia_hinh": phan_tich_dia_hinh(None),
+        "ghi_chu": (
+            "Hướng nhà do người dùng cung cấp, không thể suy ra từ một tọa độ. "
+            "Tọa độ không được lưu. Không đánh giá giá trị, mức an toàn hay khả năng đầu tư của bất động sản."
+        ),
+    }
+    if data.truy_van_do_cao:
+        if not os.getenv("GOOGLE_MAPS_API_KEY", "").strip():
+            raise HTTPException(
+                status_code=503,
+                detail="Dịch vụ độ cao chưa được cấu hình; tọa độ chưa được gửi tới Google Maps.",
+            )
+        try:
+            elevation = await lay_elevation(data.lat, data.lon)
+        except RuntimeError as exc:
+            logger.warning("Map elevation request failed: %s", exc)
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        result["dia_hinh"] = phan_tich_dia_hinh(elevation)
+        result["nguon_do_cao"] = "Google Maps Elevation API"
+    return result
+
+
+@app.post("/api/gia-dao/phan-tich")
+def api_gia_dao(
+    data: HouseholdInput,
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    members = []
+    for member in data.thanh_vien:
+        kua = phan_tich_toan_dien(
+            member.ngay_sinh.day,
+            member.ngay_sinh.month,
+            member.ngay_sinh.year,
+            gioi_tinh=member.gioi_tinh,
+        )["cung_phi"]
+        members.append({
+            "ten": member.ten,
+            "vai_tro": member.vai_tro,
+            "ngay_sinh": member.ngay_sinh.isoformat(),
+            "cung_phi": kua,
+        })
+    try:
+        return phan_tich_nhom_gia_dinh(members)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.get("/api/kinh-te/thi-truong")
+async def api_thi_truong(
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    try:
+        return await lay_du_lieu_thi_truong()
+    except RuntimeError as exc:
+        logger.warning("Market data request failed: %s", exc)
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.get("/api/trach-cat/loai-viec")
+def api_trach_cat_loai_viec(
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    return {
+        "loai_viec": {
+            key: value["ten"] for key, value in TRACH_CAT_ACTIVITIES.items()
+        },
+        "ghi_chu": (
+            "Không có mục phẫu thuật/chữa bệnh: không dùng lịch dân gian để trì hoãn chăm sóc y tế."
+        ),
+    }
+
+
+@app.post("/api/trach-cat/tim-ngay")
+def api_trach_cat_tim_ngay(
+    data: TrachCatInput,
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    try:
+        return tim_ngay_dep(
+            data.loai_viec, data.tu_ngay, data.so_ngay_tim, data.so_ket_qua
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.get("/api/tam-linh/thoi-khoa")
+def api_tam_linh_thoi_khoa(
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    return tao_thoi_khoa_tam_linh()
+
+
+@app.post("/api/tu-vi-tay/chart")
+def api_western_chart(
+    data: WesternChartInput,
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict[str, Any]:
+    del user
+    return lap_natal_chart(data.ngay, data.thang, data.nam)
+
+
+@app.post("/api/tu-vi-tay/so-sanh")
+def api_western_comparison(
+    data: WesternChartInput,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, Any]:
+    profile = _get_owned_profile(db, user)
+    east_profile = json.loads(profile.profile_json)
+    chart = lap_natal_chart(data.ngay, data.thang, data.nam)
+    return {
+        "so_sanh": so_sanh_dong_tay(east_profile, chart),
+        "chart_tay": chart,
+    }
 
 
 @app.post("/api/phong-thuy/phan-tich")
@@ -866,12 +1120,39 @@ def _prepare_analysis(
 ) -> tuple[
     Profile, dict[str, Any], dict[str, float], dict[str, float], list[dict[str, Any]]
 ]:
-    profile_data = phan_tich_ngay_sinh(data.ngay, data.thang, data.nam)
-    profile_data["ho_ten"] = data.ho_ten.strip()
     db_profile = (
         db.query(Profile)
-        .filter_by(user_id=user.id, ngay_sinh=profile_data["ngay_sinh"])
+        .filter_by(
+            user_id=user.id,
+            ngay_sinh=f"{data.ngay:02d}/{data.thang:02d}/{data.nam}",
+        )
         .first()
+    )
+    previous_profile = (
+        json.loads(db_profile.profile_json) if db_profile is not None else {}
+    )
+    ho_ten: str = data.ho_ten
+    if not ho_ten and db_profile is not None:
+        saved_name = db_profile.ho_ten
+        if isinstance(saved_name, str) and saved_name:
+            ho_ten = saved_name
+    saved_hour = previous_profile.get("gio_sinh")
+    if saved_hour is not None and (
+        type(saved_hour) is not int or not 0 <= saved_hour <= 23
+    ):
+        raise HTTPException(
+            status_code=500,
+            detail="Giờ sinh đã lưu trong hồ sơ không hợp lệ.",
+        )
+    gio_sinh: int | None = (
+        data.gio_sinh if data.gio_sinh is not None else saved_hour
+    )
+    profile_data = phan_tich_ngay_sinh(
+        data.ngay,
+        data.thang,
+        data.nam,
+        ho_ten=ho_ten,
+        gio_sinh=gio_sinh,
     )
     if db_profile is None:
         db_profile = Profile(
@@ -882,7 +1163,6 @@ def _prepare_analysis(
         )
         db.add(db_profile)
     else:
-        profile_data["ho_ten"] = profile_data["ho_ten"] or db_profile.ho_ten or ""
         db_profile.ho_ten = profile_data["ho_ten"]
         db_profile.profile_json = json.dumps(profile_data, ensure_ascii=False)
     db.commit()

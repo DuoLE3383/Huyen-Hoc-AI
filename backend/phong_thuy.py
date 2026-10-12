@@ -166,7 +166,10 @@ def phan_tich_toan_dien(
         **directions,
         "huong_nha": hop_huong_nha(kua, huong_nha),
         "phi_tinh_hom_nay": phi_tinh_ngay(date.today()),
-        "ghi_chu": "Các phép tính phong thủy là nội dung văn hóa tham khảo, không có giá trị dự đoán khoa học.",
+        "ghi_chu": (
+            "Các phép tính phong thủy là nội dung văn hóa tham khảo, không có giá trị dự đoán khoa học. "
+            "Cung phi đang dùng năm dương lịch; quy ước có thể khác nếu xét năm âm lịch."
+        ),
     }
     if huong_bep is not None:
         result["huong_bep"] = hop_huong_nha(kua, huong_bep)

@@ -1,4 +1,8 @@
+import unicodedata
+from datetime import date
 from typing import Any
+
+from lich_van_nien import ngay_can_chi
 
 CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
 CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]
@@ -57,11 +61,96 @@ def tinh_tam_tai(day: int, month: int, year: int) -> dict[str, int]:
     }
 
 
-def phan_tich_ngay_sinh(day: int, month: int, year: int) -> dict[str, Any]:
+PYTHAGORAS = {
+    letter: value
+    for value, letters in enumerate(
+        ("", "AJS", "BKT", "CLU", "DMV", "ENW", "FOX", "GPY", "HQZ", "IR"),
+    )
+    for letter in letters
+}
+VOWELS = frozenset("AEIOUY")
+MASTERNUMBERS = frozenset({11, 22, 33})
+HOUR_BRANCHES = (
+    ("Tý", "23h–01h"), ("Sửu", "01h–03h"), ("Dần", "03h–05h"),
+    ("Mão", "05h–07h"), ("Thìn", "07h–09h"), ("Tỵ", "09h–11h"),
+    ("Ngọ", "11h–13h"), ("Mùi", "13h–15h"), ("Thân", "15h–17h"),
+    ("Dậu", "17h–19h"), ("Tuất", "19h–21h"), ("Hợi", "21h–23h"),
+)
+HOUR_STEM_STARTS = (0, 2, 4, 6, 8, 0, 2, 4, 6, 8)
+
+
+def chuan_hoa_ten(ho_ten: str) -> str:
+    """Normalize Vietnamese Latin letters for the illustrative Pythagorean mapping."""
+    decomposed = unicodedata.normalize("NFD", ho_ten.upper().replace("Đ", "D"))
+    return "".join(
+        character
+        for character in decomposed
+        if unicodedata.category(character) != "Mn" and character.isascii() and character.isalpha()
+    )
+
+
+def _reduce_name_number(total: int) -> int:
+    while total > 9 and total not in MASTERNUMBERS:
+        total = sum(int(digit) for digit in str(total))
+    return total
+
+
+def phan_tich_ten(ho_ten: str) -> dict[str, Any]:
+    """Calculate name-letter numerology as a cultural/entertainment reference."""
+    normalized = chuan_hoa_ten(ho_ten)
+    if not normalized:
+        return {
+            "so_linh_hon": None,
+            "so_nhan_cach": None,
+            "so_su_menh": None,
+            "ghi_chu": "Không tính được vì tên không có chữ cái Latin A–Z.",
+        }
+    vowels = sum(PYTHAGORAS[letter] for letter in normalized if letter in VOWELS)
+    consonants = sum(PYTHAGORAS[letter] for letter in normalized if letter not in VOWELS)
+    full_name = vowels + consonants
+    return {
+        "so_linh_hon": _reduce_name_number(vowels),
+        "so_nhan_cach": _reduce_name_number(consonants),
+        "so_su_menh": _reduce_name_number(full_name),
+        "ghi_chu": (
+            "Thần số học tên là hệ quy chiếu văn hóa/giải trí, phụ thuộc cách viết và "
+            "không phải phép đo tính cách hay dự đoán khoa học. Ngũ cách cần dữ liệu "
+            "nét chữ Hán nên không được suy ra từ cách viết Latin."
+        ),
+    }
+
+
+def phan_tich_gio_sinh(day: int, month: int, year: int, hour: int) -> dict[str, Any]:
+    """Return a traditional two-hour branch and stem from the entered local clock hour."""
+    if not 0 <= hour <= 23:
+        raise ValueError("Giờ sinh phải nằm trong khoảng 0–23.")
+    can_day, _ = ngay_can_chi(date(year, month, day))
+    branch_index = 0 if hour in (23, 0) else ((hour + 1) // 2) % 12
+    branch, time_range = HOUR_BRANCHES[branch_index]
+    stem_index = (HOUR_STEM_STARTS[CAN.index(can_day)] + branch_index) % len(CAN)
+    return {
+        "gio_sinh": f"{hour:02d}:00",
+        "can_chi_gio": f"{CAN[stem_index]} {branch}",
+        "khoang_gio_tham_khao": time_range,
+        "ghi_chu": (
+            "Dùng giờ địa phương người nhập và quy ước ngày Can Chi giản lược; "
+            "không xét múi giờ, địa điểm hoặc quy ước đổi ngày tại giờ Tý."
+        ),
+    }
+
+
+def phan_tich_ngay_sinh(
+    day: int,
+    month: int,
+    year: int,
+    ho_ten: str = "",
+    gio_sinh: int | None = None,
+) -> dict[str, Any]:
     can_chi = tinh_can_chi_nam(year)
     can, chi = can_chi.split()
     cung_phi = tinh_cung_phi(day, month, year)
-    return {
+    profile: dict[str, Any] = {
+        "ho_ten": ho_ten,
         "ngay_sinh": f"{day:02d}/{month:02d}/{year}",
         "can_chi_nam": can_chi,
         "ngu_hanh_can": CAN_NGU_HANH[can],
@@ -73,6 +162,17 @@ def phan_tich_ngay_sinh(day: int, month: int, year: int) -> dict[str, Any]:
         "tam_tai": tinh_tam_tai(day, month, year),
         "con_giap": chi,
     }
+    if ho_ten:
+        profile["ten_phan_tich"] = phan_tich_ten(ho_ten)
+    if gio_sinh is not None:
+        profile["gio_sinh"] = gio_sinh
+        profile["gio_sinh_phan_tich"] = phan_tich_gio_sinh(
+            day, month, year, gio_sinh
+        )
+    profile["ghi_chu"] = (
+        "Nội dung là diễn giải văn hóa tham khảo, không phải dự đoán khoa học."
+    )
+    return profile
 
 
 def tinh_chi_so_su_kien(profile: dict[str, Any]) -> dict[str, float]:

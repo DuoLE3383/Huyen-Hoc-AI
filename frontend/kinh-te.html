@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dữ liệu thị trường — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}main{max-width:760px;margin:auto}
+  nav{display:flex;gap:12px;flex-wrap:wrap}a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  button{font:inherit;padding:10px;border-radius:7px;background:#7138d6;color:white;border:0;cursor:pointer}.note{color:#b6a1d2}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body><main>
+  <h1>📊 Dữ liệu kinh tế</h1><nav><a href="/app">Tổng quan</a><a href="/gia-dao">Gia đạo</a><a href="/tam-linh">Tâm linh</a></nav>
+  <section><p class="note">Hiển thị chỉ số nguồn công khai, không gắn với ngày sinh/ngũ hành. Không có dự báo tài vận, phân bổ tài sản hoặc khuyến nghị đầu tư.</p>
+    <button id="load">Tải dữ liệu thị trường</button><p id="error" role="alert"></p><pre id="result">Chưa tải dữ liệu.</pre>
+  </section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  document.getElementById("load").addEventListener("click",async()=>{
+    const error=document.getElementById("error"),output=document.getElementById("result");error.textContent="";output.textContent="Đang truy vấn nguồn…";
+    try{const response=await fetch("/api/kinh-te/thi-truong",{headers:{Authorization:`Bearer ${token}`}});
+      const data=await response.json();if(!response.ok)throw new Error(data.detail||`Lỗi ${response.status}`);
+      output.textContent=JSON.stringify(data,null,2);
+    }catch(e){output.textContent="";error.textContent=e.message}
+  });
+</script></body></html>

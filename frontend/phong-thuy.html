@@ -51,6 +51,7 @@
   if(!token) location.replace("/");
   const directions=["","Bắc","Đông Bắc","Đông","Đông Nam","Nam","Tây Nam","Tây","Tây Bắc"];
   for(const select of document.querySelectorAll('select[name="huong_nha"],select[name="huong_bep"],select[name="huong_phong_ngu"]')){
+    if(select.name!=="huong_nha"){const option=document.createElement("option");option.value="";option.textContent="— Không chọn —";select.append(option)}
     for(const direction of directions.slice(1)){const option=document.createElement("option");option.value=direction;option.textContent=direction;select.append(option)}
     if(select.name==="huong_nha")select.value="Nam";
   }

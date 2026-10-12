@@ -118,40 +118,57 @@
 </head>
 <body>
   <main class="container">
-    <h1>🔮 Huyền Học AI</h1>
-    <p class="subtitle">Phân tích bản mệnh · Gợi ý tham khảo · Ghi nhận phản hồi</p>
-    <nav class="nav" aria-label="Điều hướng">
-      <a href="/app">🏠 Tổng quan</a>
-      <a href="/tu-vi">🀄 Tử Vi</a>
-      <a href="/dashboard">📈 Dashboard</a>
-      <a href="/hop-tuoi">🤝 Hợp tuổi &amp; chia sẻ</a>
-      <a href="/tarot">🃏 Tarot</a>
-      <a href="/kinh-dich">☯ Kinh Dịch</a>
-      <a href="/phong-thuy">🏠 Phong thủy</a>
-      <a href="/su-kien">📅 Sự kiện</a>
-      <a href="/timeline-vi-mo">🌏 Timeline</a>
-      <a href="#" id="logout">🚪 Đăng xuất</a>
+    <h1 data-i18n="app.title">🔮 Huyền Học AI</h1>
+    <p class="subtitle" data-i18n="app.subtitle">Phân tích bản mệnh · Gợi ý tham khảo · Ghi nhận phản hồi</p>
+    <nav class="nav" aria-label="Điều hướng" data-i18n-aria-label="nav.label">
+      <a href="/app" data-i18n="nav.home">🏠 Tổng quan</a>
+      <a href="/tu-vi" data-i18n="nav.tuvi">🀄 Tử Vi</a>
+      <a href="/dashboard" data-i18n="nav.dashboard">📈 Dashboard</a>
+      <a href="/hop-tuoi" data-i18n="nav.compatibility">🤝 Hợp tuổi &amp; chia sẻ</a>
+      <a href="/tarot" data-i18n="nav.tarot">🃏 Tarot</a>
+      <a href="/kinh-dich" data-i18n="nav.iching">☯ Kinh Dịch</a>
+      <a href="/phong-thuy" data-i18n="nav.fengshui">🏠 Phong thủy</a>
+      <a href="/su-kien" data-i18n="nav.events">📅 Sự kiện</a>
+      <a href="/timeline-vi-mo" data-i18n="nav.timeline">🌏 Timeline</a>
+      <a href="/ban-do" data-i18n="nav.map">🗺️ Bản đồ</a>
+      <a href="/gia-dao" data-i18n="nav.family">👨‍👩‍👧 Gia đạo</a>
+      <a href="/kinh-te" data-i18n="nav.economy">📊 Kinh tế</a>
+      <a href="/trach-cat" data-i18n="nav.almanac">🏯 Trạch cát</a>
+      <a href="/tam-linh" data-i18n="nav.mindfulness">🕉️ Tâm linh</a>
+      <a href="/video" data-i18n="nav.video">🎥 Video</a>
+      <a href="/so-sanh" data-i18n="nav.comparison">🔮 Đông–Tây</a>
+      <a href="#" id="logout" data-i18n="nav.logout">🚪 Đăng xuất</a>
+      <label for="language" style="margin:0;align-self:center" data-i18n="language.label">Ngôn ngữ</label>
+      <select id="language" aria-label="Ngôn ngữ" style="width:auto">
+        <option value="vi">🇻🇳 Tiếng Việt</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ja">🇯🇵 日本語</option>
+      </select>
+      <span id="i18nStatus" class="disclaimer" role="status" aria-live="polite"></span>
     </nav>
 
-    <section class="card" aria-label="Thông tin ngày sinh">
+    <section class="card" aria-label="Thông tin ngày sinh" data-i18n-aria-label="profile.heading">
       <form id="birthForm">
         <div class="form-row" style="margin-bottom:12px">
           <div style="grid-column:1/-1">
-            <label for="savedProfiles">Hồ sơ đã lưu</label>
+            <label for="savedProfiles" data-i18n="profile.saved">Hồ sơ đã lưu</label>
             <select id="savedProfiles">
-              <option value="">Chọn hồ sơ đã lưu…</option>
+              <option value="" data-i18n="profile.saved.placeholder">Chọn hồ sơ đã lưu…</option>
             </select>
           </div>
         </div>
         <div class="form-row">
-          <div><label for="hoTen">Họ tên (không bắt buộc)</label><input id="hoTen" name="ho_ten" maxlength="100" placeholder="Nguyễn Văn A"></div>
-          <div><label for="ngay">Ngày</label><input id="ngay" name="ngay" type="number" value="15" min="1" max="31" required></div>
-          <div><label for="thang">Tháng</label><input id="thang" name="thang" type="number" value="6" min="1" max="12" required></div>
-          <div><label for="nam">Năm</label><input id="nam" name="nam" type="number" value="1995" min="1900" max="2100" required></div>
+          <div><label for="hoTen" data-i18n="profile.name">Họ tên (không bắt buộc)</label><input id="hoTen" name="ho_ten" maxlength="100" placeholder="Nguyễn Văn A"></div>
+          <div><label for="ngay" data-i18n="profile.day">Ngày</label><input id="ngay" name="ngay" type="number" value="15" min="1" max="31" required></div>
+          <div><label for="thang" data-i18n="profile.month">Tháng</label><input id="thang" name="thang" type="number" value="6" min="1" max="12" required></div>
+          <div><label for="nam" data-i18n="profile.year">Năm</label><input id="nam" name="nam" type="number" value="1995" min="1900" max="2100" required></div>
+          <div><label for="gioSinh" data-i18n="profile.birth_hour">Giờ sinh địa phương (không bắt buộc, 0–23)</label><input id="gioSinh" name="gio_sinh" type="number" min="0" max="23" placeholder="14"></div>
         </div>
-        <button class="primary" id="btnAnalyze" type="submit">✨ Phân tích bản mệnh</button>
-        <button id="exportProfilePdf" type="button">📄 Xuất bản mệnh PDF</button>
-        <button id="abAnalyze" type="button">🧪 Phân tích trong thử nghiệm A/B</button>
+        <p class="disclaimer">Tên và giờ sinh được lưu trong hồ sơ của tài khoản. Phân tích tên chỉ là tham khảo văn hóa; giờ Can Chi giản lược, không phải dự đoán khoa học.</p>
+        <button class="primary" id="btnAnalyze" type="submit" data-i18n="profile.analyze">✨ Phân tích bản mệnh</button>
+        <button id="exportProfilePdf" type="button" data-i18n="profile.export">📄 Xuất bản mệnh PDF</button>
+        <button id="abAnalyze" type="button" data-i18n="profile.ab">🧪 Phân tích trong thử nghiệm A/B</button>
       </form>
       <p class="disclaimer">Thử nghiệm A/B là tùy chọn; kết quả phân tích gắn với phản hồi tương ứng để so sánh biến thể.</p>
     </section>
@@ -175,6 +192,7 @@
     </section>
     <div id="output" aria-live="polite"></div>
   </main>
+  <script src="/i18n.js" defer></script>
   <script>
     const API = window.location.origin;
     const token = localStorage.getItem("token");
@@ -319,6 +337,7 @@
       const profile = saved.profile;
       const [day, month, year] = String(profile.ngay_sinh || "").split("/");
       document.getElementById("hoTen").value = profile.ho_ten || "";
+      document.getElementById("gioSinh").value = profile.gio_sinh ?? "";
       document.getElementById("ngay").value = day || "";
       document.getElementById("thang").value = month || "";
       document.getElementById("nam").value = year || "";
@@ -346,7 +365,8 @@
         ho_ten: form.get("ho_ten"),
         ngay: Number(form.get("ngay")),
         thang: Number(form.get("thang")),
-        nam: Number(form.get("nam"))
+        nam: Number(form.get("nam")),
+        gio_sinh: form.get("gio_sinh") === "" ? null : Number(form.get("gio_sinh"))
       };
       const button = document.getElementById("btnAnalyze");
       const output = document.getElementById("output");
@@ -376,7 +396,8 @@
                 ho_ten: form.get("ho_ten"),
                 ngay: Number(form.get("ngay")),
                 thang: Number(form.get("thang")),
-                nam: Number(form.get("nam"))
+                nam: Number(form.get("nam")),
+                gio_sinh: form.get("gio_sinh") === "" ? null : Number(form.get("gio_sinh"))
               })
             });
             if (!response.ok) throw new Error(await responseError(response));
@@ -470,10 +491,24 @@
       latestScores = scores;
       latestPredictionId = data.prediction_id ?? null;
       const profileItems = [
+        ...(profile.ho_ten ? [["Họ tên", profile.ho_ten]] : []),
         ["Ngày sinh", profile.ngay_sinh], ["Can Chi", profile.can_chi_nam],
         ["Con giáp", profile.con_giap], ["Mệnh nạp âm", profile.menh_nap_am],
         ["Số chủ đạo", profile.so_chu_dao], ["Cung phi", `${profile.cung_phi} - ${profile.bat_quai}`]
       ];
+      if (profile.ten_phan_tich) {
+        profileItems.push(
+          ["Số linh hồn (tham khảo)", profile.ten_phan_tich.so_linh_hon ?? "—"],
+          ["Số nhân cách (tham khảo)", profile.ten_phan_tich.so_nhan_cach ?? "—"],
+          ["Số sứ mệnh (tham khảo)", profile.ten_phan_tich.so_su_menh ?? "—"]
+        );
+      }
+      if (profile.gio_sinh_phan_tich) {
+        profileItems.push(
+          ["Can Chi giờ (tham khảo)", profile.gio_sinh_phan_tich.can_chi_gio],
+          ["Khoảng giờ", profile.gio_sinh_phan_tich.khoang_gio_tham_khao]
+        );
+      }
       const actions = Array.isArray(analysis.hanh_dong_cu_the) ? analysis.hanh_dong_cu_the : [];
       const warnings = Array.isArray(analysis.canh_bao) ? analysis.canh_bao : [];
       target.innerHTML = `
@@ -564,7 +599,8 @@
             ho_ten: form.get("ho_ten"),
             ngay: Number(form.get("ngay")),
             thang: Number(form.get("thang")),
-            nam: Number(form.get("nam"))
+            nam: Number(form.get("nam")),
+            gio_sinh: form.get("gio_sinh") === "" ? null : Number(form.get("gio_sinh"))
           })
         });
         if (!response.ok) throw new Error(await responseError(response));

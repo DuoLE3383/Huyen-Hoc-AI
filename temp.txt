@@ -1,2080 +1,3746 @@
-# 🌏 Mở Rộng Quy Mô: Phong Thủy & Sự Kiện Ảnh Hưởng
+# 🎯 Phân Tích Mở Rộng + 8 Module Cấp Doanh Nghiệp + Cloudflare Integration
 
-Mở rộng từ "cá nhân" → "không gian sống" → "sự kiện vĩ mô" — kết nối mệnh chủ với môi trường xung quanh.
+## 1️⃣ Nâng cấp Input: Tên + Giờ sinh
 
-```
-huyen-hoc-app/
-├── backend/
-│   ├── phong_thuy.py          # ✨ MỚI - Bát trạch, Huyền không
-│   ├── su_kien.py             # ✨ MỚI - Sự kiện trực tiếp/gián tiếp
-│   ├── moi_truong.py          # ✨ MỚI - Môi trường, thời tiết
-│   ├── vi_mo.py               # ✨ MỚI - Vĩ mô: tiết khí, sao hạn
-│   ├── ket_noi.py             # ✨ MỚI - Kết nối mệnh chủ ↔ sự kiện
-│   └── ... (các file cũ)
-├── frontend/
-│   ├── phong-thuy.html        # ✨ MỚI - Nhập sơ đồ nhà
-│   ├── su-kien.html           # ✨ MỚI - Timeline sự kiện
-│   ├── timeline-vi-mo.html    # ✨ MỚI - Sự kiện vĩ mô
-│   └── ...
-```
-
----
-
-## 🏠 MODULE 1: Phong Thủy Toàn Diện — `phong_thuy.py`
+### `backend/astrology.py` — bổ sung xử lý tên + giờ
 
 ```python
 """
-Phong Thủy module: Bát Trạch (8 hướng tốt/xấu), Huyền Không Phi Tinh,
-Dương Trạch Tam Yếu, hợp hướng nhà với mệnh chủ.
+Mở rộng: phân tích tên (Thần số học + Ngũ cách) và giờ sinh (Can Chi giờ).
 """
-import math
-from datetime import date, datetime
-from typing import Dict, List, Tuple
+from datetime import datetime, date
+from typing import Dict, List
+import unicodedata
 
-# ============ BÁT TRẠCH ============
-# 8 hướng
-HUONG = ["Bắc", "Đông Bắc", "Đông", "Đông Nam",
-         "Nam", "Tây Nam", "Tây", "Tây Bắc"]
-HUONG_ANH_XA = {
-    "Bắc": "N", "Đông Bắc": "NE", "Đông": "E", "Đông Nam": "SE",
-    "Nam": "S", "Tây Nam": "SW", "Tây": "W", "Tây Bắc": "NW",
+
+# ============ XỬ LÝ TÊN ============
+# Bảng quy đổi chữ cái → số (Pythagoras)
+PYTHAGORAS = {
+    "A":1,"B":2,"C":3,"D":4,"E":5,"F":6,"G":7,"H":8,"I":9,
+    "J":1,"K":2,"L":3,"M":4,"N":5,"O":6,"P":7,"Q":8,"R":9,
+    "S":1,"T":2,"U":3,"V":4,"W":5,"X":6,"Y":7,"Z":8,
 }
-HUONG_GOC = {
-    "Bắc": 0, "Đông Bắc": 45, "Đông": 90, "Đông Nam": 135,
-    "Nam": 180, "Tây Nam": 225, "Tây": 270, "Tây Bắc": 315,
-}
+# Chữ cái nguyên âm
+NGUYEN_AM = set("AEIOUY")
 
-# Bát quái theo Cung Phi
-CUNG_PHI_QUAI = {
-    1: "Khảm", 2: "Khôn", 3: "Chấn", 4: "Tốn",
-    5: "Trung", 6: "Càn", 7: "Đoài", 8: "Cấn", 9: "Ly",
-}
-
-# Bảng Đông/Tây tứ mệnh
-DONG_TU_MENH = {1, 3, 4, 9}  # Khảm, Chấn, Tốn, Ly
-TAY_TU_MENH = {2, 6, 7, 8}   # Khôn, Càn, Đoài, Cấn
-
-# Bảng Bát Trạch — 8 hướng cho mỗi cung phi
-# Sinh Khí, Thiên Y, Diên Niên, Phục Vị (tốt)
-# Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại (xấu)
-BAT_TRACH_TABLE = {
-    1: {  # Khảm
-        "Sinh Khí": "Đông Nam", "Thiên Y": "Đông",
-        "Diên Niên": "Nam", "Phục Vị": "Bắc",
-        "Tuyệt Mệnh": "Tây Nam", "Ngũ Quỷ": "Đông Bắc",
-        "Lục Sát": "Tây Bắc", "Họa Hại": "Tây",
-    },
-    2: {  # Khôn
-        "Sinh Khí": "Đông Bắc", "Thiên Y": "Tây",
-        "Diên Niên": "Tây Bắc", "Phục Vị": "Tây Nam",
-        "Tuyệt Mệnh": "Bắc", "Ngũ Quỷ": "Đông Nam",
-        "Lục Sát": "Nam", "Họa Hại": "Đông",
-    },
-    3: {  # Chấn
-        "Sinh Khí": "Nam", "Thiên Y": "Bắc",
-        "Diên Niên": "Đông Nam", "Phục Vị": "Đông",
-        "Tuyệt Mệnh": "Tây", "Ngũ Quỷ": "Tây Bắc",
-        "Lục Sát": "Đông Bắc", "Họa Hại": "Tây Nam",
-    },
-    4: {  # Tốn
-        "Sinh Khí": "Bắc", "Thiên Y": "Đông",
-        "Diên Niên": "Đông", "Phục Vị": "Đông Nam",
-        "Tuyệt Mệnh": "Đông Bắc", "Ngũ Quỷ": "Tây Nam",
-        "Lục Sát": "Tây", "Họa Hại": "Tây Bắc",
-    },
-    5: {  # Trung cung — quy về Khôn cho nữ, Cấn cho nam
-        "Sinh Khí": "Đông Bắc", "Thiên Y": "Tây",
-        "Diên Niên": "Tây Bắc", "Phục Vị": "Tây Nam",
-        "Tuyệt Mệnh": "Bắc", "Ngũ Quỷ": "Đông Nam",
-        "Lục Sát": "Nam", "Họa Hại": "Đông",
-    },
-    6: {  # Càn
-        "Sinh Khí": "Tây", "Thiên Y": "Đông Bắc",
-        "Diên Niên": "Tây Nam", "Phục Vị": "Tây Bắc",
-        "Tuyệt Mệnh": "Nam", "Ngũ Quỷ": "Đông",
-        "Lục Sát": "Bắc", "Họa Hại": "Đông Nam",
-    },
-    7: {  # Đoài
-        "Sinh Khí": "Tây Bắc", "Thiên Y": "Tây Nam",
-        "Diên Niên": "Đông Bắc", "Phục Vị": "Tây",
-        "Tuyệt Mệnh": "Đông", "Ngũ Quỷ": "Nam",
-        "Lục Sát": "Đông Nam", "Họa Hại": "Bắc",
-    },
-    8: {  # Cấn
-        "Sinh Khí": "Tây Nam", "Thiên Y": "Tây Bắc",
-        "Diên Niên": "Tây", "Phục Vị": "Đông Bắc",
-        "Tuyệt Mệnh": "Đông Nam", "Ngũ Quỷ": "Bắc",
-        "Lục Sát": "Đông", "Họa Hại": "Nam",
-    },
-    9: {  # Ly
-        "Sinh Khí": "Đông", "Thiên Y": "Đông Nam",
-        "Diên Niên": "Bắc", "Phục Vị": "Nam",
-        "Tuyệt Mệnh": "Tây Bắc", "Ngũ Quỷ": "Tây",
-        "Lục Sát": "Tây Nam", "Họa Hại": "Đông Bắc",
-    },
-}
-
-# Ý nghĩa các cung vị
-CUNG_Vi_Y_NGHIA = {
-    "Sinh Khí": "💰 Tài lộc, thăng tiến, con cái",
-    "Thiên Y": "🌿 Sức khỏe, chữa bệnh, trường thọ",
-    "Diên Niên": "💕 Hôn nhân, gia đình hòa thuận",
-    "Phục Vị": "🧘 Bình an, tĩnh tại, tu tập",
-    "Tuyệt Mệnh": "☠️ Bệnh tật, tai nạn, phá sản",
-    "Ngũ Quỷ": "🔥 Khẩu thiệt, thị phi, trộm cắp",
-    "Lục Sát": "⚔️ Kiện tụng, bất hòa, mất mát",
-    "Họa Hại": "💔 Đổ vỡ, cô đơn, thất bại",
-}
-
-# Hướng tốt theo mục đích
-HUONG_THEO_MUC_DICH = {
-    "tai_van": ["Sinh Khí", "Diên Niên"],
-    "suc_khoe": ["Thiên Y", "Diên Niên"],
-    "tinh_cam": ["Diên Niên", "Phục Vị"],
-    "su_nghiep": ["Sinh Khí", "Thiên Y"],
-    "hoc_tap": ["Thiên Y", "Phục Vị"],
-    "tam_linh": ["Phục Vị", "Sinh Khí"],
+# Ngũ hành của chữ cái theo Hán Việt (bảng tra cứu phổ biến)
+CHU_HANH = {
+    # Mộc
+    "A":"Mộc","Ă":"Mộc","Â":"Mộc","E":"Mộc","Ê":"Mộc","I":"Mộc","Y":"Mộc",
+    # Hỏa
+    "C":"Hỏa","D":"Hỏa","Đ":"Hỏa","G":"Hỏa","L":"Hỏa","N":"Hỏa","T":"Hỏa",
+    "S":"Hỏa","X":"Hỏa",
+    # Thổ
+    "B":"Thổ","M":"Thổ","P":"Thổ","V":"Thổ",
+    # Kim
+    "K":"Kim","H":"Kim","Q":"Kim","R":"Kim",
+    # Thủy
+    "O":"Thủy","Ô":"Thủy","Ơ":"Thủy","U":"Thủy","Ư":"Thủy",
 }
 
 
-def tinh_cung_phi_gioi_tinh(day: int, month: int, year: int, gioi_tinh: str) -> int:
+def chuan_hoa_ten(ten: str) -> str:
+    """Bỏ dấu tiếng Việt để tra cứu số"""
+    ten = ten.upper().strip()
+    # Bỏ dấu nhưng giữ Đ
+    normalized = unicodedata.normalize("NFD", ten)
+    return "".join(c for c in normalized if unicodedata.category(c) != "Mn")
+
+
+def tinh_so_linh_hon(ten: str) -> int:
     """
-    Tính Cung Phi (Bát Trạch) theo năm sinh + giới tính.
-    Nam và nữ có công thức khác nhau.
+    Số linh hồn = tổng các nguyên âm.
+    Đại diện cho khao khát nội tâm.
     """
-    # Rút gọn năm sinh
-    y = year
-    while y > 9:
-        y = sum(int(d) for d in str(y))
-
-    if gioi_tinh == "nam":
-        cung = 11 - y
-        if cung > 9:
-            cung -= 9
-        # Nếu năm sinh sau 2000, cộng thêm 1
-        if year >= 2000:
-            cung = cung - 1 if cung > 1 else 9
-    else:  # nữ
-        cung = y + 4
-        if cung > 9:
-            cung -= 9
-        if year >= 2000:
-            cung = cung + 1 if cung < 9 else 1
-
-    # Trung cung (5) → Nam về Khôn (2), Nữ về Cấn (8)
-    if cung == 5:
-        cung = 2 if gioi_tinh == "nam" else 8
-
-    return cung
+    ten_norm = chuan_hoa_ten(ten)
+    total = sum(PYTHAGORAS.get(c, 0) for c in ten_norm if c in NGUYEN_AM)
+    while total > 9 and total not in (11, 22, 33):
+        total = sum(int(d) for d in str(total))
+    return total
 
 
-def huong_tot_xau(cung_phi: int) -> Dict:
-    """Trả về 8 hướng với ý nghĩa cho cung phi"""
-    table = BAT_TRACH_TABLE.get(cung_phi, BAT_TRACH_TABLE[1])
-    tot = ["Sinh Khí", "Thiên Y", "Diên Niên", "Phục Vị"]
-    xau = ["Tuyệt Mệnh", "Ngũ Quỷ", "Lục Sát", "Họa Hại"]
+def tinh_so_nhan_cach(ten: str) -> int:
+    """
+    Số nhân cách = tổng các phụ âm.
+    Cách người khác nhìn bạn.
+    """
+    ten_norm = chuan_hoa_ten(ten)
+    total = sum(PYTHAGORAS.get(c, 0)
+                 for c in ten_norm if c.isalpha() and c not in NGUYEN_AM)
+    while total > 9 and total not in (11, 22, 33):
+        total = sum(int(d) for d in str(total))
+    return total
 
-    huong_tot = [{
-        "cung": c, "huong": table[c], "y_nghia": CUNG_Vi_Y_NGHIA[c],
-        "loai": "tốt",
-    } for c in tot]
 
-    huong_xau = [{
-        "cung": c, "huong": table[c], "y_nghia": CUNG_Vi_Y_NGHIA[c],
-        "loai": "xấu",
-    } for c in xau]
+def tinh_so_su_menh(ten: str) -> int:
+    """
+    Số sứ mệnh = tổng tất cả chữ cái (bao gồm cả âm và phụ âm).
+    Mục đích cuộc đời.
+    """
+    ten_norm = chuan_hoa_ten(ten)
+    total = sum(PYTHAGORAS.get(c, 0) for c in ten_norm if c.isalpha())
+    while total > 9 and total not in (11, 22, 33):
+        total = sum(int(d) for d in str(total))
+    return total
+
+
+def tinh_nam_cach(ho_ten: str) -> Dict:
+    """
+    Ngũ cách (theo Danh học Trung Hoa):
+    - Thiên cách (天格): họ + 1
+    - Nhân cách (人格): họ + tên đệm
+    - Địa cách (地格): tên đệm + tên chính
+    - Ngoại cách (外格): tổng - nhân cách + 1
+    - Tổng cách (總格): tổng tất cả
+    """
+    parts = ho_ten.strip().split()
+    if len(parts) < 2:
+        parts = [ho_ten, ""]
+
+    def so_chu(s: str) -> int:
+        s = chuan_hoa_ten(s)
+        return sum(PYTHAGORAS.get(c, 0) for c in s if c.isalpha())
+
+    ho = parts[0]
+    ten_dem = " ".join(parts[1:-1]) if len(parts) > 2 else ""
+    ten_chinh = parts[-1]
+
+    ho_so = so_chu(ho)
+    dem_so = so_chu(ten_dem) if ten_dem else 0
+    ten_so = so_chu(ten_chinh)
+    tong = ho_so + dem_so + ten_so
+
+    thien_cach = ho_so + 1
+    nhan_cach = ho_so + dem_so if dem_so else ho_so + ten_so
+    dia_cach = dem_so + ten_so if dem_so else ten_so + 1
+    ngoai_cach = tong - nhan_cach + 1
+    tong_cach = tong
+
+    def to_1_chu_so(x: int) -> int:
+        while x > 9 and x not in (11, 22, 33):
+            x = sum(int(d) for d in str(x))
+        return x
 
     return {
-        "cung_phi": cung_phi,
-        "quai": CUNG_PHI_QUAI[cung_phi],
-        "nhom": "Đông tứ mệnh" if cung_phi in DONG_TU_MENH else "Tây tứ mệnh",
-        "huong_tot": huong_tot,
-        "huong_xau": huong_xau,
+        "thien_cach": {"so": thien_cach, "rut_gon": to_1_chu_so(thien_cach),
+                        "y_nghia": "Tổ tiên, di truyền, vận mệnh ban đầu"},
+        "nhan_cach": {"so": nhan_cach, "rut_gon": to_1_chu_so(nhan_cach),
+                       "y_nghia": "Bản thân, tính cách, vận mệnh chính"},
+        "dia_cach": {"so": dia_cach, "rut_gon": to_1_chu_so(dia_cach),
+                      "y_nghia": "Nền tảng, tuổi trẻ, vợ chồng"},
+        "ngoai_cach": {"so": ngoai_cach, "rut_gon": to_1_chu_so(ngoai_cach),
+                        "y_nghia": "Xã hội, bạn bè, quan hệ ngoài"},
+        "tong_cach": {"so": tong_cach, "rut_gon": to_1_chu_so(tong_cach),
+                       "y_nghia": "Tổng vận mệnh, hậu vận"},
     }
 
 
-def hop_huong_nha(cung_phi: int, huong_nha: str) -> Dict:
-    """Đánh giá hướng nhà có hợp với mệnh chủ không"""
-    table = BAT_TRACH_TABLE.get(cung_phi, BAT_TRACH_TABLE[1])
-    for cung, huong in table.items():
-        if huong == huong_nha:
-            tot = cung in ["Sinh Khí", "Thiên Y", "Diên Niên", "Phục Vị"]
-            return {
-                "huong_nha": huong_nha,
-                "cung": cung,
-                "y_nghia": CUNG_Vi_Y_NGHIA[cung],
-                "tot": tot,
-                "diem": 90 if cung == "Sinh Khí" else
-                        80 if cung == "Thiên Y" else
-                        75 if cung == "Diên Niên" else
-                        70 if cung == "Phục Vị" else
-                        30 if cung == "Họa Hại" else
-                        20 if cung == "Lục Sát" else
-                        10 if cung == "Ngũ Quỷ" else 5,
-            }
-    return {"error": "Hướng không hợp lệ"}
+def ngu_hanh_ten(ten: str) -> Dict:
+    """Phân tích ngũ hành của tên"""
+    ten_norm = chuan_hoa_ten(ten)
+    dem = {"Kim": 0, "Mộc": 0, "Thủy": 0, "Hỏa": 0, "Thổ": 0}
+    for c in ten_norm:
+        hanh = CHU_HANH.get(c)
+        if hanh:
+            dem[hanh] += 1
+    tong = sum(dem.values()) or 1
+    ty_le = {k: round(v * 100 / tong, 1) for k, v in dem.items()}
+    hanh_chinh = max(dem, key=dem.get)
+    return {
+        "phan_bo": dem,
+        "ty_le_phan_tram": ty_le,
+        "hanh_chinh": hanh_chinh,
+        "thieu": [k for k, v in dem.items() if v == 0],
+    }
 
 
-# ============ HUYỀN KHÔNG PHI TINH ============
-# Sao số 1-9 theo Cửu Tinh
-CUU_TINH = {
-    1: {"ten": "Nhất Bạch", "hanh": "Thủy", "cat_hung": "Cát", "y_nghia": "Quan lộc, danh tiếng"},
-    2: {"ten": "Nhị Hắc", "hanh": "Thổ", "cat_hung": "Hung", "y_nghia": "Bệnh tật, ô uế"},
-    3: {"ten": "Tam Bích", "hanh": "Mộc", "cat_hung": "Hung", "y_nghia": "Khẩu thiệt, thị phi"},
-    4: {"ten": "Tứ Lục", "hanh": "Mộc", "cat_hung": "Cát", "y_nghia": "Văn chương, học vấn"},
-    5: {"ten": "Ngũ Hoàng", "hanh": "Thổ", "cat_hung": "Đại Hung", "y_nghia": "Tai họa, đại nạn"},
-    6: {"ten": "Lục Bạch", "hanh": "Kim", "cat_hung": "Cát", "y_nghia": "Quyền quý, uy vọng"},
-    7: {"ten": "Thất Xích", "hanh": "Kim", "cat_hung": "Hung", "y_nghia": "Trộm cắp, thất thoát"},
-    8: {"ten": "Bát Bạch", "hanh": "Thổ", "cat_hung": "Đại Cát", "y_nghia": "Tài lộc, thịnh vượng"},
-    9: {"ten": "Cửu Tử", "hanh": "Hỏa", "cat_hung": "Cát (sắp suy)", "y_nghia": "Hỷ sự, khai sáng"},
-}
+def phan_tich_ten(ho_ten: str, menh_nap_am: str = None) -> Dict:
+    """Phân tích tên đầy đủ"""
+    if not ho_ten.strip():
+        return {"error": "Chưa có tên"}
 
-# Lường thiên xích — 9 cung phi tinh
-LO_SHU = [
-    [4, 9, 2],
-    [3, 5, 7],
-    [8, 1, 6],
+    linh_hon = tinh_so_linh_hon(ho_ten)
+    nhan_cach = tinh_so_nhan_cach(ho_ten)
+    su_menh = tinh_so_su_menh(ho_ten)
+    nam_cach = tinh_nam_cach(ho_ten)
+    ngu_hanh = ngu_hanh_ten(ho_ten)
+
+    # Đánh giá hợp mệnh
+    hop_menh = None
+    if menh_nap_am:
+        from lich_van_nien import quan_he_ngu_hanh
+        qh = quan_he_ngu_hanh(menh_nap_am, ngu_hanh["hanh_chinh"])
+        hop_menh = {
+            "menh_chu": menh_nap_am,
+            "hanh_ten": ngu_hanh["hanh_chinh"],
+            "quan_he": qh,
+            "diem": {"tương sinh": 90, "tỷ hòa": 75,
+                      "trung tính": 60, "tương khắc": 35}[qh],
+            "nhan_xet": f"Tên hợp mệnh {menh_nap_am}" if qh in ("tương sinh", "tỷ hòa")
+                        else f"Tên khắc mệnh {menh_nap_am} — cân nhắc đặt tên thêm"
+                             if qh == "tương khắc" else "Tên trung tính với mệnh",
+        }
+
+    return {
+        "ho_ten": ho_ten,
+        "so_linh_hon": linh_hon,
+        "so_nhan_cach": nhan_cach,
+        "so_su_menh": su_menh,
+        "nam_cach": nam_cach,
+        "ngu_hanh_ten": ngu_hanh,
+        "hop_menh": hop_menh,
+    }
+
+
+# ============ XỬ LÝ GIỜ SINH ============
+# 12 Canh giờ
+CANH_GIO = [
+    ("Tý", 23, 1), ("Sửu", 1, 3), ("Dần", 3, 5), ("Mão", 5, 7),
+    ("Thìn", 7, 9), ("Tỵ", 9, 11), ("Ngọ", 11, 13), ("Mùi", 13, 15),
+    ("Thân", 15, 17), ("Dậu", 17, 19), ("Tuất", 19, 21), ("Hợi", 21, 23),
 ]
 
-# 8 hướng + trung cung
-PHI_TINH_POSITIONS = {
-    "Đông Nam": (0, 0), "Nam": (0, 1), "Tây Nam": (0, 2),
-    "Đông": (1, 0), "Trung cung": (1, 1), "Tây": (1, 2),
-    "Đông Bắc": (2, 0), "Bắc": (2, 1), "Tây Bắc": (2, 2),
-}
 
+def xac_dinh_canh_gio(gio: int) -> Dict:
+    """Xác định Canh giờ từ giờ (0-23)"""
+    if gio == 23 or gio == 0:
+        chi_idx = 0  # Tý
+    else:
+        chi_idx = ((gio + 1) // 2) % 12
 
-def tinh_nien_phi_tinh(nam: int) -> int:
-    """Sao nhập trung cung của năm (Niên Tinh)"""
-    # Công thức: (11 - (năm rút gọn)) mod 9, cộng 1
-    y = nam
-    while y > 9:
-        y = sum(int(d) for d in str(y))
-    sao = 11 - y
-    if sao > 9: sao -= 9
-    if sao < 1: sao += 9
-    return sao
-
-
-def tinh_nguyet_phi_tinh(nam: int, thang: int) -> int:
-    """Sao nhập trung cung của tháng"""
-    nien = tinh_nien_phi_tinh(nam)
-    # Bảng: tháng 1 âm = sao tháng theo năm
-    # Đơn giản hóa: dùng công thức xấp xỉ
-    return ((nien + thang - 1) % 9) or 9
-
-
-def tinh_nhat_phi_tinh(nam: int, thang: int, ngay: int) -> int:
-    """Sao nhập trung cung của ngày"""
-    nguyet = tinh_nguyet_phi_tinh(nam, thang)
-    return ((nguyet + ngay - 1) % 9) or 9
-
-
-def phi_tinh_bay_cung(sao_trung_cung: int) -> Dict:
-    """
-    Lường Thiên Xích: bay 9 sao từ trung cung ra 8 hướng.
-    """
-    # Thứ tự bay: Trung cung → Tây Bắc → Tây → Đông Bắc → Nam →
-    # Bắc → Tây Nam → Đông → Đông Nam
-    duong_bay = [
-        "Trung cung", "Tây Bắc", "Tây", "Đông Bắc",
-        "Nam", "Bắc", "Tây Nam", "Đông", "Đông Nam",
-    ]
-    ket_qua = {}
-    for i, huong in enumerate(duong_bay):
-        sao = ((sao_trung_cung - 1 + i) % 9) + 1
-        ket_qua[huong] = {
-            "sao": sao,
-            "ten": CUU_TINH[sao]["ten"],
-            "hanh": CUU_TINH[sao]["hanh"],
-            "cat_hung": CUU_TINH[sao]["cat_hung"],
-            "y_nghia": CUU_TINH[sao]["y_nghia"],
-        }
-    return ket_qua
-
-
-def phi_tinh_ngay(d: date) -> Dict:
-    """Phi tinh ngày hiện tại"""
-    am_year = d.year
-    sao_ngay = tinh_nhat_phi_tinh(am_year, d.month, d.day)
+    ten, start, end = CANH_GIO[chi_idx]
     return {
-        "ngay": d.isoformat(),
-        "sao_trung_cung": sao_ngay,
-        "sao_info": CUU_TINH[sao_ngay],
-        "bay_cung": phi_tinh_bay_cung(sao_ngay),
+        "gio": gio,
+        "canh": ten,
+        "chi_idx": chi_idx,
+        "khoang_thoi_gian": f"{start}h - {end}h",
     }
 
 
-# ============ DƯƠNG TRẠCH TAM YẾU ============
-def danh_gia_dai_van(huong_nha: str, sao_van: int) -> Dict:
+def tinh_can_gio(can_ngay: str, gio: int) -> str:
     """
-    Đại Vận: đánh giá cửa/hướng theo vận 8 (2024-2043), vận 9 (2024+).
+    Tính Can của giờ dựa trên Can của ngày.
+    Quy tắc: Ngày Giáp/Kỷ → giờ Tý là Giáp
+             Ngày Ất/Canh → giờ Tý là Bính
+             Ngày Bính/Tân → giờ Tý là Mậu
+             Ngày Đinh/Nhâm → giờ Tý là Canh
+             Ngày Mậu/Quý → giờ Tý là Nhâm
     """
-    # Vận 9 (2024-2043) — Hỏa vượng
-    huong_vuong_van9 = ["Nam", "Đông Nam", "Đông"]  # Hỏa + Mộc sinh Hỏa
-    huong_suy_van9 = ["Tây Bắc", "Tây"]  # Kim bị Hỏa khắc
+    from lich_van_nien import CAN
+    # Chỉ số Can ngày
+    can_ngay_idx = CAN.index(can_ngay)
 
-    if huong_nha in huong_vuong_van9:
-        return {"danh_gia": "vượng", "diem": 85,
-                "ly_do": f"Hướng {huong_nha} được Vận 9 (Hỏa) sinh vượng"}
-    elif huong_nha in huong_suy_van9:
-        return {"danh_gia": "suy", "diem": 35,
-                "ly_do": f"Hướng {huong_nha} bị Vận 9 khắc"}
-    return {"danh_gia": "trung bình", "diem": 60,
-            "ly_do": f"Hướng {huong_nha} không vượng không suy"}
+    # Xác định Can giờ Tý
+    can_ty_idx = {
+        0: 0, 5: 0,  # Giáp, Kỷ → Giáp
+        1: 2, 6: 2,  # Ất, Canh → Bính
+        2: 4, 7: 4,  # Bính, Tân → Mậu
+        3: 6, 8: 6,  # Đinh, Nhâm → Canh
+        4: 8, 9: 8,  # Mậu, Quý → Nhâm
+    }[can_ngay_idx]
+
+    # Canh giờ (0=Tý, 1=Sửu, ...)
+    canh = xac_dinh_canh_gio(gio)
+    can_gio_idx = (can_ty_idx + canh["chi_idx"]) % 10
+
+    return f"{CAN[can_gio_idx]} {canh['canh']}"
 
 
-def danh_gia_toa_huong(huong_toa: str, huong_huong: str,
-                        cung_phi: int) -> Dict:
-    """
-    Tọa Cát / Hướng Cát theo Bát Trạch + Huyền Không.
-    """
-    hop_toa = hop_huong_nha(cung_phi, huong_toa)
-    hop_huong = hop_huong_nha(cung_phi, huong_huong)
+def phan_tich_gio_sinh(ngay: int, thang: int, nam: int, gio: int) -> Dict:
+    """Phân tích giờ sinh đầy đủ"""
+    from lich_van_nien import ngay_can_chi, CAN_NGU_HANH, CHI_NGU_HANH
 
-    tong_diem = (hop_toa.get("diem", 50) * 0.4 +
-                  hop_huong.get("diem", 50) * 0.6)
+    d = date(nam, thang, ngay)
+    can_ngay, chi_ngay = ngay_can_chi(d)
+
+    canh = xac_dinh_canh_gio(gio)
+    can_gio_chi = tinh_can_gio(can_ngay, gio)
+    can_gio = can_gio_chi.split()[0]
+
+    # Ngũ hành của giờ
+    ngu_hanh_can_gio = CAN_NGU_HANH[can_gio]
+    ngu_hanh_chi_gio = CHI_NGU_HANH[canh["canh"]]
+
+    # Ý nghĩa Canh giờ
+    Y_NGHIA_CANH = {
+        "Tý": "Thông minh, nhanh nhẹn, có duyên, hay thức khuya",
+        "Sửu": "Chăm chỉ, kiên nhẫn, chậm mà chắc, trung thành",
+        "Dần": "Dũng cảm, quyết đoán, thích tiên phong, nóng tính",
+        "Mão": "Dịu dàng, khéo léo, yêu cái đẹp, hay lo xa",
+        "Thìn": "Uy nghi, tham vọng, có tố chất lãnh đạo",
+        "Tỵ": "Sâu sắc, kín đáo, trực giác mạnh, khéo nói",
+        "Ngọ": "Nhiệt huyết, thích tự do, hay đi xa, bốc đồng",
+        "Mùi": "Hiền lành, nhạy cảm, có khiếu nghệ thuật",
+        "Thân": "Linh hoạt, đa tài, thích khám phá, hay thay đổi",
+        "Dậu": "Tỉ mỉ, cầu toàn, thẳng thắn, trọng chữ tín",
+        "Tuất": "Trung thành, bảo vệ, công bằng, hay lo lắng",
+        "Hợi": "Phúc hậu, hào phóng, thích hưởng thụ, chậm rãi",
+    }
 
     return {
-        "toa": hop_toa, "huong": hop_huong,
-        "diem_tong_hop": round(tong_diem, 1),
-        "nhan_xet": "Tọa Cát Hướng Cát — đại cát" if tong_diem >= 75 else
-                    "Tọa/Hướng trung bình" if tong_diem >= 50 else
-                    "Tọa Hướng xấu — nên hóa giải",
-    }
-
-
-def phan_tich_toan_dien(day: int, month: int, year: int,
-                         gioi_tinh: str = "nam",
-                         huong_nha: str = "Nam",
-                         huong_bep: str = None,
-                         huong_phong_ngu: str = None) -> Dict:
-    """Phân tích phong thủy toàn diện cho 1 người + nhà ở"""
-    cung_phi = tinh_cung_phi_gioi_tinh(day, month, year, gioi_tinh)
-    huong = huong_tot_xau(cung_phi)
-    nha = hop_huong_nha(cung_phi, huong_nha)
-
-    ket_qua = {
-        "cung_phi": cung_phi,
-        "quai": CUNG_PHI_QUAI[cung_phi],
-        "nhom": huong["nhom"],
-        "huong_tot": huong["huong_tot"],
-        "huong_xau": huong["huong_xau"],
-        "huong_nha": nha,
-    }
-
-    if huong_bep:
-        ket_qua["huong_bep"] = hop_huong_nha(cung_phi, huong_bep)
-    if huong_phong_ngu:
-        ket_qua["huong_phong_ngu"] = hop_huong_nha(cung_phi, huong_phong_ngu)
-
-    # Phi tinh hôm nay
-    ket_qua["phi_tinh_hom_nay"] = phi_tinh_ngay(date.today())
-
-    # Đại vận
-    ket_qua["dai_van"] = danh_gia_dai_van(huong_nha,
-                                            tinh_nien_phi_tinh(year))
-
-    return ket_qua
-
-
-def goi_y_hoa_giai(huong_xau: str, cung: str) -> Dict:
-    """Gợi ý hóa giải cho hướng xấu"""
-    bang_hoa_giai = {
-        "Tuyệt Mệnh": {
-            "vat_pham": ["Hồ lô đồng", "Tượng Quan Âm", "Chuông gió kim loại"],
-            "mau_sac": "Vàng, trắng (Kim)",
-            "cay_trong": ["Kim ngân", "Bạch đàn"],
-            "hanh_dong": ["Đặt hồ lô đồng ở hướng xấu",
-                           "Treo gương bát quái lồi",
-                           "Trồng cây xanh che chắn"],
-        },
-        "Ngũ Quỷ": {
-            "vat_pham": ["Đá thạch anh trắng", "Tượng Kỳ Lân", "Bùa bình an"],
-            "mau_sac": "Trắng, xám (Kim)",
-            "cay_trong": ["Vạn niên thanh", "Trúc"],
-            "hanh_dong": ["Đặt thạch anh trắng", "Tránh mở cửa hướng này",
-                           "Đặt bể cá nhỏ"],
-        },
-        "Lục Sát": {
-            "vat_pham": ["Tượng Tỳ Hưu", "Hồ lô gỗ", "Đèn muối Himalaya"],
-            "mau_sac": "Xanh lá, xanh dương",
-            "cay_trong": ["Lưỡi hổ", "Kim tiền"],
-            "hanh_dong": ["Đặt cây xanh hướng xấu", "Bố trí gương phản chiếu"],
-        },
-        "Họa Hại": {
-            "vat_pham": ["Tượng Phật Di Lặc", "Chuông bạc", "Cây phong thủy"],
-            "mau_sac": "Đỏ, hồng (Hỏa)",
-            "cay_trong": ["Cây kim ngân", "Cây phát tài"],
-            "hanh_dong": ["Trồng cây cảnh hướng xấu", "Đặt đèn sáng"],
-        },
-    }
-    info = bang_hoa_giai.get(cung, {})
-    return {
-        "cung_xau": cung,
-        "huong": huong_xau,
-        **info,
+        "gio_sinh": f"{gio:02d}:00",
+        "canh_gio": canh,
+        "can_chi_gio": can_gio_chi,
+        "ngu_hanh_can_gio": ngu_hanh_can_gio,
+        "ngu_hanh_chi_gio": ngu_hanh_chi_gio,
+        "y_nghia_canh_gio": Y_NGHIA_CANH[canh["canh"]],
     }
 ```
 
-### Endpoints Phong Thủy
+### Cập nhật `phan_tich_ngay_sinh` để nhận tên + giờ
 
 ```python
-# main.py
-from phong_thuy import (tinh_cung_phi_gioi_tinh, huong_tot_xau,
-                          hop_huong_nha, phan_tich_toan_dien,
-                          phi_tinh_ngay, danh_gia_toa_huong,
-                          goi_y_hoa_giai, HUONG_THEO_MUC_DICH)
+def phan_tich_ngay_sinh(day: int, month: int, year: int,
+                          ho_ten: str = "", gio_sinh: int = None) -> Dict:
+    """Phân tích toàn diện: ngày + tên + giờ sinh"""
+    can_chi = tinh_can_chi_nam(year)
+    can = can_chi.split()[0]
+    chi = can_chi.split()[1]
 
-class PhongThuyInput(BaseModel):
-    ngay: int
-    thang: int
-    nam: int
-    gioi_tinh: str = "nam"
-    huong_nha: str = "Nam"
-    huong_bep: str = None
-    huong_phong_ngu: str = None
-    muc_dich: str = "tai_van"  # để gợi ý hướng tốt
+    profile = {
+        "ho_ten": ho_ten,
+        "ngay_sinh": f"{day:02d}/{month:02d}/{year}",
+        "can_chi_nam": can_chi,
+        "ngu_hanh_can": CAN_NGU_HANH[can],
+        "ngu_hanh_chi": CHI_NGU_HANH[chi],
+        "menh_nap_am": tinh_menh_ngu_hanh(year),
+        "so_chu_dao": tinh_so_chu_dao(day, month, year),
+        "cung_phi": tinh_cung_phi(day, month, year),
+        "bat_quai": BAT_QUAI[tinh_cung_phi(day, month, year)],
+        "tam_tai": tinh_tam_tai(day, month, year),
+        "con_giap": chi,
+    }
 
+    # Thêm tên
+    if ho_ten:
+        profile["ten_phan_tich"] = phan_tich_ten(ho_ten, profile["menh_nap_am"])
 
-@app.post("/api/phong-thuy/phan-tich")
-def api_phong_thuy(data: PhongThuyInput,
-                     user: User = Depends(get_current_user)):
-    kq = phan_tich_toan_dien(
-        data.ngay, data.thang, data.nam,
-        gioi_tinh=data.gioi_tinh,
-        huong_nha=data.huong_nha,
-        huong_bep=data.huong_bep,
-        huong_phong_ngu=data.huong_phong_ngu,
-    )
-
-    # Gợi ý hướng theo mục đích
-    cung_phi = kq["cung_phi"]
-    huong_theo_muc_dich = []
-    for cung_can in HUONG_THEO_MUC_DICH.get(data.muc_dich, []):
-        for h in kq["huong_tot"]:
-            if h["cung"] == cung_can:
-                huong_theo_muc_dich.append(h)
-    kq["huong_theo_muc_dich"] = huong_theo_muc_dich
-
-    # Hóa giải nếu hướng nhà xấu
-    if not kq["huong_nha"].get("tot", True):
-        kq["hoa_giai"] = goi_y_hoa_giai(
-            kq["huong_nha"]["huong_nha"], kq["huong_nha"]["cung"]
+    # Thêm giờ sinh
+    if gio_sinh is not None:
+        profile["gio_sinh_phan_tich"] = phan_tich_gio_sinh(
+            day, month, year, gio_sinh
         )
 
-    return kq
-
-
-@app.get("/api/phong-thuy/phi-tinh")
-def api_phi_tinh(d: str = None, user: User = Depends(get_current_user)):
-    target = date.fromisoformat(d) if d else date.today()
-    return phi_tinh_ngay(target)
-
-
-@app.post("/api/phong-thuy/llm-tu-van")
-async def api_phong_thuy_llm(data: PhongThuyInput,
-                              user: User = Depends(get_current_user),
-                              db: Session = Depends(get_db)):
-    """LLM tư vấn phong thủy cá nhân hóa"""
-    kq = phan_tich_toan_dien(
-        data.ngay, data.thang, data.nam,
-        gioi_tinh=data.gioi_tinh, huong_nha=data.huong_nha,
-        huong_bep=data.huong_bep, huong_phong_ngu=data.huong_phong_ngu,
-    )
-
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    profile = json.loads(prof.profile_json) if prof else None
-
-    prompt = f"""Tư vấn phong thủy cá nhân hóa:
-
-Mệnh chủ:
-- Ngày sinh: {data.ngay:02d}/{data.thang:02d}/{data.nam}
-- Giới tính: {data.gioi_tinh}
-- Cung phi: {kq['cung_phi']} ({kq['quai']}) — {kq['nhom']}
-{'- Mệnh nạp âm: ' + profile['menh_nap_am'] if profile else ''}
-
-Nhà ở:
-- Hướng nhà: {data.huong_nha} → {kq['huong_nha'].get('cung')} ({kq['huong_nha'].get('y_nghia')})
-{'- Hướng bếp: ' + data.huong_bep + ' → ' + kq.get('huong_bep',{}).get('cung','') if data.huong_bep else ''}
-{'- Hướng phòng ngủ: ' + data.huong_phong_ngu + ' → ' + kq.get('huong_phong_ngu',{}).get('cung','') if data.huong_phong_ngu else ''}
-
-Phi tinh hôm nay:
-- Sao trung cung: {kq['phi_tinh_hom_nay']['sao_info']['ten']} ({kq['phi_tinh_hom_nay']['sao_info']['y_nghia']})
-
-Đại vận: {kq['dai_van']['ly_do']}
-
-YÊU CẦU: Trả về JSON:
-{{
-  "danh_gia_tong_quan": "nhận định ngắn về phong thủy hiện tại",
-  "diem_manh": ["..."],
-  "van_de_can_khac_phuc": ["..."],
-  "bo_tri_cu_the": [
-    {{"khu_vuc": "cửa chính|bếp|phòng ngủ|bàn làm việc|phòng khách",
-      "huong_tot_nhat": "...", "vat_pham_nen_dat": ["..."],
-      "mau_sac_phu_hop": ["..."], "cay_canh_goi_y": ["..."],
-      "ly_do": "..."}}
-  ],
-  "hoa_giai_huong_xau": [
-    {{"huong": "...", "cung_xau": "...", "cach_hoa_giai": ["..."]}}
-  ],
-  "viec_nen_lam_ngay": ["3-5 việc có thể làm trong tuần này"],
-  "canh_bao": ["..."]
-}}"""
-
-    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
-    try:
-        tu_van = json.loads(raw)
-    except Exception:
-        tu_van = {"raw": raw}
-
-    return {"so_lieu": kq, "tu_van_llm": tu_van}
+    return profile
 ```
 
 ---
 
-## 📅 MODULE 2: Sự Kiện Trực Tiếp/Gián Tiếp — `su_kien.py`
+## 2️⃣ Cloudflare Worker — Domain `huyenbao.com`
+
+### `deploy/cloudflare/worker.js`
+
+```javascript
+/**
+ * Cloudflare Worker cho huyenbao.com
+ * - Proxy API về backend
+ * - Serve static assets từ KV
+ * - Rate limiting
+ * - Cache layer
+ * - CORS
+ */
+
+const BACKEND_ORIGIN = "https://api.huyenbao.com";
+const STATIC_DOMAIN = "static.huyenbao.com";
+
+addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event));
+});
+
+async function handleRequest(event) {
+  const request = event.request;
+  const url = new URL(request.url);
+  const host = url.hostname;
+
+  // 1. CORS preflight
+  if (request.method === "OPTIONS") {
+    return corsResponse();
+  }
+
+  // 2. Rate limiting theo IP
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const rateLimit = await checkRateLimit(ip, url.pathname);
+  if (rateLimit.exceeded) {
+    return jsonResponse({
+      error: "Quá nhiều yêu cầu. Vui lòng thử lại sau.",
+      retry_after: rateLimit.retry_after,
+    }, 429);
+  }
+
+  // 3. Route theo path
+  if (url.pathname.startsWith("/api/")) {
+    return proxyToBackend(request, url);
+  }
+
+  if (url.pathname.startsWith("/static/") ||
+      url.pathname.match(/\.(js|css|png|jpg|svg|woff2|json)$/)) {
+    return serveStatic(request, url);
+  }
+
+  // 4. Mặc định: serve index.html (SPA routing)
+  return serveSPA(request);
+}
+
+// ============ RATE LIMITING ============
+async function checkRateLimit(ip, path) {
+  // Giới hạn khác nhau theo path
+  let limit = 100, window = 60; // mặc định: 100 req/phút
+  if (path.startsWith("/api/auth/")) {
+    limit = 5; window = 60; // 5 req/phút cho auth
+  } else if (path.match(/\/api\/(analyze|tarot|kinh-dich|tu-vi|video)/)) {
+    limit = 10; window = 60; // 10 req/phút cho LLM endpoints
+  }
+
+  const key = `ratelimit:${ip}:${Math.floor(Date.now() / (window * 1000))}`;
+  const count = await RATE_LIMIT.get(key);
+  const current = count ? parseInt(count) : 0;
+
+  if (current >= limit) {
+    return { exceeded: true, retry_after: window };
+  }
+
+  await RATE_LIMIT.put(key, String(current + 1), {
+    expirationTtl: window * 2,
+  });
+  return { exceeded: false };
+}
+
+// ============ PROXY ============
+async function proxyToBackend(request, url) {
+  const targetUrl = BACKEND_ORIGIN + url.pathname + url.search;
+
+  // Copy headers, thêm CF headers
+  const headers = new Headers(request.headers);
+  headers.set("X-Forwarded-For", request.headers.get("CF-Connecting-IP"));
+  headers.set("X-Real-IP", request.headers.get("CF-Connecting-IP"));
+  headers.set("X-CF-Worker", "huyenbao-v1");
+
+  // Với SSE stream, cần disable cache + timeout dài
+  const isStream = url.pathname.includes("/stream");
+  const fetchOptions = {
+    method: request.method,
+    headers,
+    body: request.body,
+    redirect: "follow",
+  };
+  if (isStream) {
+    fetchOptions.cf = {
+      cacheTtl: 0,
+      cacheEverything: false,
+      scrapeShield: false,
+    };
+  }
+
+  const response = await fetch(targetUrl, fetchOptions);
+
+  // Thêm CORS headers
+  const newHeaders = new Headers(response.headers);
+  newHeaders.set("Access-Control-Allow-Origin", "*");
+  newHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  newHeaders.set("Access-Control-Allow-Headers", "*");
+  newHeaders.set("X-Worker", "huyenbao");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
+// ============ STATIC ============
+async function serveStatic(request, url) {
+  // Cache-first từ KV
+  const cacheKey = url.pathname;
+  const cached = await STATIC_KV.get(cacheKey, { type: "arrayBuffer" });
+
+  if (cached) {
+    return new Response(cached, {
+      headers: {
+        "Content-Type": getContentType(url.pathname),
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Cache": "HIT",
+      },
+    });
+  }
+
+  // Fallback: fetch từ origin
+  const originUrl = `https://${STATIC_DOMAIN}${url.pathname}`;
+  const response = await fetch(originUrl);
+  if (response.ok) {
+    const buffer = await response.arrayBuffer();
+    await STATIC_KV.put(cacheKey, buffer, {
+      expirationTtl: 86400 * 30,
+    });
+    return new Response(buffer, {
+      headers: {
+        "Content-Type": getContentType(url.pathname),
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Cache": "MISS",
+      },
+    });
+  }
+  return new Response("Not Found", { status: 404 });
+}
+
+async function serveSPA(request) {
+  // Serve index.html từ KV hoặc origin
+  const cached = await STATIC_KV.get("/index.html", { type: "arrayBuffer" });
+  if (cached) {
+    return new Response(cached, {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=300",
+      },
+    });
+  }
+  const response = await fetch(`https://${STATIC_DOMAIN}/index.html`);
+  return response;
+}
+
+// ============ HELPERS ============
+function corsResponse() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Max-Age": "86400",
+    },
+  });
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
+function getContentType(path) {
+  const ext = path.split(".").pop().toLowerCase();
+  const types = {
+    html: "text/html; charset=utf-8",
+    js: "application/javascript",
+    css: "text/css",
+    json: "application/json",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    svg: "image/svg+xml",
+    webp: "image/webp",
+    woff: "font/woff",
+    woff2: "font/woff2",
+    mp4: "video/mp4",
+    pdf: "application/pdf",
+    txt: "text/plain; charset=utf-8",
+  };
+  return types[ext] || "application/octet-stream";
+}
+```
+
+### `deploy/cloudflare/wrangler.toml`
+
+```toml
+name = "huyenbao-worker"
+main = "worker.js"
+compatibility_date = "2024-10-01"
+account_id = "YOUR_ACCOUNT_ID"
+
+# Custom domain
+routes = [
+  { pattern = "huyenbao.com/*", zone_name = "huyenbao.com" },
+  { pattern = "www.huyenbao.com/*", zone_name = "huyenbao.com" },
+]
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "STATIC_KV"
+id = "YOUR_STATIC_KV_ID"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "YOUR_RATE_LIMIT_KV_ID"
+
+# Durable Objects cho rate limit chính xác hơn (optional)
+# [[durable_objects.bindings]]
+# name = "RATE_LIMITER"
+# class_name = "RateLimiter"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+BACKEND_ORIGIN = "https://api.huyenbao.com"
+```
+
+### `deploy/cloudflare/deploy.sh`
+
+```bash
+#!/bin/bash
+# Deploy Cloudflare Worker cho huyenbao.com
+
+set -e
+
+echo "🌐 Deploying Cloudflare Worker..."
+
+# 1. Cài wrangler
+if ! command -v wrangler &> /dev/null; then
+    echo "📦 Installing wrangler..."
+    npm install -g wrangler
+fi
+
+# 2. Login (nếu chưa)
+wrangler whoami || wrangler login
+
+# 3. Tạo KV namespaces (chỉ lần đầu)
+echo "📂 Creating KV namespaces..."
+wrangler kv:namespace create "STATIC_KV" || true
+wrangler kv:namespace create "RATE_LIMIT" || true
+
+# 4. Upload static files vào KV
+echo "⬆️ Uploading static files to KV..."
+for file in $(find ../frontend -type f); do
+    key="/${file#../frontend/}"
+    echo "  → $key"
+    wrangler kv:key put --binding=STATIC_KV "$key" --path="$file" || true
+done
+
+# 5. Deploy worker
+echo "🚀 Deploying worker..."
+wrangler deploy
+
+# 6. Cấu hình DNS (nếu chưa)
+echo "🔧 Cấu hình DNS:"
+echo "  - huyenbao.com → Worker (Proxied)"
+echo "  - www.huyenbao.com → Worker (Proxied)"
+echo "  - api.huyenbao.com → Backend server IP (Proxied)"
+
+echo "✅ Deploy hoàn tất!"
+echo "🌍 Truy cập: https://huyenbao.com"
+```
+
+### Cập nhật file `param.ps1` (script chạy chính) với tên + giờ sinh
+
+```powershell
+param(
+    [string]$Model = "qwen2.5:7b"
+)
+
+$ErrorActionPreference = "Stop"
+Set-Location -LiteralPath $PSScriptRoot
+
+# ... (giữ nguyên phần đầu: check Python, Ollama, venv, dependencies)
+
+# === Đọc cấu hình mở rộng ===
+$envFile = Join-Path $PSScriptRoot ".env.local"
+
+# Hàm đọc biến từ file .env
+function Read-EnvVar($file, $key) {
+    if (-not (Test-Path -LiteralPath $file)) { return $null }
+    foreach ($line in Get-Content -LiteralPath $file) {
+        if ($line -match "^\s*$key\s*=\s*(.*?)\s*$") {
+            $val = $matches[1]
+            if ($val.Length -ge 2 -and
+                (($val.StartsWith('"') -and $val.EndsWith('"')) -or
+                 ($val.StartsWith("'") -and $val.EndsWith("'")))) {
+                $val = $val.Substring(1, $val.Length - 2)
+            }
+            return $val
+        }
+    }
+    return $null
+}
+
+# Secret key (giữ như cũ)
+if (-not $env:HUYEN_HOC_SECRET_KEY) { ... }
+
+# === MỞ RỘNG: Nhiều API keys ===
+$apiKeys = @(
+    "TELEGRAM_BOT_TOKEN",
+    "OPENWEATHER_API_KEY",
+    "GOOGLE_MAPS_API_KEY",
+    "ALPHA_VANTAGE_KEY",
+    "FINNHUB_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "ELEVENLABS_API_KEY",
+    "CLOUDFLARE_API_TOKEN",
+    "TIKTOK_CLIENT_KEY",
+    "YOUTUBE_API_KEY",
+    "META_APP_SECRET",
+    "OPENAI_API_KEY"  # cho LLM judge
+)
+
+foreach ($key in $apiKeys) {
+    if (-not (Get-Item -Path "env:$key" -ErrorAction SilentlyContinue)) {
+        $val = Read-EnvVar $envFile $key
+        if (-not $val) {
+            $val = Read-EnvVar (Join-Path $PSScriptRoot "deploy\.env.prod") $key
+        }
+        if ($val -and $val -notmatch '^(CHANGE|PLACEHOLDER|REPLACE)') {
+            Set-Item -Path "env:$key" -Value $val
+            Write-Host "✓ Loaded $key"
+        }
+    }
+}
+
+# Ollama (giữ như cũ)
+# ...
+
+# === MỞ RỘNG: Chạy multi-service ===
+Write-Host ""
+Write-Host "🎯 Huyền Bảo AI - Khởi động hệ thống"
+Write-Host ""
+
+# Kill process cũ nếu có
+Get-Process | Where-Object { $_.ProcessName -match "uvicorn|python" -and $_.Path -like "*$PSScriptRoot*" } | ForEach-Object {
+    Write-Host "Stopping old process $($_.Id)..."
+    Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+}
+
+Start-Sleep -Seconds 1
+
+# Chạy backend
+$backendJob = Start-Job -ScriptBlock {
+    param($venvPython, $backendDir)
+    Set-Location $backendDir
+    & $venvPython -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+} -ArgumentList $venvPython, (Join-Path $PSScriptRoot "backend")
+
+# Chạy scheduler (nếu có)
+# $schedulerJob = Start-Job -ScriptBlock {
+#     param($venvPython, $backendDir)
+#     Set-Location $backendDir
+#     & $venvPython -m scheduler_runner
+# } -ArgumentList $venvPython, (Join-Path $PSScriptRoot "backend")
+
+Write-Host ""
+Write-Host "════════════════════════════════════════════════"
+Write-Host "  🎉 HUYỀN BẢO AI ĐÃ SẴN SÀNG"
+Write-Host "════════════════════════════════════════════════"
+Write-Host ""
+Write-Host "  🌐 Local:       http://localhost:8000"
+Write-Host "  🌍 Production:  https://huyenbao.com"
+Write-Host "  📚 API Docs:    http://localhost:8000/docs"
+Write-Host "  🎨 Dashboard:   http://localhost:8000/dashboard"
+Write-Host ""
+Write-Host "  🤖 Model:       $Model"
+Write-Host "  🔌 Ollama:      $($env:OLLAMA_URL)"
+Write-Host "  📱 Telegram:    $(if ($env:TELEGRAM_BOT_TOKEN) { 'Đã cấu hình' } else { 'Chưa cấu hình' })"
+Write-Host "  💳 Stripe:      $(if ($env:STRIPE_SECRET_KEY) { 'Đã cấu hình' } else { 'Chưa cấu hình' })"
+Write-Host "  ☁️  Cloudflare:  $(if ($env:CLOUDFLARE_API_TOKEN) { 'Đã cấu hình' } else { 'Chưa cấu hình' })"
+Write-Host ""
+Write-Host "  Nhấn Ctrl+C để dừng"
+Write-Host "════════════════════════════════════════════════"
+Write-Host ""
+
+try {
+    # Giữ script chạy cho đến khi user Ctrl+C
+    while ($true) {
+        Receive-Job -Job $backendJob -Keep | ForEach-Object { Write-Host $_ }
+        Start-Sleep -Seconds 2
+    }
+} finally {
+    Write-Host ""
+    Write-Host "🛑 Đang tắt..."
+    Stop-Job -Job $backendJob -ErrorAction SilentlyContinue
+    Remove-Job -Job $backendJob -Force -ErrorAction SilentlyContinue
+    # Stop-Job -Job $schedulerJob -ErrorAction SilentlyContinue
+    # Remove-Job -Job $schedulerJob -Force -ErrorAction SilentlyContinue
+    Write-Host "✅ Đã tắt"
+}
+```
+
+---
+
+## 3️⃣ Module 1: API Doanh Nghiệp White-Label — `white_label.py`
 
 ```python
 """
-Module theo dõi & dự đoán sự kiện ảnh hưởng đến mệnh chủ.
-Phân loại:
-- Trực tiếp: sinh nhật, ký hợp đồng, phẫu thuật, cưới hỏi...
-- Gián tiếp: kinh tế vĩ mô, thiên tai, dịch bệnh, chính trị...
+White-label API cho doanh nghiệp phong thủy, spa, coaching.
+- Mỗi tenant có branding riêng
+- Custom domain, logo, màu sắc
+- Quản lý API key riêng
+- Rate limit theo tier
+- Analytics riêng
 """
-from datetime import date, datetime, timedelta
-from typing import Dict, List, Optional
-from dataclasses import dataclass
-import hashlib
+import secrets
+from datetime import datetime, timedelta
+from typing import Dict, List
+from sqlalchemy import (Column, Integer, String, Float, DateTime, Text,
+                          Boolean, ForeignKey)
+from sqlalchemy.orm import Session, relationship
+from database import Base
 
 
-@dataclass
-class SuKien:
-    id: str
-    ten: str
-    loai: str  # "ca_nhan" | "gia_dinh" | "cong_viec" | "xa_hoi" | "vi_mo"
-    muc_do: str  # "trực tiếp" | "gián tiếp"
-    thoi_gian: str  # ISO date
-    anh_huong_toi: List[str]  # các lĩnh vực
-    trong_so: float  # 0-1, độ quan trọng
-    metadata: Dict
+# ============ MODELS ============
+class Tenant(Base):
+    """Doanh nghiệp sử dụng white-label"""
+    __tablename__ = "tenants"
+    id = Column(Integer, primary_key=True)
+    slug = Column(String, unique=True, index=True)  # "spa-abc"
+    ten_doanh_nghiep = Column(String)
+    domain = Column(String, unique=True, nullable=True)  # "phongthuy-abc.com"
+    email_lien_he = Column(String)
+    phone = Column(String, nullable=True)
+
+    # Branding
+    logo_url = Column(String, nullable=True)
+    primary_color = Column(String, default="#7b3fe4")
+    secondary_color = Column(String, default="#c4a3ff")
+    brand_name = Column(String, default="Huyền Học AI")
+    footer_text = Column(Text, nullable=True)
+
+    # Tier
+    tier = Column(String, default="basic")  # basic, pro, enterprise
+    max_users = Column(Integer, default=100)
+    max_llm_calls_month = Column(Integer, default=1000)
+    features_json = Column(Text, default="{}")  # {video: true, pdf: true, tarot: false}
+
+    # Trạng thái
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    api_keys = relationship("ApiKey", back_populates="tenant")
 
 
-# ============ LOẠI SỰ KIỆN ============
-LOAI_SU_KIEN = {
-    "ca_nhan": {
-        "ten": "Sự kiện cá nhân",
-        "items": [
-            {"id": "sinh_nhat", "ten": "Sinh nhật", "muc_do": "trực tiếp",
-             "anh_huong": ["tinh_than", "tai_van"], "trong_so": 0.6},
-            {"id": "ky_hop_dong", "ten": "Ký hợp đồng", "muc_do": "trực tiếp",
-             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.9},
-            {"id": "phau_thuat", "ten": "Phẫu thuật", "muc_do": "trực tiếp",
-             "anh_huong": ["suc_khoe"], "trong_so": 1.0},
-            {"id": "cuoi_hoi", "ten": "Cưới hỏi", "muc_do": "trực tiếp",
-             "anh_huong": ["tinh_duyen", "gia_dinh"], "trong_so": 1.0},
-            {"id": "chuyen_nha", "ten": "Chuyển nhà", "muc_do": "trực tiếp",
-             "anh_huong": ["phong_thuy", "tai_van"], "trong_so": 0.8},
-            {"id": "khoi_nghiep", "ten": "Khởi nghiệp", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.9},
-            {"id": "thi_cu", "ten": "Thi cử", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep", "hoc_tap"], "trong_so": 0.85},
-            {"id": "dau_tu", "ten": "Đầu tư lớn", "muc_do": "trực tiếp",
-             "anh_huong": ["tai_van"], "trong_so": 0.9},
-        ],
+class ApiKey(Base):
+    __tablename__ = "api_keys"
+    id = Column(Integer, primary_key=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id"), index=True)
+    key_hash = Column(String, unique=True, index=True)
+    name = Column(String)  # "production", "staging"
+    is_active = Column(Boolean, default=True)
+    last_used = Column(DateTime, nullable=True)
+    calls_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    tenant = relationship("Tenant", back_populates="api_keys")
+
+
+class TenantUsage(Base):
+    __tablename__ = "tenant_usage"
+    id = Column(Integer, primary_key=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id"), index=True)
+    thang = Column(String, index=True)  # "2025-01"
+    llm_calls = Column(Integer, default=0)
+    video_renders = Column(Integer, default=0)
+    pdf_exports = Column(Integer, default=0)
+    users_created = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ============ TIERS ============
+TIERS = {
+    "basic": {
+        "max_users": 100,
+        "max_llm_calls_month": 1000,
+        "features": {"video": False, "pdf": True, "tarot": True,
+                       "kinh_dich": True, "tu_vi": True, "phong_thuy": True,
+                       "gia_dao": False, "kinh_te": False,
+                       "tam_linh": False, "so_sanh": False},
+        "gia_vnd": 990000,
     },
-    "gia_dinh": {
-        "ten": "Sự kiện gia đình",
-        "items": [
-            {"id": "them_thanh_vien", "ten": "Sinh con", "muc_do": "trực tiếp",
-             "anh_huong": ["gia_dinh", "tai_van"], "trong_so": 0.9},
-            {"id": "nguoi_than_mat", "ten": "Người thân mất", "muc_do": "trực tiếp",
-             "anh_huong": ["tinh_than", "gia_dinh"], "trong_so": 1.0},
-            {"id": "gia_dinh_ly_tan", "ten": "Ly hôn/ly thân", "muc_do": "trực tiếp",
-             "anh_huong": ["tinh_duyen", "tinh_than"], "trong_so": 1.0},
-        ],
+    "pro": {
+        "max_users": 1000,
+        "max_llm_calls_month": 20000,
+        "features": {"video": True, "pdf": True, "tarot": True,
+                       "kinh_dich": True, "tu_vi": True, "phong_thuy": True,
+                       "gia_dao": True, "kinh_te": True,
+                       "tam_linh": True, "so_sanh": False},
+        "gia_vnd": 2990000,
     },
-    "cong_viec": {
-        "ten": "Sự kiện công việc",
-        "items": [
-            {"id": "thang_chuc", "ten": "Thăng chức", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.85},
-            {"id": "mat_viec", "ten": "Mất việc", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep", "tai_van", "tinh_than"], "trong_so": 0.9},
-            {"id": "chuyen_viec", "ten": "Chuyển việc", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep"], "trong_so": 0.7},
-            {"id": "du_an_lon", "ten": "Dự án lớn", "muc_do": "trực tiếp",
-             "anh_huong": ["su_nghiep", "tai_van"], "trong_so": 0.75},
-        ],
-    },
-    "xa_hoi": {
-        "ten": "Sự kiện xã hội",
-        "items": [
-            {"id": "dich_benh", "ten": "Dịch bệnh", "muc_do": "gián tiếp",
-             "anh_huong": ["suc_khoe", "tai_van", "tinh_than"], "trong_so": 0.8},
-            {"id": "thien_tai", "ten": "Thiên tai", "muc_do": "gián tiếp",
-             "anh_huong": ["suc_khoe", "tai_van", "phong_thuy"], "trong_so": 0.75},
-            {"id": "chinh_tri", "ten": "Biến động chính trị", "muc_do": "gián tiếp",
-             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.7},
-            {"id": "kinh_te", "ten": "Khủng hoảng kinh tế", "muc_do": "gián tiếp",
-             "anh_huong": ["tai_van", "su_nghiep"], "trong_so": 0.85},
-            {"id": "cong_nghe", "ten": "Đột phá công nghệ", "muc_do": "gián tiếp",
-             "anh_huong": ["su_nghiep", "hoc_tap"], "trong_so": 0.6},
-            {"id": "thoi_tiet_cuc_doan", "ten": "Thời tiết cực đoan", "muc_do": "gián tiếp",
-             "anh_huong": ["suc_khoe", "tinh_than"], "trong_so": 0.5},
-        ],
+    "enterprise": {
+        "max_users": 100000,
+        "max_llm_calls_month": 500000,
+        "features": {"video": True, "pdf": True, "tarot": True,
+                       "kinh_dich": True, "tu_vi": True, "phong_thuy": True,
+                       "gia_dao": True, "kinh_te": True,
+                       "tam_linh": True, "so_sanh": True},
+        "gia_vnd": 9900000,
     },
 }
 
 
-# ============ CHU KỲ ============
-CHU_KY = {
-    "sinh_nhat": {"period": 365, "type": "annual"},
-    "tet": {"period": 365, "type": "annual"},
-    "trung_nguyen": {"period": 365, "type": "annual"},  # 15/7 âm
-    "thanh_minh": {"period": 365, "type": "annual"},
-    "doan_ngo": {"period": 365, "type": "annual"},
-    "vu_lan": {"period": 365, "type": "annual"},
-}
+# ============ LOGIC ============
+def tao_tenant(db: Session, ten_doanh_nghiep: str, email: str,
+                 slug: str, tier: str = "basic") -> Dict:
+    """Tạo tenant mới"""
+    if db.query(Tenant).filter_by(slug=slug).first():
+        raise ValueError(f"Slug '{slug}' đã tồn tại")
 
-
-# ============ DỰ ĐOÁN ============
-def _seeded_random(seed: str):
-    import random
-    h = int(hashlib.sha256(seed.encode()).hexdigest(), 16)
-    return random.Random(h)
-
-
-def tinh_chi_so_su_kien(profile: Dict, ngay: date,
-                         loai: str, su_kien_id: str) -> Dict:
-    """
-    Tính chỉ số ảnh hưởng (0-100) của 1 sự kiện tới mệnh chủ.
-    Dựa trên:
-    - Ngày sinh mệnh chủ vs ngày sự kiện
-    - Can Chi của ngày sự kiện
-    - Mệnh nạp âm
-    - Loại sự kiện (trực tiếp cao hơn gián tiếp)
-    """
-    from lich_van_nien import ngay_can_chi, CAN_NGU_HANH, quan_he_ngu_hanh
-    from astrology import tinh_chi_so_su_kien as tinh_cs_base
-
-    can, chi = ngay_can_chi(ngay)
-    ngu_hanh_ngay = CAN_NGU_HANH[can]
-    menh = profile["menh_nap_am"]
-    quan_he = quan_he_ngu_hanh(menh, ngu_hanh_ngay)
-
-    # Base score
-    base = tinh_cs_base(profile)
-    linh_vuc_chinh = {
-        "sinh_nhat": "tinh_than", "ky_hop_dong": "tai_van",
-        "phau_thuat": "suc_khoe", "cuoi_hoi": "tinh_duyen",
-        "chuyen_nha": "tai_van", "khoi_nghiep": "su_nghiep",
-        "thi_cu": "su_nghiep", "dau_tu": "tai_van",
-        "them_thanh_vien": "tai_van", "nguoi_than_mat": "suc_khoe",
-        "thang_chuc": "su_nghiep", "mat_viec": "su_nghiep",
-        "dich_benh": "suc_khoe", "thien_tai": "suc_khoe",
-        "kinh_te": "tai_van", "chinh_tri": "su_nghiep",
-        "cong_nghe": "su_nghiep", "thoi_tiet_cuc_doan": "suc_khoe",
-    }.get(su_kien_id, "gap_go")
-
-    diem_base = base.get(linh_vuc_chinh, 50)
-
-    # Modifier từ ngày
-    modifier = {"tương sinh": 15, "tỷ hòa": 10, "trung tính": 0, "tương khắc": -15}[quan_he]
-
-    # Trực tiếp impact mạnh hơn gián tiếp
-    loai_info = next(
-        (s for cat in LOAI_SU_KIEN.values() for s in cat["items"]
-         if s["id"] == su_kien_id), None
+    tier_info = TIERS[tier]
+    tenant = Tenant(
+        slug=slug, ten_doanh_nghiep=ten_doanh_nghiep,
+        email_lien_he=email, tier=tier,
+        max_users=tier_info["max_users"],
+        max_llm_calls_month=tier_info["max_llm_calls_month"],
+        features_json=__import__("json").dumps(tier_info["features"]),
     )
-    trong_so = loai_info["trong_so"] if loai_info else 0.5
-    muc_do = loai_info["muc_do"] if loai_info else "trực tiếp"
+    db.add(tenant); db.commit(); db.refresh(tenant)
 
-    # Sự kiện gián tiếp → ảnh hưởng giảm nhưng phạm vi rộng
-    he_so = 1.0 if muc_do == "trực tiếp" else 0.7
+    # Tạo API key đầu tiên
+    api_key = tao_api_key(db, tenant.id, "production")
+    return {"tenant_id": tenant.id, "slug": tenant.slug,
+            "api_key": api_key["key"], "tier": tier}
 
-    diem_cuoi = (diem_base + modifier) * he_so
-    diem_cuoi = max(0, min(100, diem_cuoi))
 
+def tao_api_key(db: Session, tenant_id: int, name: str) -> Dict:
+    """Tạo API key cho tenant"""
+    import hashlib
+    key = "hb_" + secrets.token_urlsafe(32)
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
+
+    api_key = ApiKey(tenant_id=tenant_id, key_hash=key_hash, name=name)
+    db.add(api_key); db.commit(); db.refresh(api_key)
+
+    # Chỉ trả key 1 lần — sau đó không thể lấy lại
+    return {"id": api_key.id, "key": key, "name": name,
+            "luu_y": "Lưu key này ngay, không thể xem lại!"}
+
+
+def xac_thuc_api_key(db: Session, key: str) -> Dict:
+    """Xác thực API key và trả tenant"""
+    import hashlib
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
+    api_key = db.query(ApiKey).filter_by(key_hash=key_hash, is_active=True).first()
+    if not api_key:
+        return {"valid": False, "reason": "API key không hợp lệ"}
+
+    tenant = db.query(Tenant).filter_by(id=api_key.tenant_id, is_active=True).first()
+    if not tenant:
+        return {"valid": False, "reason": "Tenant không hoạt động"}
+
+    # Update usage
+    api_key.last_used = datetime.utcnow()
+    api_key.calls_count += 1
+    db.commit()
+
+    # Check quota
+    thang = datetime.now().strftime("%Y-%m")
+    usage = db.query(TenantUsage).filter_by(
+        tenant_id=tenant.id, thang=thang
+    ).first()
+    if not usage:
+        usage = TenantUsage(tenant_id=tenant.id, thang=thang)
+        db.add(usage); db.commit()
+
+    if usage.llm_calls >= tenant.max_llm_calls_month:
+        return {"valid": False, "reason": "Đã vượt quota LLM tháng này",
+                "tenant": tenant, "quota_exceeded": True}
+
+    features = __import__("json").loads(tenant.features_json or "{}")
     return {
-        "su_kien_id": su_kien_id,
-        "ten": loai_info["ten"] if loai_info else su_kien_id,
-        "ngay": ngay.isoformat(),
-        "can_chi_ngay": f"{can} {chi}",
-        "quan_he_ngu_hanh": quan_he,
-        "linh_vuc_chinh": linh_vuc_chinh,
-        "muc_do": muc_do,
-        "trong_so": trong_so,
-        "diem_anh_huong": round(diem_cuoi, 1),
-        "du_bao": "tích cực" if diem_cuoi >= 65 else
-                   "trung tính" if diem_cuoi >= 45 else "tiêu cực",
-        "loai_anh_huong": "trực tiếp" if muc_do == "trực tiếp"
-                            else "gián tiếp (lan tỏa)",
+        "valid": True,
+        "tenant": {
+            "id": tenant.id, "slug": tenant.slug,
+            "ten_doanh_nghiep": tenant.ten_doanh_nghiep,
+            "brand_name": tenant.brand_name,
+            "logo_url": tenant.logo_url,
+            "primary_color": tenant.primary_color,
+            "secondary_color": tenant.secondary_color,
+            "footer_text": tenant.footer_text,
+            "tier": tenant.tier,
+            "features": features,
+        },
     }
 
 
-def quet_su_kien_tuan(profile: Dict, start: date = None,
-                        su_kien_ca_nhan: List[Dict] = None) -> Dict:
-    """
-    Quét tất cả sự kiện trong tuần tới:
-    - Sự kiện cá nhân user khai báo
-    - Sự kiện xã hội (dự đoán từ dữ liệu mẫu)
-    - Sự kiện chu kỳ (sinh nhật, lễ tết)
-    """
-    start = start or date.today()
-    end = start + timedelta(days=7)
+def ghi_usage(db: Session, tenant_id: int, loai: str, so_luong: int = 1):
+    """Ghi nhận sử dụng"""
+    thang = datetime.now().strftime("%Y-%m")
+    usage = db.query(TenantUsage).filter_by(
+        tenant_id=tenant_id, thang=thang
+    ).first()
+    if not usage:
+        usage = TenantUsage(tenant_id=tenant_id, thang=thang)
+        db.add(usage)
+    if loai == "llm":
+        usage.llm_calls += so_luong
+    elif loai == "video":
+        usage.video_renders += so_luong
+    elif loai == "pdf":
+        usage.pdf_exports += so_luong
+    db.commit()
 
-    tat_ca = []
 
-    # 1. Sự kiện cá nhân user khai báo
-    if su_kien_ca_nhan:
-        for sk in su_kien_ca_nhan:
-            ngay_sk = date.fromisoformat(sk["ngay"])
-            if start <= ngay_sk <= end:
-                ket_qua = tinh_chi_so_su_kien(
-                    profile, ngay_sk, "ca_nhan", sk["loai"]
-                )
-                ket_qua["custom_note"] = sk.get("note", "")
-                tat_ca.append(ket_qua)
+def bao_cao_tenant(db: Session, tenant_id: int) -> Dict:
+    """Báo cáo sử dụng cho tenant"""
+    tenant = db.query(Tenant).filter_by(id=tenant_id).first()
+    if not tenant:
+        return {"error": "Không tìm thấy tenant"}
 
-    # 2. Sinh nhật (nếu trong tuần)
-    ngay_sinh = profile["ngay_sinh"]  # "DD/MM/YYYY"
-    d, m, _ = map(int, ngay_sinh.split("/"))
-    for i in range(7):
-        check = start + timedelta(days=i)
-        if check.day == d and check.month == m:
-            ket_qua = tinh_chi_so_su_kien(profile, check, "ca_nhan", "sinh_nhat")
-            tat_ca.append(ket_qua)
+    thang_nay = datetime.now().strftime("%Y-%m")
+    usage = db.query(TenantUsage).filter_by(
+        tenant_id=tenant_id, thang=thang_nay
+    ).first()
 
-    # 3. Sự kiện xã hội mẫu (trong thực tế sẽ call API)
-    # Đây là placeholder — production sẽ fetch từ news API
-    su_kien_xa_hoi_mau = _lay_su_kien_xa_hoi_mau(start, end)
-    for sk in su_kien_xa_hoi_mau:
-        ket_qua = tinh_chi_so_su_kien(profile, date.fromisoformat(sk["ngay"]),
-                                        "xa_hoi", sk["id"])
-        ket_qua["mo_ta"] = sk["mo_ta"]
-        tat_ca.append(ket_qua)
-
-    # Sắp xếp theo ngày + điểm ảnh hưởng
-    tat_ca.sort(key=lambda x: (x["ngay"], -x["diem_anh_huong"]))
-
-    # Tổng hợp
     return {
-        "tu_ngay": start.isoformat(),
-        "den_ngay": end.isoformat(),
-        "tong_su_kien": len(tat_ca),
-        "su_kien": tat_ca,
-        "diem_tuan": round(sum(x["diem_anh_huong"] for x in tat_ca) /
-                            len(tat_ca), 1) if tat_ca else 50,
-        "su_kien_trong_diem": [x for x in tat_ca if x["diem_anh_huong"] >= 70],
-        "su_kien_can_chu_y": [x for x in tat_ca if x["diem_anh_huong"] <= 35],
+        "tenant": {
+            "slug": tenant.slug,
+            "ten_doanh_nghiep": tenant.ten_doanh_nghiep,
+            "tier": tenant.tier,
+            "brand_name": tenant.brand_name,
+        },
+        "quota": {
+            "max_llm_calls": tenant.max_llm_calls_month,
+            "max_users": tenant.max_users,
+        },
+        "su_dung_thang_nay": {
+            "thang": thang_nay,
+            "llm_calls": usage.llm_calls if usage else 0,
+            "video_renders": usage.video_renders if usage else 0,
+            "pdf_exports": usage.pdf_exports if usage else 0,
+            "users_created": usage.users_created if usage else 0,
+        },
+        "tinh_trang": "bình thường" if (not usage or
+                                        usage.llm_calls < tenant.max_llm_calls_month * 0.8)
+                      else "sắp hết quota",
     }
-
-
-def _lay_su_kien_xa_hoi_mau(start: date, end: date) -> List[Dict]:
-    """
-    Placeholder — production thay bằng:
-    - News API (NewsAPI, GNews)
-    - Lịch kinh tế (investing.com)
-    - Lịch âm (ngày rằm, mùng 1, tiết khí)
-    """
-    su_kien = []
-    # Các ngày rằm, mùng 1 âm lịch
-    from lich_van_nien import AmLich
-    d = start
-    while d <= end:
-        try:
-            ngay_am, thang_am, _, _ = AmLich.solar_to_lunar(d)
-            if ngay_am in (1, 15):
-                su_kien.append({
-                    "id": "ram_mung_mot",
-                    "ngay": d.isoformat(),
-                    "mo_ta": f"Ngày {'rằm' if ngay_am == 15 else 'mùng 1'} "
-                              f"tháng {thang_am} âm lịch",
-                })
-        except Exception:
-            pass
-        d += timedelta(days=1)
-
-    # Có thể thêm: ngày lễ VN, sự kiện kinh tế, v.v.
-    return su_kien
-
-
-def du_bao_dai_han(profile: Dict, nam: int = None) -> Dict:
-    """
-    Dự đoán sự kiện lớn trong năm — chia theo 4 quý.
-    """
-    nam = nam or date.today().year
-    quy = []
-    for q in range(1, 5):
-        thang_bat_dau = (q - 1) * 3 + 1
-        su_kien_quan_trong = []
-
-        # Sự kiện trọng đại của năm
-        for sk_id in ["ky_hop_dong", "dau_tu", "chuyen_viec",
-                       "thang_chuc", "khoi_nghiep"]:
-            # Điểm dự đoán cho tháng giữa quý
-            mid_month = thang_bat_dau + 1
-            ngay_test = date(nam, mid_month, 15)
-            kq = tinh_chi_so_su_kien(profile, ngay_test, "ca_nhan", sk_id)
-            if kq["diem_anh_huong"] >= 60:
-                su_kien_quan_trong.append(kq)
-
-        quy.append({
-            "quy": q,
-            "thang": f"{thang_bat_dau}-{thang_bat_dau + 2}",
-            "su_kien_nen_lap_ke_hoach": su_kien_quan_trong,
-        })
-
-    return {"nam": nam, "quy": quy}
 ```
 
-### Endpoints Sự Kiện
+### Middleware xác thực API key trong FastAPI
+
+```python
+# backend/middleware_tenant.py
+from fastapi import Request, HTTPException, Depends
+from fastapi.security import APIKeyHeader
+from sqlalchemy.orm import Session
+from database import SessionLocal
+from white_label import xac_thuc_api_key
+
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+async def get_tenant_from_api_key(
+    api_key: str = Depends(api_key_header),
+    db: Session = Depends(get_db),
+):
+    """Middleware xác thực API key cho white-label"""
+    if not api_key:
+        raise HTTPException(401, "Thiếu X-API-Key header")
+    result = xac_thuc_api_key(db, api_key)
+    if not result["valid"]:
+        raise HTTPException(401, result.get("reason", "API key không hợp lệ"))
+    return result["tenant"]
+```
+
+### Endpoints White-label
 
 ```python
 # main.py
-from su_kien import (quet_su_kien_tuan, tinh_chi_so_su_kien,
-                       du_bao_dai_han, LOAI_SU_KIEN)
-
-class SuKienInput(BaseModel):
-    ngay: str  # ISO date
-    loai: str  # "ky_hop_dong", "cuoi_hoi"...
-    note: str = ""
+from white_label import (tao_tenant, tao_api_key, bao_cao_tenant,
+                          ghi_usage, TIERS, Tenant, ApiKey)
+from middleware_tenant import get_tenant_from_api_key
 
 
-class QuetSuKienInput(BaseModel):
-    start: str = None  # ISO date
-    su_kien_ca_nhan: List[SuKienInput] = []
+class TenantCreateInput(BaseModel):
+    ten_doanh_nghiep: str
+    email: str
+    slug: str
+    tier: str = "basic"
 
 
-@app.post("/api/su-kien/quet-tuan")
-def api_quet_tuan(data: QuetSuKienInput,
-                    user: User = Depends(get_current_user),
-                    db: Session = Depends(get_db)):
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    if not prof:
-        raise HTTPException(400, "Chưa có hồ sơ")
-    profile = json.loads(prof.profile_json)
-
-    start = date.fromisoformat(data.start) if data.start else date.today()
-    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
-                    for s in data.su_kien_ca_nhan]
-
-    return quet_su_kien_tuan(profile, start, sk_ca_nhan)
-
-
-@app.get("/api/su-kien/du-bao-nam")
-def api_du_bao_nam(nam: int = None,
-                     user: User = Depends(get_current_user),
-                     db: Session = Depends(get_db)):
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    if not prof:
-        raise HTTPException(400, "Chưa có hồ sơ")
-    profile = json.loads(prof.profile_json)
-    return du_bao_dai_han(profile, nam)
-
-
-@app.get("/api/su-kien/loai")
-def api_loai_su_kien():
-    """Trả về danh mục sự kiện để user chọn"""
-    return LOAI_SU_KIEN
-
-
-@app.post("/api/su-kien/llm-tu-van")
-async def api_su_kien_llm(data: QuetSuKienInput,
-                            user: User = Depends(get_current_user),
-                            db: Session = Depends(get_db)):
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    if not prof:
-        raise HTTPException(400, "Chưa có hồ sơ")
-    profile = json.loads(prof.profile_json)
-
-    start = date.fromisoformat(data.start) if data.start else date.today()
-    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
-                    for s in data.su_kien_ca_nhan]
-
-    kq = quet_su_kien_tuan(profile, start, sk_ca_nhan)
-
-    prompt = f"""Tư vấn về các sự kiện sắp tới ảnh hưởng đến mệnh chủ:
-
-Hồ sơ: {profile['ngay_sinh']} — Mệnh {profile['menh_nap_am']} — {profile['con_giap']}
-
-Sự kiện trong tuần tới:
-{json.dumps(kq, ensure_ascii=False, indent=2)}
-
-Trả về JSON:
-{{
-  "tom_tat_tuan": "nhận định tổng quan về tuần",
-  "su_kien_trong_diem": [
-    {{"su_kien": "...", "ngay": "...", "muc_do_anh_huong": "...",
-      "nen_lam_gi": ["..."], "nen_tranh_gi": ["..."]}}
-  ],
-  "su_kien_gian_tiep_lan_toa": [
-    {{"su_kien": "...", "tac_dong": "...", "cach_thich_ung": ["..."]}}
-  ],
-  "lich_hanh_dong": [
-    {{"ngay": "YYYY-MM-DD", "hanh_dong": ["..."], "gio_tot": "..."}}
-  ],
-  "loi_khuyen_tong_the": "..."
-}}"""
-
-    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
+@app.post("/api/admin/tenants/create")
+def api_create_tenant(data: TenantCreateInput,
+                        user: User = Depends(get_current_user)):
+    """Chỉ admin tổng mới tạo tenant"""
+    if not user.username.startswith("admin"):
+        raise HTTPException(403, "Chỉ admin tổng")
     try:
-        tu_van = json.loads(raw)
-    except Exception:
-        tu_van = {"raw": raw}
+        return tao_tenant(SessionLocal(), data.ten_doanh_nghiep,
+                            data.email, data.slug, data.tier)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
-    return {"so_lieu": kq, "tu_van_llm": tu_van}
+
+@app.get("/api/tenant/me")
+def api_tenant_me(tenant: dict = Depends(get_tenant_from_api_key),
+                    db: Session = Depends(get_db)):
+    """Tenant info qua API key"""
+    return bao_cao_tenant(db, tenant["id"])
+
+
+@app.post("/api/tenant/api-key")
+def api_create_key(name: str = "default",
+                     tenant: dict = Depends(get_tenant_from_api_key),
+                     db: Session = Depends(get_db)):
+    return tao_api_key(db, tenant["id"], name)
+
+
+@app.get("/api/tenant/tiers")
+def api_list_tiers():
+    """Public: bảng giá các gói"""
+    return {
+        "tiers": [
+            {"id": k, **v, "gia_vnd_formatted": f"{v['gia_vnd']:,}đ/tháng"}
+            for k, v in TIERS.items()
+        ]
+    }
 ```
 
 ---
 
-## 🌍 MODULE 3: Môi Trường & Thời Tiết — `moi_truong.py`
+## 4️⃣ Module 2: Auto-posting TikTok/YouTube/Instagram — `auto_posting.py`
 
 ```python
 """
-Module kết nối phong thủy với môi trường thực tế:
-- Thời tiết (temperature, humidity, air quality)
-- Vị trí địa lý (longitude/latitude)
-- Ảnh hưởng môi trường đến mệnh chủ
+Tự động đăng video lên TikTok, YouTube, Instagram.
+Sử dụng API chính thức + fallback (Playwright).
+"""
+import os
+import json
+import httpx
+from datetime import datetime
+from typing import Dict, List, Optional
+from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey
+from sqlalchemy.orm import Session
+from database import Base
+
+
+# ============ MODELS ============
+class SocialAccount(Base):
+    __tablename__ = "social_accounts"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    platform = Column(String)  # "tiktok", "youtube", "instagram", "facebook"
+    account_name = Column(String)
+    access_token = Column(Text)
+    refresh_token = Column(Text, nullable=True)
+    expires_at = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ScheduledPost(Base):
+    __tablename__ = "scheduled_posts"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    video_path = Column(String)
+    caption = Column(Text)
+    hashtags = Column(Text)
+    platforms_json = Column(Text)  # ["tiktok", "youtube"]
+    scheduled_at = Column(DateTime)
+    posted_at = Column(DateTime, nullable=True)
+    status = Column(String, default="pending")  # pending, posted, failed
+    error = Column(Text, nullable=True)
+    post_urls_json = Column(Text, nullable=True)  # URLs sau khi post
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ============ CAPTION GENERATOR ============
+CAPTION_TEMPLATES = {
+    "vi": {
+        "ban_menh": """🔮 Bản mệnh của bạn tiết lộ điều gì?
+
+{summary}
+
+✨ 3 hành động cụ thể:
+{actions}
+
+👉 Xem chi tiết tại huyenbao.com
+
+#huyền_học #tử_vi #phong_thủy #bản_mệnh #tâmlinh #vậnmệnh""",
+        "su_kien": """📅 Sự kiện tuần này của bạn
+
+Điểm tuần: {diem}/100
+
+{top_events}
+
+👉 Xem lịch chi tiết tại huyenbao.com
+
+#sự_kiện #lịch_vạn_niên #vậnmệnh #huyềnhọc""",
+    },
+    "en": {
+        "ban_menh": """🔮 Your destiny revealed
+
+{summary}
+
+✨ 3 concrete actions:
+{actions}
+
+👉 Full reading at huyenbao.com
+
+#astrology #destiny #fengshui #metaphysics""",
+    },
+}
+
+
+def tao_caption(loai: str, data: dict, ngon_ngu: str = "vi") -> str:
+    """Tạo caption tự động cho video"""
+    templates = CAPTION_TEMPLATES.get(ngon_ngu, CAPTION_TEMPLATES["vi"])
+    template = templates.get(loai, "")
+
+    if loai == "ban_menh":
+        summary = data.get("tom_tat", "")[:200]
+        actions = "\n".join([
+            f"   {i+1}. {a.get('hanh_dong','')[:60]}"
+            for i, a in enumerate(data.get("hanh_dong_cu_the", [])[:3])
+        ])
+        return template.format(summary=summary, actions=actions)
+    elif loai == "su_kien":
+        diem = data.get("diem_tuan", 50)
+        events = "\n".join([
+            f"✨ {e['ten']} — {e['ngay']}"
+            for e in data.get("su_kien_trong_diem", [])[:3]
+        ])
+        return template.format(diem=diem, top_events=events)
+    return ""
+
+
+# ============ PLATFORM UPLOADERS ============
+class TikTokUploader:
+    """TikTok Content Posting API"""
+
+    def __init__(self, access_token: str):
+        self.token = access_token
+        self.base = "https://open.tiktokapis.com/v2"
+
+    async def upload_video(self, video_path: str, caption: str) -> Dict:
+        """Upload video lên TikTok"""
+        async with httpx.AsyncClient(timeout=300) as client:
+            # 1. Init upload
+            init_r = await client.post(
+                f"{self.base}/post/publish/video/init/",
+                headers={"Authorization": f"Bearer {self.token}"},
+                json={
+                    "post_info": {
+                        "title": caption[:2200],
+                        "privacy_level": "PUBLIC_TO_EVERYONE",
+                        "disable_duet": False,
+                        "disable_comment": False,
+                        "disable_stitch": False,
+                    },
+                    "source_info": {
+                        "source": "FILE_UPLOAD",
+                        "video_size": os.path.getsize(video_path),
+                        "chunk_size": os.path.getsize(video_path),
+                        "total_chunk_count": 1,
+                    },
+                },
+            )
+            data = init_r.json()
+            if "data" not in data or "upload_url" not in data.get("data", {}):
+                return {"error": "Không tạo được upload URL", "detail": data}
+
+            upload_url = data["data"]["upload_url"]
+            publish_id = data["data"]["publish_id"]
+
+            # 2. Upload file
+            with open(video_path, "rb") as f:
+                video_bytes = f.read()
+
+            upload_r = await client.put(
+                upload_url,
+                content=video_bytes,
+                headers={
+                    "Content-Type": "video/mp4",
+                    "Content-Range": f"bytes 0-{len(video_bytes)-1}/{len(video_bytes)}",
+                },
+            )
+            if upload_r.status_code not in (200, 201, 206):
+                return {"error": "Upload thất bại", "status": upload_r.status_code}
+
+            return {"success": True, "publish_id": publish_id}
+
+
+class YouTubeUploader:
+    """YouTube Data API v3"""
+
+    def __init__(self, access_token: str):
+        self.token = access_token
+        self.base = "https://www.googleapis.com/upload/youtube/v3"
+
+    async def upload_video(self, video_path: str, title: str,
+                            description: str, tags: List[str] = None,
+                            privacy: str = "public") -> Dict:
+        """Upload video lên YouTube (resumable)"""
+        metadata = {
+            "snippet": {
+                "title": title[:100],
+                "description": description[:5000],
+                "tags": tags or [],
+                "categoryId": "22",  # People & Blogs
+            },
+            "status": {
+                "privacyStatus": privacy,
+                "selfDeclaredMadeForKids": False,
+            },
+        }
+
+        async with httpx.AsyncClient(timeout=600) as client:
+            # 1. Init resumable upload
+            init_r = await client.post(
+                f"{self.base}/videos?uploadType=resumable&part=snippet,status",
+                headers={
+                    "Authorization": f"Bearer {self.token}",
+                    "Content-Type": "application/json",
+                    "X-Upload-Content-Type": "video/mp4",
+                    "X-Upload-Content-Length": str(os.path.getsize(video_path)),
+                },
+                json=metadata,
+            )
+            if init_r.status_code != 200:
+                return {"error": "Không tạo được session", "detail": init_r.text}
+
+            upload_url = init_r.headers.get("Location")
+
+            # 2. Upload video
+            with open(video_path, "rb") as f:
+                video_bytes = f.read()
+
+            upload_r = await client.put(
+                upload_url,
+                content=video_bytes,
+                headers={
+                    "Content-Type": "video/mp4",
+                    "Content-Length": str(len(video_bytes)),
+                },
+            )
+            if upload_r.status_code not in (200, 201):
+                return {"error": "Upload thất bại", "detail": upload_r.text}
+
+            data = upload_r.json()
+            return {
+                "success": True,
+                "video_id": data.get("id"),
+                "url": f"https://youtube.com/watch?v={data.get('id')}",
+            }
+
+
+class InstagramUploader:
+    """Instagram Graph API (Business accounts)"""
+
+    def __init__(self, access_token: str, ig_user_id: str):
+        self.token = access_token
+        self.ig_user_id = ig_user_id
+        self.base = "https://graph.facebook.com/v18.0"
+
+    async def upload_reel(self, video_url: str, caption: str) -> Dict:
+        """Upload Reel — cần public URL của video trước"""
+        async with httpx.AsyncClient(timeout=300) as client:
+            # 1. Create container
+            create_r = await client.post(
+                f"{self.base}/{self.ig_user_id}/media",
+                params={
+                    "media_type": "REELS",
+                    "video_url": video_url,
+                    "caption": caption,
+                    "access_token": self.token,
+                },
+            )
+            container_id = create_r.json().get("id")
+            if not container_id:
+                return {"error": "Không tạo được container", "detail": create_r.json()}
+
+            # 2. Publish (đợi vài giây cho container xử lý)
+            import asyncio
+            await asyncio.sleep(5)
+            pub_r = await client.post(
+                f"{self.base}/{self.ig_user_id}/media_publish",
+                params={"creation_id": container_id, "access_token": self.token},
+            )
+            return {"success": True, "post_id": pub_r.json().get("id")}
+
+
+# ============ ORCHESTRATOR ============
+async def post_to_multiple_platforms(
+    db: Session, user_id: int, video_path: str,
+    caption: str, platforms: List[str],
+) -> Dict:
+    """
+    Đăng video lên nhiều nền tảng cùng lúc.
+    """
+    accounts = db.query(SocialAccount).filter(
+        SocialAccount.user_id == user_id,
+        SocialAccount.platform.in_(platforms),
+        SocialAccount.is_active == True,
+    ).all()
+
+    if not accounts:
+        return {"error": "Chưa có tài khoản social nào được kết nối"}
+
+    results = {}
+    for account in accounts:
+        try:
+            if account.platform == "tiktok":
+                uploader = TikTokUploader(account.access_token)
+                results["tiktok"] = await uploader.upload_video(video_path, caption)
+            elif account.platform == "youtube":
+                uploader = YouTubeUploader(account.access_token)
+                results["youtube"] = await uploader.upload_video(
+                    video_path,
+                    title=caption.split("\n")[0][:100],
+                    description=caption,
+                )
+            elif account.platform == "instagram":
+                # Instagram cần public URL
+                # Upload video lên CDN trước (huyenbao.com)
+                video_url = f"https://huyenbao.com/media/{os.path.basename(video_path)}"
+                uploader = InstagramUploader(account.access_token,
+                                               account.account_name)
+                results["instagram"] = await uploader.upload_reel(video_url, caption)
+        except Exception as e:
+            results[account.platform] = {"error": str(e)}
+
+    return results
+
+
+def lap_lich_dang(db: Session, user_id: int, video_path: str,
+                    caption: str, platforms: List[str],
+                    scheduled_at: datetime = None) -> Dict:
+    """Lập lịch đăng video"""
+    post = ScheduledPost(
+        user_id=user_id, video_path=video_path, caption=caption,
+        hashtags="", platforms_json=json.dumps(platforms),
+        scheduled_at=scheduled_at or datetime.utcnow(),
+    )
+    db.add(post); db.commit(); db.refresh(post)
+    return {"post_id": post.id, "scheduled_at": post.scheduled_at.isoformat()}
+```
+
+### Endpoints Auto-posting
+
+```python
+# main.py
+from auto_posting import (SocialAccount, ScheduledPost, tao_caption,
+                            post_to_multiple_platforms, lap_lich_dang)
+
+
+class SocialConnectInput(BaseModel):
+    platform: str
+    account_name: str
+    access_token: str
+    refresh_token: str = None
+
+
+@app.post("/api/social/connect")
+def api_social_connect(data: SocialConnectInput,
+                         user: User = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    acc = SocialAccount(
+        user_id=user.id, platform=data.platform,
+        account_name=data.account_name,
+        access_token=data.access_token, refresh_token=data.refresh_token,
+    )
+    db.add(acc); db.commit(); db.refresh(acc)
+    return {"id": acc.id, "platform": acc.platform}
+
+
+class AutoPostInput(BaseModel):
+    video_path: str
+    caption: str = None
+    platforms: List[str] = ["tiktok", "youtube"]
+    loai: str = "ban_menh"  # để auto-gen caption
+    data: dict = {}  # dữ liệu cho caption template
+    ngon_ngu: str = "vi"
+    scheduled_at: str = None
+
+
+@app.post("/api/social/auto-post")
+async def api_auto_post(data: AutoPostInput,
+                          user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
+    caption = data.caption or tao_caption(data.loai, data.data, data.ngon_ngu)
+
+    if data.scheduled_at:
+        # Lên lịch
+        sch = datetime.fromisoformat(data.scheduled_at)
+        return lap_lich_dang(db, user.id, data.video_path, caption,
+                              data.platforms, sch)
+    else:
+        # Đăng ngay
+        results = await post_to_multiple_platforms(
+            db, user.id, data.video_path, caption, data.platforms
+        )
+        return {"caption": caption, "results": results}
+
+
+@app.get("/api/social/accounts")
+def api_list_accounts(user: User = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
+    accs = db.query(SocialAccount).filter_by(user_id=user.id).all()
+    return {"accounts": [{
+        "id": a.id, "platform": a.platform,
+        "account_name": a.account_name, "is_active": a.is_active,
+    } for a in accs]}
+
+
+@app.get("/api/social/scheduled")
+def api_list_scheduled(user: User = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    posts = db.query(ScheduledPost).filter_by(user_id=user.id).order_by(
+        ScheduledPost.scheduled_at.desc()
+    ).limit(50).all()
+    return {"posts": [{
+        "id": p.id, "video_path": p.video_path, "caption": p.caption[:100],
+        "platforms": json.loads(p.platforms_json or "[]"),
+        "scheduled_at": p.scheduled_at.isoformat(),
+        "status": p.status,
+    } for p in posts]}
+```
+
+---
+
+## 5️⃣ Module 3: Monetization Stripe — `monetization.py`
+
+```python
+"""
+Tích hợp Stripe cho subscription + one-time payments.
+"""
+import os
+import stripe
+from datetime import datetime, timedelta
+from typing import Dict, List
+from sqlalchemy import (Column, Integer, String, DateTime, Boolean,
+                          Float, Text, ForeignKey)
+from sqlalchemy.orm import Session
+from database import Base
+
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
+
+# ============ MODELS ============
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    stripe_customer_id = Column(String, index=True)
+    stripe_subscription_id = Column(String, unique=True, index=True)
+    plan = Column(String)  # "free", "premium", "vip"
+    status = Column(String)  # "active", "canceled", "past_due"
+    current_period_end = Column(DateTime, nullable=True)
+    cancel_at_period_end = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Payment(Base):
+    __tablename__ = "payments"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    stripe_payment_id = Column(String, unique=True)
+    amount = Column(Float)
+    currency = Column(String, default="vnd")
+    status = Column(String)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ============ PLANS ============
+PLANS = {
+    "free": {
+        "ten": "Miễn phí",
+        "gia_vnd": 0,
+        "features": [
+            "5 lần phân tích/ngày",
+            "Tử Vi cơ bản",
+            "Lịch vạn niên",
+            "Có watermark trên video",
+        ],
+        "limits": {
+            "llm_calls_day": 5,
+            "video_renders_day": 0,
+            "pdf_exports_month": 1,
+            "api_access": False,
+        },
+    },
+    "premium": {
+        "ten": "Premium",
+        "gia_vnd": 199000,
+        "gia_usd": 9,
+        "stripe_price_id": "price_premium_monthly",
+        "features": [
+            "Không giới hạn phân tích",
+            "Đầy đủ Tử Vi + Bát Tự + Tarot + Kinh Dịch",
+            "Video không watermark",
+            "PDF branded cá nhân",
+            "Auto-post TikTok/YouTube",
+            "Không quảng cáo",
+        ],
+        "limits": {
+            "llm_calls_day": 100,
+            "video_renders_day": 5,
+            "pdf_exports_month": 30,
+            "api_access": False,
+        },
+    },
+    "vip": {
+        "ten": "VIP",
+        "gia_vnd": 499000,
+        "gia_usd": 21,
+        "stripe_price_id": "price_vip_monthly",
+        "features": [
+            "Mọi tính năng Premium",
+            "API access cho doanh nghiệp",
+            "White-label",
+            "Ưu tiên LLM (không queue)",
+            "Hỗ trợ 1-1 với chuyên gia",
+            "Custom domain",
+        ],
+        "limits": {
+            "llm_calls_day": 1000,
+            "video_renders_day": 50,
+            "pdf_exports_month": 500,
+            "api_access": True,
+        },
+    },
+    "enterprise": {
+        "ten": "Doanh nghiệp",
+        "gia_vnd": 9900000,
+        "features": [
+            "Mọi tính năng VIP",
+            "Dedicated server",
+            "SLA 99.9%",
+            "Training riêng",
+            "White-label full",
+        ],
+        "limits": {
+            "llm_calls_day": 100000,
+            "video_renders_day": 5000,
+            "pdf_exports_month": 100000,
+            "api_access": True,
+        },
+    },
+}
+
+
+# ============ LOGIC ============
+def lay_plan(user_id: int, db: Session) -> Dict:
+    """Lấy plan hiện tại của user"""
+    sub = db.query(Subscription).filter_by(
+        user_id=user_id, status="active"
+    ).first()
+
+    if not sub or (sub.current_period_end and sub.current_period_end < datetime.utcnow()):
+        return {"plan": "free", **PLANS["free"]}
+
+    return {
+        "plan": sub.plan,
+        "current_period_end": sub.current_period_end.isoformat() if sub.current_period_end else None,
+        "cancel_at_period_end": sub.cancel_at_period_end,
+        **PLANS.get(sub.plan, PLANS["free"]),
+    }
+
+
+def check_quota(user_id: int, feature: str, db: Session) -> Dict:
+    """Kiểm tra user còn quota không"""
+    plan = lay_plan(user_id, db)
+    limits = plan.get("limits", {})
+
+    if feature == "llm_calls":
+        limit = limits.get("llm_calls_day", 5)
+        used = dem_su_dung_hom_nay(user_id, "llm", db)
+        return {
+            "allowed": used < limit,
+            "used": used, "limit": limit,
+            "remaining": max(0, limit - used),
+        }
+
+    if feature == "video_renders":
+        limit = limits.get("video_renders_day", 0)
+        used = dem_su_dung_hom_nay(user_id, "video", db)
+        return {
+            "allowed": used < limit,
+            "used": used, "limit": limit,
+            "remaining": max(0, limit - used),
+        }
+
+    return {"allowed": True}
+
+
+def dem_su_dung_hom_nay(user_id: int, loai: str, db: Session) -> int:
+    """Đếm số lần dùng hôm nay (dùng Prediction table làm nguồn)"""
+    from database import Prediction
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0)
+    if loai == "llm":
+        return db.query(Prediction).filter(
+            Prediction.created_at >= today
+        ).count()
+    return 0
+
+
+async def tao_checkout_session(user: User, plan: str, db: Session) -> Dict:
+    """Tạo Stripe Checkout Session"""
+    if plan not in PLANS or plan == "free":
+        raise ValueError(f"Plan không hợp lệ: {plan}")
+
+    plan_info = PLANS[plan]
+
+    # Tìm/tạo Stripe customer
+    sub = db.query(Subscription).filter_by(user_id=user.id).first()
+    if not sub or not sub.stripe_customer_id:
+        customer = stripe.Customer.create(
+            email=user.email,
+            metadata={"user_id": user.id, "username": user.username},
+        )
+        if not sub:
+            sub = Subscription(user_id=user.id,
+                                stripe_customer_id=customer.id,
+                                plan="free", status="active")
+            db.add(sub)
+        else:
+            sub.stripe_customer_id = customer.id
+        db.commit()
+
+    # Tạo checkout session
+    session = stripe.checkout.Session.create(
+        customer=sub.stripe_customer_id,
+        mode="subscription",
+        payment_method_types=["card"],
+        line_items=[{
+            "price": plan_info["stripe_price_id"],
+            "quantity": 1,
+        }],
+        success_url="https://huyenbao.com/payment/success?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url="https://huyenbao.com/payment/cancel",
+        metadata={"user_id": user.id, "plan": plan},
+    )
+    return {"checkout_url": session.url, "session_id": session.id}
+
+
+async def xu_ly_webhook(payload: bytes, sig_header: str, db: Session) -> Dict:
+    """Xử lý webhook từ Stripe"""
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+    event_type = event["type"]
+    data = event["data"]["object"]
+
+    if event_type == "checkout.session.completed":
+        user_id = int(data["metadata"]["user_id"])
+        plan = data["metadata"]["plan"]
+        sub_id = data["subscription"]
+
+        # Lấy subscription từ Stripe
+        stripe_sub = stripe.Subscription.retrieve(sub_id)
+
+        sub = db.query(Subscription).filter_by(user_id=user_id).first()
+        if sub:
+            sub.stripe_subscription_id = sub_id
+            sub.plan = plan
+            sub.status = "active"
+            sub.current_period_end = datetime.fromtimestamp(
+                stripe_sub["current_period_end"]
+            )
+            db.commit()
+
+        return {"handled": True, "action": "subscription_activated"}
+
+    if event_type == "invoice.payment_succeeded":
+        # Ghi payment
+        customer_id = data.get("customer")
+        sub = db.query(Subscription).filter_by(
+            stripe_customer_id=customer_id
+        ).first()
+        if sub:
+            db.add(Payment(
+                user_id=sub.user_id,
+                stripe_payment_id=data["id"],
+                amount=data["amount_paid"] / 100,
+                currency=data["currency"],
+                status="succeeded",
+                description=data.get("description"),
+            ))
+            db.commit()
+        return {"handled": True, "action": "payment_recorded"}
+
+    if event_type == "customer.subscription.deleted":
+        sub = db.query(Subscription).filter_by(
+            stripe_subscription_id=data["id"]
+        ).first()
+        if sub:
+            sub.status = "canceled"
+            sub.plan = "free"
+            db.commit()
+        return {"handled": True, "action": "subscription_canceled"}
+
+    return {"handled": False, "event": event_type}
+```
+
+### Middleware kiểm tra quota
+
+```python
+# backend/middleware_quota.py
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session
+from auth import get_current_user, get_db
+from database import User
+from monetization import check_quota
+
+
+def require_quota(feature: str):
+    """Dependency factory — kiểm tra quota cho feature"""
+    def check(user: User = Depends(get_current_user),
+              db: Session = Depends(get_db)):
+        quota = check_quota(user.id, feature, db)
+        if not quota["allowed"]:
+            raise HTTPException(
+                429,
+                f"Hết quota {feature}. Còn {quota['remaining']}/{quota['limit']}. "
+                f"Nâng cấp Premium để dùng không giới hạn."
+            )
+        return quota
+    return check
+```
+
+### Endpoints Monetization
+
+```python
+# main.py
+from monetization import (PLANS, lay_plan, check_quota,
+                            tao_checkout_session, xu_ly_webhook,
+                            Subscription, Payment)
+from middleware_quota import require_quota
+from fastapi import Request
+
+
+@app.get("/api/plans")
+def api_list_plans():
+    """Public: bảng giá"""
+    return {
+        "plans": [
+            {"id": k, **v} for k, v in PLANS.items()
+        ]
+    }
+
+
+@app.get("/api/me/plan")
+def api_my_plan(user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    return lay_plan(user.id, db)
+
+
+@app.get("/api/me/quota")
+def api_my_quota(user: User = Depends(get_current_user),
+                   db: Session = Depends(get_db)):
+    return {
+        "llm": check_quota(user.id, "llm_calls", db),
+        "video": check_quota(user.id, "video_renders", db),
+    }
+
+
+class CheckoutInput(BaseModel):
+    plan: str
+
+
+@app.post("/api/payments/checkout")
+async def api_checkout(data: CheckoutInput,
+                         user: User = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    try:
+        return await tao_checkout_session(user, data.plan, db)
+    except Exception as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/payments/webhook")
+async def api_webhook(request: Request,
+                        db: Session = Depends(get_db)):
+    """Stripe webhook endpoint"""
+    payload = await request.body()
+    sig = request.headers.get("stripe-signature", "")
+    result = await xu_ly_webhook(payload, sig, db)
+    return result
+
+
+@app.get("/api/payments/history")
+def api_payment_history(user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
+    payments = db.query(Payment).filter_by(user_id=user.id).order_by(
+        Payment.created_at.desc()
+    ).limit(50).all()
+    return {"payments": [{
+        "id": p.id, "amount": p.amount, "currency": p.currency,
+        "status": p.status, "description": p.description,
+        "created_at": p.created_at.isoformat(),
+    } for p in payments]}
+
+
+# ============ ÁP DỤNG QUOTA CHO CÁC ENDPOINT LLM ============
+# Ví dụ:
+@app.post("/api/analyze/quota")
+async def analyze_with_quota(data: BirthInput,
+                                quota: dict = Depends(require_quota("llm_calls")),
+                                user: User = Depends(get_current_user),
+                                db: Session = Depends(get_db)):
+    """Analyze với quota check"""
+    # ... logic analyze
+    return {"quota": quota, ...}
+```
+
+---
+
+## 6️⃣ Module 4: i18n Đa Ngôn Ngữ — `i18n.py`
+
+```python
+"""
+Đa ngôn ngữ: Việt, Anh, Trung, Nhật.
+Dùng dict + fallback.
+"""
+from typing import Dict
+from fastapi import Request, Depends
+
+
+LANG_DEFAULT = "vi"
+LANG_SUPPORTED = ["vi", "en", "zh", "ja"]
+
+TRANSLATIONS: Dict[str, Dict[str, str]] = {
+    "vi": {
+        # Auth
+        "auth.register": "Đăng ký",
+        "auth.login": "Đăng nhập",
+        "auth.email": "Email",
+        "auth.password": "Mật khẩu",
+        "auth.invalid_credentials": "Sai thông tin đăng nhập",
+
+        # Features
+        "feature.tu_vi": "Tử Vi",
+        "feature.tarot": "Tarot",
+        "feature.kinh_dich": "Kinh Dịch",
+        "feature.phong_thuy": "Phong Thủy",
+        "feature.tam_linh": "Tâm Linh",
+        "feature.ban_do": "Bản Đồ Phong Thủy",
+
+        # Messages
+        "msg.welcome": "Chào mừng đến Huyền Bảo AI",
+        "msg.quota_exceeded": "Đã hết quota. Nâng cấp để dùng thêm.",
+        "msg.error_generic": "Có lỗi xảy ra, vui lòng thử lại",
+        "msg.loading": "Đang tải...",
+
+        # Actions
+        "action.analyze": "Phân tích",
+        "action.render": "Tạo video",
+        "action.share": "Chia sẻ",
+        "action.export_pdf": "Xuất PDF",
+        "action.upgrade": "Nâng cấp",
+    },
+    "en": {
+        "auth.register": "Register",
+        "auth.login": "Login",
+        "auth.email": "Email",
+        "auth.password": "Password",
+        "auth.invalid_credentials": "Invalid credentials",
+
+        "feature.tu_vi": "Zi Wei Astrology",
+        "feature.tarot": "Tarot",
+        "feature.kinh_dich": "I Ching",
+        "feature.phong_thuy": "Feng Shui",
+        "feature.tam_linh": "Spirituality",
+        "feature.ban_do": "Feng Shui Map",
+
+        "msg.welcome": "Welcome to Huyen Bao AI",
+        "msg.quota_exceeded": "Quota exceeded. Upgrade to continue.",
+        "msg.error_generic": "An error occurred, please try again",
+        "msg.loading": "Loading...",
+
+        "action.analyze": "Analyze",
+        "action.render": "Render Video",
+        "action.share": "Share",
+        "action.export_pdf": "Export PDF",
+        "action.upgrade": "Upgrade",
+    },
+    "zh": {
+        "auth.register": "注册",
+        "auth.login": "登录",
+        "auth.email": "电子邮件",
+        "auth.password": "密码",
+        "auth.invalid_credentials": "凭据无效",
+
+        "feature.tu_vi": "紫微斗数",
+        "feature.tarot": "塔罗",
+        "feature.kinh_dich": "易经",
+        "feature.phong_thuy": "风水",
+        "feature.tam_linh": "灵修",
+        "feature.ban_do": "风水地图",
+
+        "msg.welcome": "欢迎来到玄宝AI",
+        "msg.quota_exceeded": "配额已用完。升级以继续。",
+        "msg.error_generic": "发生错误，请重试",
+        "msg.loading": "加载中...",
+
+        "action.analyze": "分析",
+        "action.render": "制作视频",
+        "action.share": "分享",
+        "action.export_pdf": "导出PDF",
+        "action.upgrade": "升级",
+    },
+    "ja": {
+        "auth.register": "登録",
+        "auth.login": "ログイン",
+        "auth.email": "メール",
+        "auth.password": "パスワード",
+        "auth.invalid_credentials": "認証情報が無効です",
+
+        "feature.tu_vi": "紫微斗数",
+        "feature.tarot": "タロット",
+        "feature.kinh_dich": "易経",
+        "feature.phong_thuy": "風水",
+        "feature.tam_linh": "スピリチュアル",
+        "feature.ban_do": "風水マップ",
+
+        "msg.welcome": "玄宝AIへようこそ",
+        "msg.quota_exceeded": "クォータを超えました。アップグレードしてください。",
+        "msg.error_generic": "エラーが発生しました。もう一度お試しください",
+        "msg.loading": "読み込み中...",
+
+        "action.analyze": "分析",
+        "action.render": "動画を作成",
+        "action.share": "共有",
+        "action.export_pdf": "PDF出力",
+        "action.upgrade": "アップグレード",
+    },
+}
+
+
+def detect_lang(request: Request) -> str:
+    """Detect ngôn ngữ từ Accept-Language header hoặc ?lang="""
+    # Query param ưu tiên
+    lang = request.query_params.get("lang")
+    if lang in LANG_SUPPORTED:
+        return lang
+
+    # Header Accept-Language
+    accept = request.headers.get("accept-language", "")
+    for part in accept.split(","):
+        code = part.split(";")[0].strip()[:2].lower()
+        if code in LANG_SUPPORTED:
+            return code
+
+    return LANG_DEFAULT
+
+
+def t(key: str, lang: str = "vi", **kwargs) -> str:
+    """Translate function"""
+    lang_dict = TRANSLATIONS.get(lang, TRANSLATIONS[LANG_DEFAULT])
+    text = lang_dict.get(key) or TRANSLATIONS[LANG_DEFAULT].get(key) or key
+    if kwargs:
+        try:
+            text = text.format(**kwargs)
+        except (KeyError, IndexError):
+            pass
+    return text
+
+
+async def get_lang(request: Request) -> str:
+    """Dependency: get ngôn ngữ từ request"""
+    return detect_lang(request)
+```
+
+### Endpoint i18n
+
+```python
+# main.py
+from i18n import t, TRANSLATIONS, LANG_SUPPORTED, get_lang
+from fastapi import Request
+
+
+@app.get("/api/i18n/{lang}")
+def api_i18n(lang: str):
+    """Trả về toàn bộ translations cho ngôn ngữ"""
+    if lang not in LANG_SUPPORTED:
+        lang = "vi"
+    return {"lang": lang, "translations": TRANSLATIONS[lang]}
+
+
+@app.get("/api/i18n")
+def api_i18n_detect(request: Request):
+    """Auto-detect ngôn ngữ"""
+    lang = detect_lang(request)
+    return {"lang": lang, "translations": TRANSLATIONS[lang]}
+```
+
+### Frontend i18n helper
+
+```html
+<!-- frontend/i18n.js -->
+<script>
+const I18n = {
+  lang: 'vi',
+  data: {},
+  
+  async init() {
+    // Detect ngôn ngữ
+    const savedLang = localStorage.getItem('lang');
+    const browserLang = navigator.language.split('-')[0];
+    const supported = ['vi', 'en', 'zh', 'ja'];
+    this.lang = savedLang || (supported.includes(browserLang) ? browserLang : 'vi');
+    
+    const r = await fetch(`/api/i18n/${this.lang}`);
+    const d = await r.json();
+    this.data = d.translations;
+    
+    // Auto-translate elements có data-i18n
+    this.applyTranslations();
+  },
+  
+  applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      const text = this.data[key] || key;
+      if (el.tagName === 'INPUT' && el.placeholder !== undefined) {
+        el.placeholder = text;
+      } else {
+        el.textContent = text;
+      }
+    });
+  },
+  
+  t(key, fallback = '') {
+    return this.data[key] || fallback || key;
+  },
+  
+  async switchLang(lang) {
+    this.lang = lang;
+    localStorage.setItem('lang', lang);
+    await this.init();
+  }
+};
+
+I18n.init();
+</script>
+
+<!-- Sử dụng -->
+<button data-i18n="action.analyze"></button>
+<input data-i18n="auth.email" placeholder="Email">
+
+<!-- Language switcher -->
+<select onchange="I18n.switchLang(this.value)">
+  <option value="vi">🇻🇳 Tiếng Việt</option>
+  <option value="en">🇬🇧 English</option>
+  <option value="zh">🇨🇳 中文</option>
+  <option value="ja">🇯🇵 日本語</option>
+</select>
+```
+
+---
+
+## 7️⃣ Module 5: Mobile App React Native — `mobile/`
+
+### `mobile/package.json`
+
+```json
+{
+  "name": "huyenbao-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "build:android": "eas build -p android --profile production",
+    "build:ios": "eas build -p ios --profile production"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-router": "~3.5.0",
+    "expo-notifications": "~0.28.0",
+    "expo-secure-store": "~13.0.0",
+    "expo-web-browser": "~13.0.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-webview": "13.8.6",
+    "@react-navigation/native": "^6.1.0",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "axios": "^1.7.0"
+  }
+}
+```
+
+### `mobile/app/_layout.tsx`
+
+```tsx
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
+import { AuthProvider } from '../lib/auth';
+
+// Cấu hình notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+export default function RootLayout() {
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </AuthProvider>
+  );
+}
+
+async function registerForPushNotifications() {
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') return;
+
+  const token = (await Notifications.getExpoPushTokenAsync()).data;
+  // Gửi token về backend
+  const authToken = await require('expo-secure-store').getItemAsync('token');
+  if (authToken) {
+    await fetch('https://huyenbao.com/api/notifications/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ token, platform: 'expo' }),
+    });
+  }
+}
+```
+
+### `mobile/app/(tabs)/index.tsx` — Trang chủ
+
+```tsx
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
+
+export default function HomeScreen() {
+  const [profile, setProfile] = useState(null);
+  const [chiSo, setChiSo] = useState(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const d = await api.get('/api/me/profile');
+      setProfile(d.profile);
+      setChiSo(d.chi_so);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.greeting}>
+          🔮 Chào {profile?.ho_ten || 'bạn'}
+        </Text>
+        <Text style={styles.subtitle}>
+          Mệnh {profile?.menh_nap_am} · {profile?.con_giap}
+        </Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>📊 Chỉ số hôm nay</Text>
+        {chiSo && Object.entries(chiSo).map(([k, v]) => (
+          <View key={k} style={styles.row}>
+            <Text style={styles.label}>{k}</Text>
+            <View style={styles.barBg}>
+              <View style={[styles.barFill, { width: `${v}%` }]} />
+            </View>
+            <Text style={styles.value}>{Math.round(v)}%</Text>
+          </View>
+        ))}
+      </View>
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>📅 Xem lịch vạn niên</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>🎴 Rút Tarot</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>☯️ Gieo quẻ Kinh Dịch</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0f0524' },
+  header: { padding: 24, paddingTop: 60 },
+  greeting: { fontSize: 28, fontWeight: 'bold', color: '#c4a3ff' },
+  subtitle: { fontSize: 16, color: '#a890c9', marginTop: 8 },
+  card: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    margin: 16, padding: 20, borderRadius: 16,
+    borderColor: 'rgba(196,163,255,0.2)', borderWidth: 1,
+  },
+  cardTitle: { fontSize: 18, color: '#ffd700', marginBottom: 16 },
+  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  label: { width: 100, color: '#e8dff5', fontSize: 14 },
+  barBg: {
+    flex: 1, height: 8, backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 4, overflow: 'hidden',
+  },
+  barFill: { height: '100%', backgroundColor: '#ffd700' },
+  value: { width: 50, textAlign: 'right', color: '#ffd700', fontSize: 14 },
+  button: {
+    backgroundColor: '#7b3fe4',
+    margin: 16, marginTop: 0, padding: 16, borderRadius: 12,
+  },
+  buttonText: { color: 'white', fontSize: 16, fontWeight: '600', textAlign: 'center' },
+});
+```
+
+### Build config `mobile/app.json`
+
+```json
+{
+  "expo": {
+    "name": "Huyền Bảo AI",
+    "slug": "huyenbao",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "huyenbao",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "backgroundColor": "#0f0524"
+    },
+    "ios": {
+      "bundleIdentifier": "com.huyenbao.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Chụp ảnh để phân tích",
+        "NSLocationWhenInUseUsageDescription": "Xác định vị trí phong thủy"
+      }
+    },
+    "android": {
+      "package": "com.huyenbao.app",
+      "permissions": [
+        "CAMERA", "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      ["expo-notifications", {
+        "icon": "./assets/notification-icon.png",
+        "color": "#7b3fe4"
+      }]
+    ]
+  }
+}
+```
+
+### Build script `mobile/build.sh`
+
+```bash
+#!/bin/bash
+# Build mobile app
+
+set -e
+
+echo "📱 Building Huyền Bảo AI mobile app..."
+
+# Cài dependencies
+npm install
+
+# Cài EAS CLI
+if ! command -v eas &> /dev/null; then
+    npm install -g eas-cli
+fi
+
+# Login EAS
+eas login
+
+# Build Android
+echo "🤖 Building Android APK/AAB..."
+eas build -p android --profile production
+
+# Build iOS
+echo "🍎 Building iOS IPA..."
+eas build -p ios --profile production
+
+echo "✅ Build done!"
+echo "📤 Submit lên store:"
+echo "  eas submit -p android"
+echo "  eas submit -p ios"
+```
+
+---
+
+## 8️⃣ Module 6: Blockchain NFT — `blockchain_nft.py`
+
+```python
+"""
+Lưu lá số dạng NFT trên blockchain (Polygon/BSC — chi phí thấp).
+"""
+import os
+import json
+import hashlib
+from datetime import datetime
+from typing import Dict, List
+from sqlalchemy import (Column, Integer, String, DateTime, Text, ForeignKey)
+from sqlalchemy.orm import Session
+from database import Base
+
+
+# Cấu hình blockchain
+WEB3_PROVIDER = os.getenv("WEB3_PROVIDER", "https://polygon-rpc.com")
+CONTRACT_ADDRESS = os.getenv("NFT_CONTRACT_ADDRESS", "")
+PRIVATE_KEY = os.getenv("WALLET_PRIVATE_KEY", "")
+
+
+# ============ MODELS ============
+class LaSoNFT(Base):
+    __tablename__ = "la_so_nft"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    profile_id = Column(Integer, ForeignKey("profiles.id"), index=True)
+    token_id = Column(String, unique=True, index=True)
+    tx_hash = Column(String, index=True)
+    chain = Column(String, default="polygon")
+    metadata_uri = Column(String)
+    metadata_json = Column(Text)
+    minted_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ============ METADATA GENERATOR ============
+def tao_metadata_nft(profile: Dict, chi_so: Dict,
+                       la_so: Dict = None) -> Dict:
+    """Tạo ERC-721 metadata chuẩn OpenSea"""
+    # Hash để đảm bảo immutable
+    content = json.dumps(profile, sort_keys=True, ensure_ascii=False)
+    content_hash = hashlib.sha256(content.encode()).hexdigest()
+
+    metadata = {
+        "name": f"Lá Số Huyền Bảo — {profile.get('ho_ten', 'Ẩn danh')}",
+        "description": (
+            f"Lá số huyền học được AI tạo bởi Huyền Bảo AI. "
+            f"Ngày sinh: {profile['ngay_sinh']}. "
+            f"Mệnh: {profile['menh_nap_am']}. "
+            f"Verifiable hash: {content_hash[:16]}..."
+        ),
+        "image": f"https://huyenbao.com/nft/image/{content_hash[:16]}.png",
+        "external_url": f"https://huyenbao.com/nft/{content_hash[:16]}",
+        "attributes": [
+            {"trait_type": "Ngày sinh", "value": profile["ngay_sinh"]},
+            {"trait_type": "Can Chi", "value": profile["can_chi_nam"]},
+            {"trait_type": "Con giáp", "value": profile["con_giap"]},
+            {"trait_type": "Mệnh nạp âm", "value": profile["menh_nap_am"]},
+            {"trait_type": "Số chủ đạo", "value": profile["so_chu_dao"]},
+            {"trait_type": "Cung phi", "value": profile["cung_phi"]},
+            {"trait_type": "Bát quái", "value": profile["bat_quai"]},
+            {"trait_type": "Tài vận", "value": int(chi_so.get("tai_van", 50))},
+            {"trait_type": "Tình duyên", "value": int(chi_so.get("tinh_duyen", 50))},
+            {"trait_type": "Sự nghiệp", "value": int(chi_so.get("su_nghiep", 50))},
+            {"trait_type": "Sức khỏe", "value": int(chi_so.get("suc_khoe", 50))},
+            {"trait_type": "Content Hash", "value": content_hash},
+        ],
+        "properties": {
+            "content_hash": content_hash,
+            "profile": profile,
+            "chi_so": chi_so,
+            "la_so": la_so,
+            "created_by": "Huyen Bao AI",
+            "version": "1.0",
+            "immutable": True,
+        },
+    }
+    return metadata
+
+
+# ============ MINT (dùng web3.py) ============
+def mint_nft(user_id: int, profile_id: int, wallet_address: str,
+               metadata: Dict, db: Session) -> Dict:
+    """
+    Mint NFT trên blockchain.
+    Yêu cầu: WEB3_PROVIDER, CONTRACT_ADDRESS, PRIVATE_KEY.
+    """
+    try:
+        from web3 import Web3
+        from eth_account import Account
+        from web3.middleware import geth_poa_middleware
+    except ImportError:
+        return {"error": "Cần cài: pip install web3 eth-account"}
+
+    if not CONTRACT_ADDRESS or not PRIVATE_KEY:
+        return {"error": "Chưa cấu hình contract hoặc private key"}
+
+    w3 = Web3(Web3.HTTPProvider(WEB3_PROVIDER))
+    if not w3.is_connected():
+        return {"error": "Không kết nối được blockchain"}
+
+    # Thêm middleware cho Polygon
+    w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+    # ABI rút gọn của ERC-721
+    ABI = json.loads("""
+    [
+      {"inputs":[{"name":"to","type":"address"},{"name":"uri","type":"string"}],
+       "name":"safeMint","outputs":[{"name":"","type":"uint256"}],
+       "stateMutability":"nonpayable","type":"function"}
+    ]
+    """)
+
+    account = Account.from_key(PRIVATE_KEY)
+    contract = w3.eth.contract(
+        address=Web3.to_checksum_address(CONTRACT_ADDRESS),
+        abi=ABI,
+    )
+
+    # Upload metadata lên IPFS (dùng Pinata/NFT.Storage)
+    metadata_uri = upload_to_ipfs(metadata)
+    if not metadata_uri:
+        return {"error": "Không upload được metadata"}
+
+    # Build tx
+    nonce = w3.eth.get_transaction_count(account.address)
+    tx = contract.functions.safeMint(
+        Web3.to_checksum_address(wallet_address),
+        metadata_uri,
+    ).build_transaction({
+        "from": account.address,
+        "nonce": nonce,
+        "gas": 300000,
+        "maxFeePerGas": w3.to_wei("50", "gwei"),
+        "maxPriorityFeePerGas": w3.to_wei("30", "gwei"),
+        "chainId": w3.eth.chain_id,
+    })
+
+    signed = account.sign_transaction(tx)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
+
+    # Parse token_id từ event Transfer
+    token_id = None
+    for log in receipt.logs:
+        if len(log["topics"]) == 4:  # Transfer event
+            token_id = str(int(log["topics"][3].hex(), 16))
+            break
+
+    nft = LaSoNFT(
+        user_id=user_id, profile_id=profile_id,
+        token_id=token_id or "0",
+        tx_hash=tx_hash.hex(),
+        chain="polygon",
+        metadata_uri=metadata_uri,
+        metadata_json=json.dumps(metadata, ensure_ascii=False),
+    )
+    db.add(nft); db.commit(); db.refresh(nft)
+
+    return {
+        "token_id": nft.token_id,
+        "tx_hash": nft.tx_hash,
+        "chain": "polygon",
+        "opensea_url": f"https://opensea.io/assets/matic/{CONTRACT_ADDRESS}/{nft.token_id}",
+        "polygonscan_url": f"https://polygonscan.com/tx/{nft.tx_hash}",
+    }
+
+
+def upload_to_ipfs(metadata: Dict) -> str:
+    """Upload metadata lên IPFS qua Pinata"""
+    pinata_jwt = os.getenv("PINATA_JWT", "")
+    if not pinata_jwt:
+        # Fallback: lưu metadata và dùng URL huyenbao.com
+        content_hash = hashlib.sha256(
+            json.dumps(metadata, sort_keys=True).encode()
+        ).hexdigest()[:32]
+        # Lưu vào DB riêng hoặc file static
+        return f"https://huyenbao.com/metadata/{content_hash}.json"
+
+    import httpx
+    r = httpx.post(
+        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        headers={"Authorization": f"Bearer {pinata_jwt}"},
+        json={"pinataContent": metadata},
+        timeout=30,
+    )
+    if r.status_code == 200:
+        ipfs_hash = r.json()["IpfsHash"]
+        return f"ipfs://{ipfs_hash}"
+    return ""
+```
+
+### Endpoints NFT
+
+```python
+# main.py
+from blockchain_nft import tao_metadata_nft, mint_nft, LaSoNFT
+
+
+class MintNFTInput(BaseModel):
+    wallet_address: str
+    profile_id: int = None
+
+
+@app.post("/api/nft/preview-metadata")
+def api_nft_preview(data: BirthInput,
+                      user: User = Depends(get_current_user),
+                      db: Session = Depends(get_db)):
+    """Xem trước metadata NFT (chưa mint)"""
+    prof = _get_or_create_profile(db, user, data.ho_ten,
+                                    data.ngay, data.thang, data.nam)
+    profile = json.loads(prof.profile_json)
+    chi_so = tinh_chi_so_su_kien(profile)
+    return tao_metadata_nft(profile, chi_so)
+
+
+@app.post("/api/nft/mint")
+def api_nft_mint(data: MintNFTInput,
+                   user: User = Depends(get_current_user),
+                   db: Session = Depends(get_db)):
+    """Mint NFT lá số"""
+    prof = db.query(Profile).filter_by(
+        id=data.profile_id, user_id=user.id
+    ).first()
+    if not prof:
+        raise HTTPException(404, "Không tìm thấy profile")
+
+    profile = json.loads(prof.profile_json)
+    chi_so = tinh_chi_so_su_kien(profile)
+    metadata = tao_metadata_nft(profile, chi_so)
+
+    return mint_nft(user.id, prof.id, data.wallet_address, metadata, db)
+
+
+@app.get("/api/nft/my-nfts")
+def api_my_nfts(user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    nfts = db.query(LaSoNFT).filter_by(user_id=user.id).all()
+    return {"nfts": [{
+        "token_id": n.token_id,
+        "tx_hash": n.tx_hash,
+        "chain": n.chain,
+        "opensea_url": f"https://opensea.io/assets/matic/{CONTRACT_ADDRESS}/{n.token_id}",
+        "minted_at": n.minted_at.isoformat(),
+    } for n in nfts]}
+```
+
+### Smart Contract mẫu `contracts/LaSoNFT.sol`
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract LaSoNFT is ERC721URIStorage, Ownable {
+    uint256 private _nextTokenId;
+
+    event LaSoMinted(address indexed to, uint256 indexed tokenId, string uri);
+
+    constructor() ERC721("Huyen Bao La So", "HBLS") Ownable(msg.sender) {}
+
+    function safeMint(address to, string memory uri)
+        public
+        onlyOwner
+        returns (uint256)
+    {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+        emit LaSoMinted(to, tokenId, uri);
+        return tokenId;
+    }
+}
+```
+
+### Deploy contract `contracts/deploy.js`
+
+```javascript
+// Dùng Hardhat
+const hre = require("hardhat");
+
+async function main() {
+  const LaSoNFT = await hre.ethers.getContractFactory("LaSoNFT");
+  const nft = await LaSoNFT.deploy();
+  await nft.waitForDeployment();
+
+  const address = await nft.getAddress();
+  console.log("LaSoNFT deployed to:", address);
+  console.log("Lưu vào .env: NFT_CONTRACT_ADDRESS=" + address);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+---
+
+## 9️⃣ Module 7: Voice AI — `voice_ai.py`
+
+```python
+"""
+Đọc dự đoán bằng giọng nói tiếng Việt.
+Hỗ trợ ElevenLabs, Coqui TTS, hoặc Google Cloud TTS.
 """
 import os
 import httpx
-from datetime import date, datetime
+from datetime import datetime
 from typing import Dict, Optional
+from pathlib import Path
 
 
-OPENWEATHER_KEY = os.getenv("OPENWEATHER_API_KEY", "")
+ELEVENLABS_KEY = os.getenv("ELEVENLABS_API_KEY", "")
+GOOGLE_TTS_KEY = os.getenv("GOOGLE_TTS_KEY", "")
+
+MEDIA_DIR = Path(__file__).parent.parent / "media" / "voice"
+MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-async def lay_thoi_tiet(lat: float, lon: float) -> Dict:
-    """Lấy thời tiết hiện tại từ OpenWeather"""
-    if not OPENWEATHER_KEY:
-        return {"error": "Chưa cấu hình OPENWEATHER_API_KEY"}
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    async with httpx.AsyncClient(timeout=10) as client:
-        r = await client.get(url, params={
-            "lat": lat, "lon": lon,
-            "appid": OPENWEATHER_KEY, "units": "metric", "lang": "vi",
-        })
+# ============ ELEVENLABS ============
+ELEVENLABS_VOICES = {
+    "vi_nu": "EXAVITQu4vr4xnSDxMaL",  # Sarah (đa ngôn ngữ)
+    "vi_nam": "pNInz6obpgDQGcFmaJgB",  # Adam
+    "vi_tre": "21m00Tcm4TlvDq8ikWAM",  # Rachel
+}
+
+
+async def tts_elevenlabs(text: str, voice_id: str,
+                            output_path: str) -> Dict:
+    """ElevenLabs TTS"""
+    if not ELEVENLABS_KEY:
+        return {"error": "Chưa cấu hình ELEVENLABS_API_KEY"}
+
+    async with httpx.AsyncClient(timeout=60) as client:
+        r = await client.post(
+            f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+            headers={
+                "xi-api-key": ELEVENLABS_KEY,
+                "Content-Type": "application/json",
+            },
+            json={
+                "text": text,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75,
+                    "style": 0.3,
+                    "use_speaker_boost": True,
+                },
+            },
+        )
         if r.status_code != 200:
             return {"error": r.text}
-        d = r.json()
-        return {
-            "nhiet_do": d["main"]["temp"],
-            "do_am": d["main"]["humidity"],
-            "mo_ta": d["weather"][0]["description"],
-            "icon": d["weather"][0]["icon"],
-            "gio": d["wind"]["speed"],
-            "may": d["clouds"]["all"],
-            "thanh_pho": d.get("name", ""),
-        }
+
+        with open(output_path, "wb") as f:
+            f.write(r.content)
+
+    return {"success": True, "path": output_path, "provider": "elevenlabs"}
 
 
-async def lay_chat_luong_khong_khi(lat: float, lon: float) -> Dict:
-    """AQI từ OpenWeather"""
-    if not OPENWEATHER_KEY:
-        return {"error": "Chưa cấu hình"}
-    url = "https://api.openweathermap.org/data/2.5/air_pollution"
-    async with httpx.AsyncClient(timeout=10) as client:
-        r = await client.get(url, params={
-            "lat": lat, "lon": lon, "appid": OPENWEATHER_KEY,
-        })
+# ============ GOOGLE CLOUD TTS ============
+GOOGLE_VOICES = {
+    "vi_nu": "vi-VN-Standard-A",
+    "vi_nam": "vi-VN-Standard-B",
+    "vi_nu2": "vi-VN-Wavenet-A",
+}
+
+
+async def tts_google(text: str, voice_name: str,
+                        output_path: str) -> Dict:
+    """Google Cloud TTS"""
+    if not GOOGLE_TTS_KEY:
+        return {"error": "Chưa cấu hình GOOGLE_TTS_KEY"}
+
+    async with httpx.AsyncClient(timeout=60) as client:
+        r = await client.post(
+            f"https://texttospeech.googleapis.com/v1/text:synthesize?key={GOOGLE_TTS_KEY}",
+            json={
+                "input": {"text": text},
+                "voice": {"languageCode": "vi-VN", "name": voice_name},
+                "audioConfig": {
+                    "audioEncoding": "MP3",
+                    "speakingRate": 1.0,
+                    "pitch": 0.0,
+                },
+            },
+        )
         if r.status_code != 200:
             return {"error": r.text}
-        d = r.json()["list"][0]
-        aqi = d["main"]["aqi"]  # 1-5
-        return {
-            "aqi": aqi,
-            "muc_do": ["Tốt", "Khá", "Trung bình", "Kém", "Nguy hại"][aqi-1],
-            "pm2_5": d["components"]["pm2_5"],
-            "pm10": d["components"]["pm10"],
-            "o3": d["components"]["o3"],
-            "no2": d["components"]["no2"],
-            "so2": d["components"]["so2"],
-            "co": d["components"]["co"],
-        }
+
+        import base64
+        audio_content = base64.b64decode(r.json()["audioContent"])
+        with open(output_path, "wb") as f:
+            f.write(audio_content)
+
+    return {"success": True, "path": output_path, "provider": "google"}
 
 
-# ============ ẢNH HƯỞNG MÔI TRƯỜNG → MỆNH CHỦ ============
-def danh_gia_anh_huong_moi_truong(profile: Dict,
-                                    thoi_tiet: Dict,
-                                    aqi: Dict) -> Dict:
+# ============ COQUI (offline) ============
+async def tts_coqui(text: str, output_path: str) -> Dict:
     """
-    Đánh giá môi trường hiện tại ảnh hưởng thế nào đến mệnh chủ.
+    Coqui TTS — chạy local, miễn phí, cần cài: pip install TTS.
+    Hỗ trợ tiếng Việt qua model VietTTS.
     """
-    menh = profile["menh_nap_am"]
-    ket_qua = {"diem_tong_hop": 50, "nhan_xet": [], "hanh_dong": []}
+    try:
+        from TTS.api import TTS
+    except ImportError:
+        return {"error": "Cần cài: pip install TTS"}
 
-    # 1. Ngũ hành môi trường vs mệnh
-    # Nhiệt độ cao → Hỏa vượng; thấp → Thủy vượng
-    if "nhiet_do" in thoi_tiet:
-        t = thoi_tiet["nhiet_do"]
-        if t > 35:
-            hanh_mt = "Hỏa"
-            ket_qua["nhan_xet"].append(f"Nhiệt độ cao {t}°C — Hỏa vượng")
-        elif t < 15:
-            hanh_mt = "Thủy"
-            ket_qua["nhan_xet"].append(f"Nhiệt độ thấp {t}°C — Thủy vượng")
+    try:
+        # Model tiếng Việt
+        tts = TTS(model_name="tts_models/vi/mai/glow-tts", progress_bar=False)
+        tts.tts_to_file(text=text, file_path=output_path)
+        return {"success": True, "path": output_path, "provider": "coqui"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============ ORCHESTRATOR ============
+async def tao_giong_doc(text: str, voice: str = "vi_nu",
+                          provider: str = "auto") -> Dict:
+    """Tạo file audio đọc text"""
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    output = str(MEDIA_DIR / f"voice_{ts}.mp3")
+
+    # Auto chọn provider
+    if provider == "auto":
+        if ELEVENLABS_KEY:
+            provider = "elevenlabs"
+        elif GOOGLE_TTS_KEY:
+            provider = "google"
         else:
-            hanh_mt = None
-            ket_qua["nhan_xet"].append(f"Nhiệt độ dễ chịu {t}°C")
+            provider = "coqui"
 
-        if hanh_mt:
-            from lich_van_nien import quan_he_ngu_hanh
-            qh = quan_he_ngu_hanh(menh, hanh_mt)
-            if qh == "tương sinh":
-                ket_qua["diem_tong_hop"] += 10
-                ket_qua["nhan_xet"].append(f"{menh} tương sinh {hanh_mt} — thuận")
-            elif qh == "tương khắc":
-                ket_qua["diem_tong_hop"] -= 10
-                ket_qua["nhan_xet"].append(f"{menh} khắc {hanh_mt} — cần chú ý")
-                ket_qua["hanh_dong"].append(
-                    f"Hạn chế ra ngoài giờ cao điểm, uống nhiều nước"
-                )
-
-    # 2. Độ ẩm
-    if "do_am" in thoi_tiet:
-        h = thoi_tiet["do_am"]
-        if h > 85:
-            ket_qua["diem_tong_hop"] -= 5
-            ket_qua["nhan_xet"].append(f"Độ ẩm cao {h}% — Thủy khí nặng")
-            ket_qua["hanh_dong"].append("Dùng máy hút ẩm, tránh ẩm mốc")
-        elif h < 30:
-            ket_qua["diem_tong_hop"] -= 5
-            ket_qua["nhan_xet"].append(f"Không khí khô {h}% — Kim/Hỏa khô")
-            ket_qua["hanh_dong"].append("Uống đủ nước, dùng máy tạo ẩm")
-
-    # 3. Chất lượng không khí
-    if "aqi" in aqi:
-        aqi_val = aqi["aqi"]
-        if aqi_val >= 4:
-            ket_qua["diem_tong_hop"] -= 20
-            ket_qua["nhan_xet"].append(
-                f"Không khí {aqi['muc_do']} (PM2.5: {aqi['pm2_5']}) — nguy hiểm"
-            )
-            ket_qua["hanh_dong"].extend([
-                "Đeo khẩu trang N95 khi ra ngoài",
-                "Đóng cửa sổ, dùng máy lọc không khí",
-                "Hạn chế tập thể dục ngoài trời",
-            ])
-        elif aqi_val == 3:
-            ket_qua["diem_tong_hop"] -= 10
-            ket_qua["nhan_xet"].append(f"Không khí {aqi['muc_do']} — nhạy cảm")
-            ket_qua["hanh_dong"].append("Người có bệnh hô hấp nên ở trong nhà")
-
-    # 4. Mưa / gió
-    if thoi_tiet.get("mo_ta"):
-        mt = thoi_tiet["mo_ta"].lower()
-        if "mưa" in mt or "rain" in mt:
-            ket_qua["nhan_xet"].append("Có mưa — Thủy khí vượng")
-            ket_qua["hanh_dong"].append("Mang áo mưa, tránh đi xa giờ mưa lớn")
-        if thoi_tiet.get("gio", 0) > 10:
-            ket_qua["nhan_xet"].append(f"Gió mạnh {thoi_tiet['gio']} m/s — Phong khí")
-            ket_qua["hanh_dong"].append("Tránh đứng dưới cây lớn, biển hiệu")
-
-    ket_qua["diem_tong_hop"] = max(0, min(100, ket_qua["diem_tong_hop"]))
-    return ket_qua
-
-
-# ============ VỊ TRÍ PHONG THỦY ============
-def goi_y_vi_tri_tot(profile: Dict, huong_tot: List[str]) -> Dict:
-    """
-    Gợi ý vị trí địa lý có phong thủy tốt cho mệnh chủ.
-    Trong thực tế sẽ kết hợp bản đồ + các yếu tố địa lý.
-    """
-    menh = profile["menh_nap_am"]
-    # Hướng theo ngũ hành
-    huong_theo_menh = {
-        "Kim": ["Tây", "Tây Bắc"],
-        "Mộc": ["Đông", "Đông Nam"],
-        "Thủy": ["Bắc"],
-        "Hỏa": ["Nam"],
-        "Thổ": ["Đông Bắc", "Tây Nam"],
-    }
-    return {
-        "menh": menh,
-        "huong_hop_tu_nhien": huong_theo_menh.get(menh, []),
-        "huong_bat_trach": [h["huong"] for h in huong_tot
-                              if h["cung"] in ("Sinh Khí", "Thiên Y")],
-        "goi_y_di_chuyen": [
-            "Chọn nhà hướng " + h for h in huong_theo_menh.get(menh, [])
-        ],
-        "dia_hinh_tot": [
-            "Gần sông/hồ" if menh in ("Thủy", "Mộc") else
-            "Gần núi/cao" if menh in ("Thổ", "Kim") else
-            "Vùng nắng ấm" if menh == "Hỏa" else "Vùng cây xanh"
-        ],
-    }
-```
-
-### Endpoints Môi Trường
-
-```python
-# main.py
-from moi_truong import (lay_thoi_tiet, lay_chat_luong_khong_khi,
-                          danh_gia_anh_huong_moi_truong, goi_y_vi_tri_tot)
-
-class ViTriInput(BaseModel):
-    lat: float
-    lon: float
-
-
-@app.post("/api/moi-truong/hien-tai")
-async def api_moi_truong(data: ViTriInput,
-                           user: User = Depends(get_current_user),
-                           db: Session = Depends(get_db)):
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    if not prof:
-        raise HTTPException(400, "Chưa có hồ sơ")
-    profile = json.loads(prof.profile_json)
-
-    thoi_tiet = await lay_thoi_tiet(data.lat, data.lon)
-    aqi = await lay_chat_luong_khong_khi(data.lat, data.lon)
-    anh_huong = danh_gia_anh_huong_moi_truong(profile, thoi_tiet, aqi)
-    return {"thoi_tiet": thoi_tiet, "aqi": aqi, "anh_huong": anh_huong}
-
-
-@app.post("/api/moi-truong/goi-y-vi-tri")
-def api_goi_y_vi_tri(data: PhongThuyInput,
-                       user: User = Depends(get_current_user)):
-    from phong_thuy import tinh_cung_phi_gioi_tinh, huong_tot_xau
-    cung_phi = tinh_cung_phi_gioi_tinh(data.ngay, data.thang, data.nam,
-                                         data.gioi_tinh)
-    huong = huong_tot_xau(cung_phi)
-    profile = {"menh_nap_am": "Thổ"}  # Sẽ lấy từ DB
-    return goi_y_vi_tri_tot(profile, huong["huong_tot"])
-```
-
----
-
-## 🔗 MODULE 4: Kết Nối Mệnh Chủ ↔ Sự Kiện — `ket_noi.py`
-
-```python
-"""
-Module kết nối tất cả: mệnh chủ + phong thủy + sự kiện + môi trường
-→ Bức tranh tổng thể + dự đoán cascade (domino effect)
-"""
-from datetime import date, timedelta
-from typing import Dict, List
-import json
-
-
-def buc_tranh_tong_the(profile: Dict, phong_thuy: Dict,
-                         su_kien_tuan: Dict,
-                         moi_truong: Dict = None) -> Dict:
-    """
-    Tạo bức tranh tổng thể: mọi yếu tố ảnh hưởng đến mệnh chủ trong tuần.
-    """
-    # 1. Điểm nền từ mệnh
-    from astrology import tinh_chi_so_su_kien as cs_base
-    diem_nen = cs_base(profile)
-
-    # 2. Phong thủy modifier
-    phong_thuy_modifier = 0
-    if phong_thuy.get("huong_nha", {}).get("tot"):
-        phong_thuy_modifier += 10
+    if provider == "elevenlabs":
+        voice_id = ELEVENLABS_VOICES.get(voice, ELEVENLABS_VOICES["vi_nu"])
+        result = await tts_elevenlabs(text, voice_id, output)
+    elif provider == "google":
+        voice_name = GOOGLE_VOICES.get(voice, GOOGLE_VOICES["vi_nu"])
+        result = await tts_google(text, voice_name, output)
     else:
-        phong_thuy_modifier -= 10
+        result = await tts_coqui(text, output)
 
-    # 3. Sự kiện modifier
-    su_kien_modifier = 0
-    if su_kien_tuan.get("su_kien_trong_diem"):
-        su_kien_modifier += len(su_kien_tuan["su_kien_trong_diem"]) * 5
-    if su_kien_tuan.get("su_kien_can_chu_y"):
-        su_kien_modifier -= len(su_kien_tuan["su_kien_can_chu_y"]) * 5
-
-    # 4. Môi trường modifier
-    moi_truong_modifier = 0
-    if moi_truong:
-        mt_score = moi_truong.get("anh_huong", {}).get("diem_tong_hop", 50)
-        moi_truong_modifier = (mt_score - 50) * 0.3
-
-    # 5. Tổng hợp
-    diem_cuoi = {}
-    for linh_vuc, base_score in diem_nen.items():
-        final = (base_score +
-                  phong_thuy_modifier * 0.3 +
-                  su_kien_modifier * 0.4 +
-                  moi_truong_modifier * 0.3)
-        diem_cuoi[linh_vuc] = round(max(0, min(100, final)), 1)
-
-    return {
-        "ngay": date.today().isoformat(),
-        "diem_tong_hop": diem_cuoi,
-        "diem_trung_binh": round(sum(diem_cuoi.values()) / len(diem_cuoi), 1),
-        "yeu_to_anh_huong": {
-            "phong_thuy_modifier": phong_thuy_modifier,
-            "su_kien_modifier": su_kien_modifier,
-            "moi_truong_modifier": round(moi_truong_modifier, 1),
-        },
-        "canh_bao_cascade": phat_hien_cascade(diem_cuoi, su_kien_tuan),
-    }
-
-
-def phat_hien_cascade(diem: Dict, su_kien_tuan: Dict) -> List[Dict]:
-    """
-    Phát hiện domino effect: 1 sự kiện xấu có thể kéo theo nhiều hệ quả.
-    """
-    canh_bao = []
-
-    # Nếu sức khỏe yếu → ảnh hưởng tài vận, sự nghiệp
-    if diem.get("suc_khoe", 50) < 40:
-        canh_bao.append({
-            "loai": "cascade_suc_khoe",
-            "mo_ta": "Sức khỏe yếu có thể kéo theo sự nghiệp và tài vận suy giảm",
-            "doi_tuong_anh_huong": ["su_nghiep", "tai_van"],
-            "hanh_dong": [
-                "Ưu tiên nghỉ ngơi, khám sức khỏe",
-                "Trì hoãn quyết định lớn về tài chính",
-            ],
-        })
-
-    # Tài vận yếu + sự nghiệp yếu → nguy cơ mất việc
-    if diem.get("tai_van", 50) < 40 and diem.get("su_nghiep", 50) < 40:
-        canh_bao.append({
-            "loai": "cascade_tai_chinh_su_nghiep",
-            "mo_ta": "Tài chính + sự nghiệp đồng thời yếu — nguy cơ khủng hoảng",
-            "doi_tuong_anh_huong": ["tinh_than", "gia_dinh"],
-            "hanh_dong": [
-                "Cắt giảm chi tiêu không cần thiết",
-                "Không vay nợ mới",
-                "Tìm nguồn thu nhập dự phòng",
-            ],
-        })
-
-    # Tình duyên + tinh thần yếu → nguy cơ trầm cảm
-    if diem.get("tinh_duyen", 50) < 40 and diem.get("tinh_than", 50) < 40:
-        canh_bao.append({
-            "loai": "cascade_tinh_cam",
-            "mo_ta": "Tình cảm + tinh thần yếu — cần chăm sóc bản thân",
-            "doi_tuong_anh_huong": ["suc_khoe", "cong_viec"],
-            "hanh_dong": [
-                "Chia sẻ với người tin tưởng",
-                "Thiền/tập thể dục đều đặn",
-                "Tránh quyết định lớn về tình cảm lúc này",
-            ],
-        })
-
-    # Sự kiện lớn sắp tới + điểm nền thấp
-    for sk in su_kien_tuan.get("su_kien", []):
-        if sk["diem_anh_huong"] < 35 and sk["trong_so"] >= 0.8:
-            canh_bao.append({
-                "loai": "su_kien_quan_trong_diem_thap",
-                "mo_ta": f"Sự kiện '{sk['ten']}' ngày {sk['ngay']} có điểm thấp",
-                "doi_tuong_anh_huong": [sk["linh_vuc_chinh"]],
-                "hanh_dong": [
-                    f"Chuẩn bị kỹ cho sự kiện, có phương án B",
-                    "Tránh quyết định quan trọng đúng ngày này",
-                ],
-            })
-
-    return canh_bao
-
-
-def tao_lich_hanh_dong(profile: Dict, su_kien_tuan: Dict,
-                         phong_thuy: Dict) -> List[Dict]:
-    """
-    Tạo lịch hành động chi tiết từng ngày trong tuần.
-    """
-    lich = []
-    for sk in su_kien_tuan.get("su_kien", []):
-        ngay = sk["ngay"]
-        diem = sk["diem_anh_huong"]
-
-        hanh_dong = {
-            "ngay": ngay,
-            "su_kien": sk["ten"],
-            "diem": diem,
-            "muc_do": sk["muc_do"],
+    if result.get("success"):
+        return {
+            "url": f"/media/voice/{os.path.basename(output)}",
+            "provider": result["provider"],
+            "text_length": len(text),
         }
+    return result
 
-        if diem >= 70:
-            hanh_dong["nen_lam"] = [
-                f"Triển khai {sk['ten']} — thời điểm tốt",
-                "Ký kết, giao dịch quan trọng",
-                "Gặp gỡ đối tác",
-            ]
-            hanh_dong["tranh"] = ["Trì hoãn vô cớ", "Bỏ lỡ cơ hội"]
-        elif diem >= 50:
-            hanh_dong["nen_lam"] = [
-                "Chuẩn bị kỹ, không vội",
-                "Tham khảo ý kiến người có kinh nghiệm",
-            ]
-            hanh_dong["tranh"] = ["Quyết định bốc đồng"]
-        else:
-            hanh_dong["nen_lam"] = [
-                "Trì hoãn nếu có thể",
-                "Chỉ làm việc nhỏ, an toàn",
-                "Nghỉ ngơi, tĩnh tâm",
-            ]
-            hanh_dong["tranh"] = [
-                "Ký kết hợp đồng lớn",
-                "Đầu tư rủi ro",
-                "Tranh cãi",
-                "Đi xa nếu không cần",
-            ]
 
-        lich.append(hanh_dong)
+def tao_script_doc(profile: Dict, chi_so: Dict,
+                     phan_tich: Dict) -> str:
+    """Tạo script đọc từ dữ liệu phân tích"""
+    lines = [
+        f"Xin chào. Đây là dự đoán huyền học cho bạn.",
+        f"Ngày sinh {profile['ngay_sinh']}, "
+        f"mệnh {profile['menh_nap_am']}, con giáp {profile['con_giap']}.",
+        "",
+        f"Chỉ số tài vận: {int(chi_so.get('tai_van', 50))} trên 100.",
+        f"Chỉ số tình duyên: {int(chi_so.get('tinh_duyen', 50))} trên 100.",
+        f"Chỉ số sự nghiệp: {int(chi_so.get('su_nghiep', 50))} trên 100.",
+        "",
+    ]
 
-    return lich
+    if phan_tich.get("tom_tat"):
+        lines.append(f"Tổng quan: {phan_tich['tom_tat']}")
+        lines.append("")
+
+    actions = phan_tich.get("hanh_dong_cu_the", [])
+    if actions:
+        lines.append("Hành động cụ thể tuần này:")
+        for i, a in enumerate(actions[:3], 1):
+            lines.append(f"{i}. {a.get('hanh_dong', '')}")
+        lines.append("")
+
+    if phan_tich.get("cau_chuc"):
+        lines.append(phan_tich["cau_chuc"])
+
+    lines.append("Cảm ơn bạn đã sử dụng Huyền Bảo AI. Chúc bạn may mắn.")
+
+    return " ".join(lines)
 ```
 
-### Endpoint tổng hợp
+### Endpoints Voice
 
 ```python
 # main.py
-from ket_noi import buc_tranh_tong_the, tao_lich_hanh_dong
+from voice_ai import tao_giong_doc, tao_script_doc, ELEVENLABS_VOICES, GOOGLE_VOICES
+from fastapi import Body
 
-class TongTheInput(BaseModel):
-    # Profile
+
+class VoiceInput(BaseModel):
     ngay: int
     thang: int
     nam: int
-    gioi_tinh: str = "nam"
-    # Phong thủy
-    huong_nha: str = "Nam"
-    huong_bep: str = None
-    huong_phong_ngu: str = None
-    # Vị trí
-    lat: float = None
-    lon: float = None
-    # Sự kiện
-    su_kien_ca_nhan: List[SuKienInput] = []
-    start: str = None
+    ho_ten: str = ""
+    gio_sinh: int = None
+    voice: str = "vi_nu"
+    provider: str = "auto"
+    custom_text: str = None
 
 
-@app.post("/api/tong-the")
-async def api_tong_the(data: TongTheInput,
-                         user: User = Depends(get_current_user),
-                         db: Session = Depends(get_db)):
-    """Bức tranh tổng thể — gộp mọi yếu tố"""
-    prof = db.query(Profile).filter_by(user_id=user.id).first()
-    if not prof:
-        # Tạo profile mới
-        prof = _get_or_create_profile(db, user, "", data.ngay, data.thang, data.nam)
-    profile = json.loads(prof.profile_json)
+@app.post("/api/voice/tts")
+async def api_tts(data: VoiceInput,
+                    user: User = Depends(get_current_user),
+                    db: Session = Depends(get_db)):
+    """Đọc dự đoán bằng giọng nói"""
+    if data.custom_text:
+        text = data.custom_text
+    else:
+        prof = _get_or_create_profile(db, user, data.ho_ten,
+                                        data.ngay, data.thang, data.nam,
+                                        gio_sinh=data.gio_sinh)
+        profile = json.loads(prof.profile_json)
+        chi_so = tinh_chi_so_su_kien(profile)
+        # Gọi LLM lấy phân tích
+        phan_tich = await ollama.phan_tich_va_hanh_dong(profile, chi_so)
+        text = tao_script_doc(profile, chi_so, phan_tich)
 
-    # 1. Phong thủy
-    from phong_thuy import phan_tich_toan_dien
-    phong_thuy = phan_tich_toan_dien(
-        data.ngay, data.thang, data.nam,
-        gioi_tinh=data.gioi_tinh,
-        huong_nha=data.huong_nha,
-        huong_bep=data.huong_bep,
-        huong_phong_ngu=data.huong_phong_ngu,
-    )
+    return await tao_giong_doc(text, data.voice, data.provider)
 
-    # 2. Sự kiện
-    from su_kien import quet_su_kien_tuan
-    start = date.fromisoformat(data.start) if data.start else date.today()
-    sk_ca_nhan = [{"ngay": s.ngay, "loai": s.loai, "note": s.note}
-                    for s in data.su_kien_ca_nhan]
-    su_kien_tuan = quet_su_kien_tuan(profile, start, sk_ca_nhan)
 
-    # 3. Môi trường (nếu có lat/lon)
-    moi_truong = None
-    if data.lat and data.lon:
-        tt = await lay_thoi_tiet(data.lat, data.lon)
-        aqi = await lay_chat_luong_khong_khi(data.lat, data.lon)
-        anh_huong = danh_gia_anh_huong_moi_truong(profile, tt, aqi)
-        moi_truong = {"thoi_tiet": tt, "aqi": aqi, "anh_huong": anh_huong}
+@app.get("/api/voice/voices")
+def api_list_voices():
+    """Danh sách giọng nói có sẵn"""
+    return {
+        "elevenlabs": [
+            {"id": k, "name": k.replace("_", " ").title()}
+            for k in ELEVENLABS_VOICES
+        ],
+        "google": [
+            {"id": k, "name": k.replace("_", " ").title()}
+            for k in GOOGLE_VOICES
+        ],
+    }
+```
 
-    # 4. Bức tranh tổng thể
-    tong_the = buc_tranh_tong_the(profile, phong_thuy, su_kien_tuan, moi_truong)
+---
 
-    # 5. Lịch hành động
-    lich = tao_lich_hanh_dong(profile, su_kien_tuan, phong_thuy)
+## 🔟 Module 8: LMS Khóa học + AI Tutor — `lms.py`
 
-    # 6. LLM tư vấn cuối
-    prompt = f"""Đưa ra nhận định TỔNG THỂ cho mệnh chủ dựa trên mọi yếu tố:
+```python
+"""
+Hệ thống học tập: khóa học huyền học + AI tutor cá nhân hóa.
+"""
+import json
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional
+from sqlalchemy import (Column, Integer, String, DateTime, Text, Boolean,
+                          Float, ForeignKey)
+from sqlalchemy.orm import Session, relationship
+from database import Base
 
-HỒ SƠ: {profile['ngay_sinh']} — {profile['menh_nap_am']} — {profile['con_giap']}
 
-PHONG THỦY:
-- Cung phi: {phong_thuy['cung_phi']} ({phong_thuy['quai']})
-- Hướng nhà: {data.huong_nha} → {phong_thuy['huong_nha'].get('cung')}
+# ============ MODELS ============
+class Course(Base):
+    __tablename__ = "courses"
+    id = Column(Integer, primary_key=True)
+    slug = Column(String, unique=True, index=True)
+    ten = Column(String)
+    mo_ta = Column(Text)
+    level = Column(String)  # "beginner", "intermediate", "advanced"
+    category = Column(String)  # "tu_vi", "phong_thuy", "tarot", "kinh_dich"
+    gia_vnd = Column(Float, default=0)
+    is_free = Column(Boolean, default=False)
+    thumbnail_url = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-SỰ KIỆN TUẦN:
-{json.dumps(su_kien_tuan['su_kien'], ensure_ascii=False, indent=2)}
 
-MÔI TRƯỜNG: {json.dumps(moi_truong, ensure_ascii=False) if moi_truong else 'Không có dữ liệu'}
+class Lesson(Base):
+    __tablename__ = "lessons"
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), index=True)
+    order_num = Column(Integer)
+    ten = Column(String)
+    noi_dung_md = Column(Text)  # Markdown
+    video_url = Column(String, nullable=True)
+    duration_min = Column(Integer, default=15)
+    quiz_json = Column(Text, nullable=True)  # câu hỏi trắc nghiệm
 
-ĐIỂM TỔNG HỢP: {json.dumps(tong_the['diem_tong_hop'], ensure_ascii=False)}
-CẢNH BÁO CASCADE: {json.dumps(tong_the['canh_bao_cascade'], ensure_ascii=False)}
+
+class Enrollment(Base):
+    __tablename__ = "enrollments"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), index=True)
+    progress_pct = Column(Float, default=0)
+    enrolled_at = Column(DateTime, default=datetime.utcnow)
+    last_activity = Column(DateTime, nullable=True)
+    completed_at = Column(DateTime, nullable=True)
+
+
+class LessonProgress(Base):
+    __tablename__ = "lesson_progress"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), index=True)
+    completed = Column(Boolean, default=False)
+    quiz_score = Column(Float, nullable=True)
+    time_spent_sec = Column(Integer, default=0)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AI TutorChat(Base):
+    __tablename__ = "ai_tutor_chats"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=True)
+    question = Column(Text)
+    answer = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ============ SEED DATA ============
+DEFAULT_COURSES = [
+    {
+        "slug": "tu-vi-co-ban",
+        "ten": "Tử Vi Đẩu Số Cơ Bản",
+        "mo_ta": "Học từ con số 0: 12 cung, 14 chính tinh, cách luận giải cơ bản.",
+        "level": "beginner", "category": "tu_vi",
+        "gia_vnd": 0, "is_free": True,
+        "lessons": [
+            {"ten": "Giới thiệu Tử Vi Đẩu Số",
+             "duration_min": 20,
+             "noi_dung_md": "# Tử Vi là gì?\n\nTử Vi Đẩu Số là hệ thống chiêm tinh học Đông phương..."},
+            {"ten": "12 Cung trong lá số",
+             "duration_min": 30,
+             "noi_dung_md": "# 12 Cung\n\n- Mệnh\n- Phụ Mẫu\n- Phúc Đức\n..."},
+            {"ten": "14 Chính Tinh",
+             "duration_min": 45,
+             "noi_dung_md": "# 14 Chính Tinh\n\n## Tử Vi\nTử Vi là đế tinh..."},
+        ],
+    },
+    {
+        "slug": "phong-thuy-thuc-chien",
+        "ten": "Phong Thủy Thực Chiến",
+        "mo_ta": "Bát trạch, Huyền không, áp dụng vào nhà ở và văn phòng.",
+        "level": "intermediate", "category": "phong_thuy",
+        "gia_vnd": 990000, "is_free": False,
+        "lessons": [
+            {"ten": "Bát Trạch Bát Cung", "duration_min": 40,
+             "noi_dung_md": "# Bát Trạch\n\nPhân biệt Đông tứ mệnh - Tây tứ mệnh..."},
+            {"ten": "Huyền Không Phi Tinh", "duration_min": 60,
+             "noi_dung_md": "# Phi Tinh\n\nCửu tinh bay 9 cung..."},
+        ],
+    },
+    {
+        "slug": "tarot-tu-co-ban-den-nang-cao",
+        "ten": "Tarot — Từ Cơ Bản đến Nâng Cao",
+        "mo_ta": "78 lá bài, các trải bài phổ biến, đọc cho bản thân và người khác.",
+        "level": "beginner", "category": "tarot",
+        "gia_vnd": 490000, "is_free": False,
+        "lessons": [
+            {"ten": "22 Lá Ẩn Chính (Major Arcana)", "duration_min": 60,
+             "noi_dung_md": "# 22 Major Arcana\n\nThe Fool, The Magician..."},
+            {"ten": "56 Lá Ẩn Phụ (Minor Arcana)", "duration_min": 50,
+             "noi_dung_md": "# 4 Suits\n\nWands, Cups, Swords, Pentacles..."},
+            {"ten": "Các trải bài phổ biến", "duration_min": 30,
+             "noi_dung_md": "# Trải bài\n\n1 lá, 3 lá, Celtic Cross..."},
+        ],
+    },
+]
+
+
+def init_lms(db: Session):
+    """Seed khóa học mặc định"""
+    for course_data in DEFAULT_COURSES:
+        existing = db.query(Course).filter_by(slug=course_data["slug"]).first()
+        if existing:
+            continue
+
+        lessons = course_data.pop("lessons", [])
+        course = Course(**course_data)
+        db.add(course); db.commit(); db.refresh(course)
+
+        for i, lesson_data in enumerate(lessons, 1):
+            lesson = Lesson(
+                course_id=course.id, order_num=i,
+                ten=lesson_data["ten"],
+                noi_dung_md=lesson_data["noi_dung_md"],
+                duration_min=lesson_data["duration_min"],
+            )
+            db.add(lesson)
+        db.commit()
+
+
+# ============ AI TUTOR ============
+async def ask_ai_tutor(user_id: int, question: str,
+                         course_id: int = None, lesson_id: int = None,
+                         db: Session = None) -> Dict:
+    """Hỏi AI tutor về bài học"""
+
+    # Lấy context
+    context = ""
+    if lesson_id and db:
+        lesson = db.query(Lesson).filter_by(id=lesson_id).first()
+        if lesson:
+            context = f"Bài học hiện tại: {lesson.ten}\n\n{lesson.noi_dung_md}"
+
+    # Lấy profile user để cá nhân hóa
+    from database import Profile
+    prof = db.query(Profile).filter_by(user_id=user_id).first() if db else None
+    profile_info = ""
+    if prof:
+        p = json.loads(prof.profile_json)
+        profile_info = (f"\nHọc viên: sinh {p['ngay_sinh']}, "
+                         f"mệnh {p['menh_nap_am']}, {p['con_giap']}")
+
+    prompt = f"""Bạn là giảng viên huyền học nhiệt tình, giảng dễ hiểu cho người mới.
+
+{context}
+{profile_info}
+
+Câu hỏi của học viên: {question}
+
+Hãy trả lời:
+1. Ngắn gọn, dễ hiểu, có ví dụ cụ thể
+2. Nếu liên quan đến mệnh của học viên, đưa ví dụ cá nhân hóa
+3. Cuối cùng đề xuất 1-2 bài học tiếp theo nên học
 
 Trả về JSON:
 {{
-  "nhan_dinh_tong_quan": "1 đoạn văn tổng hợp mọi yếu tố",
-  "3_dieu_quan_trong_nhat": ["...", "...", "..."],
-  "lich_hanh_dong_7_ngay": [
-    {{"ngay": "YYYY-MM-DD", "trong_tam": "...", "hanh_dong": ["..."], "tranh": ["..."]}}
-  ],
-  "cascade_can_chu_y": ["các domino effect có thể xảy ra"],
-  "phong_thuy_can_chinh": ["nếu có"],
-  "cau_chuc": "..."
+  "tra_loi": "câu trả lời chính",
+  "vi_du": ["ví dụ 1", "ví dụ 2"],
+  "bai_hoc_tiep_theo": ["tên bài", "tên bài"],
+  "cau_hoi_goi_y": ["câu hỏi tiếp theo học viên có thể hỏi"]
 }}"""
 
-    raw = await ollama.generate(prompt, temperature=0.6, json_mode=True)
+    from ollama_client import ollama
+    raw = await ollama.generate(prompt, temperature=0.7, json_mode=True)
     try:
-        tu_van = json.loads(raw)
+        answer = json.loads(raw)
     except Exception:
-        tu_van = {"raw": raw}
+        answer = {"tra_loi": raw, "vi_du": [], "bai_hoc_tiep_theo": []}
+
+    # Lưu chat
+    if db:
+        chat = AI TutorChat(
+            user_id=user_id, course_id=course_id,
+            lesson_id=lesson_id, question=question,
+            answer=json.dumps(answer, ensure_ascii=False),
+        )
+        db.add(chat); db.commit()
+
+    return answer
+
+
+def danh_gia_tien_do(user_id: int, course_id: int, db: Session) -> Dict:
+    """Đánh giá tiến độ học tập"""
+    course = db.query(Course).filter_by(id=course_id).first()
+    if not course:
+        return {"error": "Không tìm thấy khóa học"}
+
+    lessons = db.query(Lesson).filter_by(course_id=course_id).order_by(
+        Lesson.order_num
+    ).all()
+
+    completed = 0
+    total_score = 0
+    score_count = 0
+    for lesson in lessons:
+        prog = db.query(LessonProgress).filter_by(
+            user_id=user_id, lesson_id=lesson.id
+        ).first()
+        if prog and prog.completed:
+            completed += 1
+            if prog.quiz_score is not None:
+                total_score += prog.quiz_score
+                score_count += 1
+
+    avg_score = total_score / score_count if score_count else None
 
     return {
-        "profile": profile,
-        "phong_thuy": phong_thuy,
-        "su_kien_tuan": su_kien_tuan,
-        "moi_truong": moi_truong,
-        "tong_the": tong_the,
-        "lich_hanh_dong": lich,
-        "tu_van_llm": tu_van,
+        "course": course.ten,
+        "lessons_total": len(lessons),
+        "lessons_completed": completed,
+        "progress_pct": round(completed / len(lessons) * 100, 1) if lessons else 0,
+        "avg_quiz_score": round(avg_score, 1) if avg_score else None,
+        "next_lesson": next(
+            (l.ten for l in lessons
+             if not (db.query(LessonProgress)
+                       .filter_by(user_id=user_id, lesson_id=l.id,
+                                    completed=True).first())),
+            None
+        ),
     }
 ```
 
----
-
-## 🎨 Frontend: `frontend/phong-thuy.html`
-
-```html
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8"><title>Phong Thủy · Huyền Học AI</title>
-<style>
-  body { font-family: system-ui; background: linear-gradient(135deg,#1a0b2e,#0f0524);
-         color: #e8dff5; padding: 20px; min-height: 100vh; }
-  .container { max-width: 1200px; margin: 0 auto; }
-  h1 { color: #c4a3ff; text-align: center; }
-  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  input, select {
-    width: 100%; padding: 10px; border-radius: 8px; font-size: 0.95rem;
-    background: rgba(0,0,0,0.3); color: #fff;
-    border: 1px solid rgba(196,163,255,0.3);
-  }
-  button { padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer;
-           background: linear-gradient(135deg, #7b3fe4, #c4a3ff); color: #fff;
-           font-weight: 600; margin-top: 12px; }
-  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,163,255,0.2);
-          border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-  /* Bát trạch grid 3x3 */
-  .bat-trach {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    max-width: 600px; margin: 20px auto;
-  }
-  .huong-cell {
-    aspect-ratio: 1; display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    padding: 12px; border-radius: 10px;
-    background: rgba(0,0,0,0.3);
-    border: 2px solid transparent;
-    text-align: center;
-    transition: 0.3s;
-  }
-  .huong-cell.tot {
-    border-color: #7bffa0;
-    background: linear-gradient(135deg, rgba(123,255,160,0.15), rgba(0,0,0,0.3));
-  }
-  .huong-cell.xau {
-    border-color: #ff8080;
-    background: linear-gradient(135deg, rgba(255,128,128,0.15), rgba(0,0,0,0.3));
-  }
-  .huong-cell .huong { font-size: 0.85rem; color: #a890c9; }
-  .huong-cell .cung { font-size: 1rem; font-weight: 700; color: #ffd700; margin: 4px 0; }
-  .huong-cell .y_nghia { font-size: 0.7rem; color: #e8dff5; }
-  .huong-cell.trung-cung {
-    background: linear-gradient(135deg, #7b3fe4, #1a0b2e);
-    color: #fff;
-  }
-  .hoa-giai { background: rgba(255,215,0,0.1); border-left: 3px solid #ffd700;
-              padding: 16px; border-radius: 10px; margin-top: 16px; }
-  .hoa-giai h4 { color: #ffd700; margin-bottom: 8px; }
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>🏠 Phong Thủy Cá Nhân</h1>
-
-  <div class="card">
-    <h2 style="color:#c4a3ff;margin-bottom:12px">📝 Nhập thông tin</h2>
-    <div class="form-grid">
-      <div><label>Ngày sinh</label><input id="ngay" type="number" value="15"></div>
-      <div><label>Tháng</label><input id="thang" type="number" value="6"></div>
-      <div><label>Năm</label><input id="nam" type="number" value="1995"></div>
-      <div>
-        <label>Giới tính</label>
-        <select id="gioiTinh">
-          <option value="nam">Nam</option><option value="nu">Nữ</option>
-        </select>
-      </div>
-      <div>
-        <label>Hướng nhà</label>
-        <select id="huongNha">
-          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
-          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
-          <option>Tây</option><option>Tây Bắc</option>
-        </select>
-      </div>
-      <div>
-        <label>Hướng bếp</label>
-        <select id="huongBep"><option value="">— Không rõ —</option>
-          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
-          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
-          <option>Tây</option><option>Tây Bắc</option>
-        </select>
-      </div>
-      <div>
-        <label>Hướng phòng ngủ</label>
-        <select id="huongPhongNgu"><option value="">— Không rõ —</option>
-          <option>Bắc</option><option>Đông Bắc</option><option>Đông</option>
-          <option>Đông Nam</option><option>Nam</option><option>Tây Nam</option>
-          <option>Tây</option><option>Tây Bắc</option>
-        </select>
-      </div>
-      <div>
-        <label>Mục đích chính</label>
-        <select id="mucDich">
-          <option value="tai_van">💰 Tài vận</option>
-          <option value="suc_khoe">🌿 Sức khỏe</option>
-          <option value="tinh_cam">💕 Tình cảm</option>
-          <option value="su_nghiep">💼 Sự nghiệp</option>
-        </select>
-      </div>
-    </div>
-    <button onclick="phanTich()">🔮 Phân tích phong thủy</button>
-    <button onclick="tuVanLLM()" style="background:linear-gradient(135deg,#ffd700,#c4a3ff);color:#1a0b2e">
-      🧠 Tư vấn bằng AI
-    </button>
-  </div>
-
-  <div id="result"></div>
-</div>
-
-<script>
-const API = "http://localhost:8000";
-const token = localStorage.getItem('token');
-if (!token) location.href = '/';
-
-function getInput() {
-  return {
-    ngay: +document.getElementById('ngay').value,
-    thang: +document.getElementById('thang').value,
-    nam: +document.getElementById('nam').value,
-    gioi_tinh: document.getElementById('gioiTinh').value,
-    huong_nha: document.getElementById('huongNha').value,
-    huong_bep: document.getElementById('huongBep').value || null,
-    huong_phong_ngu: document.getElementById('huongPhongNgu').value || null,
-    muc_dich: document.getElementById('mucDich').value,
-  };
-}
-
-async function phanTich() {
-  const out = document.getElementById('result');
-  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">Đang phân tích...</div>';
-  const r = await fetch(`${API}/api/phong-thuy/phan-tich`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-    body: JSON.stringify(getInput())
-  });
-  const d = await r.json();
-  renderPhongThuy(d);
-}
-
-async function tuVanLLM() {
-  const out = document.getElementById('result');
-  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">🧠 AI đang tư vấn (30-60s)...</div>';
-  const r = await fetch(`${API}/api/phong-thuy/llm-tu-van`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-    body: JSON.stringify(getInput())
-  });
-  const d = await r.json();
-  renderPhongThuy(d.so_lieu, d.tu_van_llm);
-}
-
-function renderPhongThuy(kq, tuVan) {
-  const posMap = {
-    "Đông Nam": [0,0], "Nam": [0,1], "Tây Nam": [0,2],
-    "Đông": [1,0], "Trung cung": [1,1], "Tây": [1,2],
-    "Đông Bắc": [2,0], "Bắc": [2,1], "Tây Bắc": [2,2]
-  };
-
-  // Map hướng → cung
-  const huongMap = {};
-  kq.huong_tot.forEach(h => huongMap[h.huong] = {...h, tot: true});
-  kq.huong_xau.forEach(h => huongMap[h.huong] = {...h, tot: false});
-
-  const grid = Array(3).fill().map(() => Array(3).fill(null));
-  for (const [h, [r, c]] of Object.entries(posMap)) {
-    grid[r][c] = { huong: h, info: huongMap[h] };
-  }
-
-  let batTrachHtml = '<div class="bat-trach">';
-  for (let r = 0; r < 3; r++) {
-    for (let c = 0; c < 3; c++) {
-      const cell = grid[r][c];
-      if (!cell) continue;
-      if (cell.huong === 'Trung cung') {
-        batTrachHtml += `<div class="huong-cell trung-cung">
-          <div class="huong">${kq.cung_phi} — ${kq.quai}</div>
-          <div style="font-size:1.2rem;color:#ffd700;font-weight:700">${kq.nhom}</div>
-        </div>`;
-      } else if (cell.info) {
-        const cls = cell.info.tot ? 'tot' : 'xau';
-        batTrachHtml += `<div class="huong-cell ${cls}">
-          <div class="huong">${cell.huong}</div>
-          <div class="cung">${cell.info.cung}</div>
-          <div class="y_nghia">${cell.info.y_nghia}</div>
-        </div>`;
-      } else {
-        batTrachHtml += '<div></div>';
-      }
-    }
-  }
-  batTrachHtml += '</div>';
-
-  let html = `
-    <div class="card">
-      <h2 style="color:#c4a3ff;text-align:center">🧭 Bát Trạch Bát Cung</h2>
-      ${batTrachHtml}
-      <p style="text-align:center;color:#a890c9;margin-top:12px">
-        Cung phi: <b style="color:#ffd700">${kq.cung_phi}</b> ·
-        Quẻ: <b>${kq.quai}</b> ·
-        Nhóm: <b>${kq.nhom}</b>
-      </p>
-    </div>
-
-    <div class="card">
-      <h2 style="color:#c4a3ff">🏠 Hướng nhà: ${kq.huong_nha.huong_nha}</h2>
-      <div style="font-size:1.1rem;margin:12px 0">
-        Cung: <b style="color:#ffd700">${kq.huong_nha.cung}</b>
-        — ${kq.huong_nha.y_nghia}
-      </div>
-      <div style="padding:12px;border-radius:8px;background:${
-        kq.huong_nha.tot ? 'rgba(123,255,160,0.15)' : 'rgba(255,128,128,0.15)'
-      }">
-        <b>${kq.huong_nha.tot ? '✅ Tốt' : '❌ Xấu'}</b> — Điểm: ${kq.huong_nha.diem}/100
-      </div>
-      ${kq.hoa_giai ? `
-        <div class="hoa-giai">
-          <h4>🔮 Hóa giải hướng ${kq.hoa_giai.huong} (${kq.hoa_giai.cung_xau})</h4>
-          <div style="margin:8px 0">
-            <b>Vật phẩm:</b> ${(kq.hoa_giai.vat_pham||[]).join(', ')}<br>
-            <b>Màu sắc:</b> ${kq.hoa_giai.mau_sac||''}<br>
-            <b>Cây trồng:</b> ${(kq.hoa_giai.cay_trong||[]).join(', ')}
-          </div>
-          <div><b>Hành động:</b></div>
-          <ul>${(kq.hoa_giai.hanh_dong||[]).map(x => `<li>${x}</li>`).join('')}</ul>
-        </div>` : ''}
-    </div>
-
-    <div class="card">
-      <h2 style="color:#c4a3ff">🌟 Phi Tinh hôm nay</h2>
-      <div style="text-align:center;margin:16px 0">
-        <div style="font-size:2.5rem;color:#ffd700;font-weight:700">
-          ${kq.phi_tinh_hom_nay.sao_info.ten}
-        </div>
-        <div style="color:#c4a3ff">${kq.phi_tinh_hom_nay.sao_info.hanh} —
-          ${kq.phi_tinh_hom_nay.sao_info.cat_hung}</div>
-        <div style="color:#a890c9;margin-top:8px">${kq.phi_tinh_hom_nay.sao_info.y_nghia}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:400px;margin:0 auto">
-        ${Object.entries(kq.phi_tinh_hom_nay.bay_cung).map(([h, s]) => `
-          <div style="padding:8px;background:rgba(0,0,0,0.25);border-radius:6px;text-align:center;
-                      border:1px solid ${s.cat_hung.includes('Cát')?'#7bffa0':
-                                        s.cat_hung.includes('Hung')?'#ff8080':'#ffd700'}">
-            <div style="font-size:0.7rem;color:#a890c9">${h}</div>
-            <div style="color:#ffd700;font-size:1.1rem;font-weight:700">${s.sao}</div>
-            <div style="font-size:0.75rem">${s.ten}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="color:#c4a3ff">📊 Đại Vận</h2>
-      <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px">
-        <b style="color:#ffd700">${kq.dai_van.danh_gia.toUpperCase()}</b>
-        — Điểm: ${kq.dai_van.diem}/100<br>
-        <div style="margin-top:6px;color:#a890c9">${kq.dai_van.ly_do}</div>
-      </div>
-    </div>
-  `;
-
-  if (tuVan) {
-    html += `
-      <div class="card">
-        <h2 style="color:#ffd700">🧠 AI Tư Vấn</h2>
-        <p style="line-height:1.6">${tuVan.danh_gia_tong_quan || ''}</p>
-
-        ${tuVan.diem_manh?.length ? `
-          <h3 style="color:#7bffa0;margin-top:16px">✨ Điểm mạnh</h3>
-          <ul>${tuVan.diem_manh.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
-
-        ${tuVan.van_de_can_khac_phuc?.length ? `
-          <h3 style="color:#ff8080;margin-top:16px">⚠️ Vấn đề cần khắc phục</h3>
-          <ul>${tuVan.van_de_can_khac_phuc.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
-
-        ${tuVan.bo_tri_cu_the?.length ? `
-          <h3 style="color:#c4a3ff;margin-top:16px">🏠 Bố trí cụ thể</h3>
-          ${tuVan.bo_tri_cu_the.map(b => `
-            <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px;margin:8px 0">
-              <b style="color:#ffd700">${b.khu_vuc}</b>
-              ${b.huong_tot_nhat ? `<div style="margin-top:6px">→ Hướng tốt: ${b.huong_tot_nhat}</div>` : ''}
-              ${b.vat_pham_nen_dat?.length ? `<div>→ Vật phẩm: ${b.vat_pham_nen_dat.join(', ')}</div>` : ''}
-              ${b.mau_sac_phu_hop?.length ? `<div>→ Màu: ${b.mau_sac_phu_hop.join(', ')}</div>` : ''}
-              ${b.cay_canh_goi_y?.length ? `<div>→ Cây: ${b.cay_canh_goi_y.join(', ')}</div>` : ''}
-              ${b.ly_do ? `<div style="color:#a890c9;font-size:0.85rem;margin-top:6px">${b.ly_do}</div>` : ''}
-            </div>`).join('')}` : ''}
-
-        ${tuVan.viec_nen_lam_ngay?.length ? `
-          <h3 style="color:#7bffa0;margin-top:16px">✅ Việc nên làm ngay</h3>
-          <ul>${tuVan.viec_nen_lam_ngay.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
-
-        ${tuVan.canh_bao?.length ? `
-          <h3 style="color:#ff8080;margin-top:16px">⚠️ Cảnh báo</h3>
-          <ul>${tuVan.canh_bao.map(x=>`<li>${x}</li>`).join('')}</ul>` : ''}
-      </div>`;
-  }
-
-  document.getElementById('result').innerHTML = html;
-}
-</script>
-</body>
-</html>
-```
-
-### `frontend/su-kien.html` — Rút gọn
-
-```html
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8"><title>Sự Kiện · Huyền Học AI</title>
-<style>
-  body { font-family: system-ui; background: linear-gradient(135deg,#1a0b2e,#0f0524);
-         color: #e8dff5; padding: 20px; min-height: 100vh; }
-  .container { max-width: 1000px; margin: 0 auto; }
-  h1 { color: #c4a3ff; text-align: center; }
-  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,163,255,0.2);
-          border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-  input, select { padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3);
-                  color: #fff; border: 1px solid rgba(196,163,255,0.3); margin-right: 8px; }
-  button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
-           background: linear-gradient(135deg, #7b3fe4, #c4a3ff); color: #fff; font-weight: 600; }
-  .sk-item {
-    padding: 14px; margin-bottom: 10px; border-radius: 10px;
-    background: rgba(0,0,0,0.25);
-    border-left: 4px solid;
-  }
-  .sk-item.tot { border-color: #7bffa0; }
-  .sk-item.tb { border-color: #ffd700; }
-  .sk-item.xau { border-color: #ff8080; }
-  .sk-head { display: flex; justify-content: space-between; align-items: center; }
-  .sk-name { font-weight: 700; color: #fff; }
-  .sk-badge {
-    padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
-    text-transform: uppercase; font-weight: 600;
-  }
-  .sk-badge.truc-tiep { background: #7b3fe4; color: #fff; }
-  .sk-badge.gian-tiep { background: #a890c9; color: #1a0b2e; }
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>📅 Sự Kiện Ảnh Hưởng</h1>
-
-  <div class="card">
-    <h2 style="color:#c4a3ff;margin-bottom:12px">➕ Thêm sự kiện cá nhân</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-      <input type="date" id="skNgay">
-      <select id="skLoai">
-        <option value="ky_hop_dong">Ký hợp đồng</option>
-        <option value="cuoi_hoi">Cưới hỏi</option>
-        <option value="chuyen_nha">Chuyển nhà</option>
-        <option value="khoi_nghiep">Khởi nghiệp</option>
-        <option value="thi_cu">Thi cử</option>
-        <option value="dau_tu">Đầu tư</option>
-        <option value="phau_thuat">Phẫu thuật</option>
-      </select>
-      <input type="text" id="skNote" placeholder="Ghi chú (tuỳ chọn)" style="flex:1;min-width:200px">
-      <button onclick="themSuKien()">Thêm</button>
-    </div>
-    <div id="listSuKien"></div>
-    <button onclick="quetTuan()" style="margin-top:12px">🔮 Quét sự kiện tuần tới</button>
-    <button onclick="tuVanLLM()" style="margin-top:12px;background:linear-gradient(135deg,#ffd700,#c4a3ff);color:#1a0b2e">
-      🧠 AI tư vấn
-    </button>
-  </div>
-
-  <div id="result"></div>
-</div>
-
-<script>
-const API = "http://localhost:8000";
-const token = localStorage.getItem('token');
-if (!token) location.href = '/';
-
-let suKienCaNhan = [];
-
-function themSuKien() {
-  const ngay = document.getElementById('skNgay').value;
-  const loai = document.getElementById('skLoai').value;
-  const note = document.getElementById('skNote').value;
-  if (!ngay) return alert('Chọn ngày');
-  suKienCaNhan.push({ngay, loai, note});
-  renderList();
-  document.getElementById('skNote').value = '';
-}
-
-function renderList() {
-  document.getElementById('listSuKien').innerHTML = suKienCaNhan.map((s, i) => `
-    <div style="padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:6px;margin:6px 0;
-                display:flex;justify-content:space-between;align-items:center">
-      <span><b>${s.ngay}</b> — ${s.loai}${s.note ? ' · ' + s.note : ''}</span>
-      <button onclick="xoaSk(${i})" style="padding:4px 10px;font-size:0.8rem">×</button>
-    </div>`).join('');
-}
-
-function xoaSk(i) { suKienCaNhan.splice(i, 1); renderList(); }
-
-async function quetTuan() {
-  const out = document.getElementById('result');
-  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">Đang quét...</div>';
-  const r = await fetch(`${API}/api/su-kien/quet-tuan`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-    body: JSON.stringify({su_kien_ca_nhan: suKienCaNhan})
-  });
-  const d = await r.json();
-  renderSuKien(d);
-}
-
-async function tuVanLLM() {
-  const out = document.getElementById('result');
-  out.innerHTML = '<div style="text-align:center;padding:40px;color:#a890c9">🧠 AI đang tư vấn...</div>';
-  const r = await fetch(`${API}/api/su-kien/llm-tu-van`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-    body: JSON.stringify({su_kien_ca_nhan: suKienCaNhan})
-  });
-  const d = await r.json();
-  renderSuKien(d.so_lieu, d.tu_van_llm);
-}
-
-function renderSuKien(kq, tuVan) {
-  let html = `
-    <div class="card">
-      <h2 style="color:#c4a3ff">📊 Tổng quan tuần</h2>
-      <div style="display:flex;gap:20px;justify-content:center;margin-top:16px">
-        <div style="text-align:center">
-          <div style="font-size:2.5rem;color:#ffd700;font-weight:700">${kq.diem_tuan}</div>
-          <div style="color:#a890c9">Điểm TB</div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-size:2.5rem;color:#7bffa0;font-weight:700">${kq.su_kien_trong_diem.length}</div>
-          <div style="color:#a890c9">Sự kiện tốt</div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-size:2.5rem;color:#ff8080;font-weight:700">${kq.su_kien_can_chu_y.length}</div>
-          <div style="color:#a890c9">Cần chú ý</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="color:#c4a3ff">📅 ${kq.tong_su_kien} sự kiện</h2>
-      ${kq.su_kien.map(sk => {
-        const cls = sk.diem_anh_huong >= 65 ? 'tot' :
-                    sk.diem_anh_huong >= 45 ? 'tb' : 'xau';
-        const badge = sk.muc_do === 'trực tiếp' ? 'truc-tiep' : 'gian-tiep';
-        return `
-          <div class="sk-item ${cls}">
-            <div class="sk-head">
-              <div>
-                <span class="sk-name">${sk.ten}</span>
-                ${sk.mo_ta ? `<span style="color:#a890c9;font-size:0.85rem"> · ${sk.mo_ta}</span>` : ''}
-              </div>
-              <div style="display:flex;gap:8px;align-items:center">
-                <span class="sk-badge ${badge}">${sk.muc_do}</span>
-                <b style="color:#ffd700;font-size:1.2rem">${sk.diem_anh_huong}</b>
-              </div>
-            </div>
-            <div style="margin-top:8px;font-size:0.85rem;color:#a890c9">
-              📅 ${sk.ngay} · Can Chi: ${sk.can_chi_ngay} · ${sk.quan_he_ngu_hanh}
-              · Dự báo: <b style="color:${
-                sk.du_bao === 'tích cực' ? '#7bffa0' :
-                sk.du_bao === 'trung tính' ? '#ffd700' : '#ff8080'}">${sk.du_bao}</b>
-            </div>
-          </div>`;
-      }).join('')}
-    </div>
-  `;
-
-  if (tuVan) {
-    html += `
-      <div class="card">
-        <h2 style="color:#ffd700">🧠 AI Tư Vấn</h2>
-        <p style="line-height:1.6">${tuVan.tom_tat_tuan || ''}</p>
-
-        ${tuVan.su_kien_trong_diem?.length ? `
-          <h3 style="color:#7bffa0;margin-top:16px">🎯 Sự kiện trọng điểm</h3>
-          ${tuVan.su_kien_trong_diem.map(sk => `
-            <div style="padding:12px;background:rgba(0,0,0,0.25);border-radius:8px;margin:8px 0;
-                        border-left:3px solid #7bffa0">
-              <b>${sk.su_kien} — ${sk.ngay}</b>
-              <div style="margin-top:6px;color:#7bffa0">✓ Nên: ${(sk.nen_lam_gi||[]).join(', ')}</div>
-              <div style="color:#ff8080;margin-top:4px">✗ Tránh: ${(sk.nen_tranh_gi||[]).join(', ')}</div>
-            </div>`).join('')}` : ''}
-
-        ${tuVan.su_kien_gian_tiep_lan_toa?.length ? `
-          <h3 style="color:#c4a3ff;margin-top:16px">🌊 Sự kiện gián tiếp lan toả</h3>
-          ${tuVan.su_kien_gian_tiep_lan_toa.map(sk => `
-            <div style="padding:12px;background:rgba(123,63,228,0.15);border-radius:8px;margin:8px 0">
-              <b>${sk.su_kien}</b>
-              <div style="margin-top:6px">${sk.tac_dong}</div>
-              <div style="margin-top:6px;color:#7bffa0">→ ${(sk.cach_thich_ung||[]).join(', ')}</div>
-            </div>`).join('')}` : ''}
-
-        ${tuVan.lich_hanh_dong?.length ? `
-          <h3 style="color:#ffd700;margin-top:16px">📋 Lịch hành động</h3>
-          ${tuVan.lich_hanh_dong.map(d => `
-            <div style="padding:12px;background:rgba(255,215,0,0.1);border-radius:8px;margin:8px 0">
-              <b>${d.ngay}</b>${d.gio_tot ? ` · Giờ tốt: ${d.gio_tot}` : ''}
-              <ul style="margin-top:6px">
-                ${(d.hanh_dong||[]).map(x => `<li>${x}</li>`).join('')}
-              </ul>
-            </div>`).join('')}` : ''}
-
-        ${tuVan.loi_khuyen_tong_the ? `
-          <div style="margin-top:16px;padding:12px;background:rgba(196,163,255,0.15);border-radius:8px">
-            💡 <b>${tuVan.loi_khuyen_tong_the}</b>
-          </div>` : ''}
-      </div>`;
-  }
-
-  document.getElementById('result').innerHTML = html;
-}
-
-// Set ngày mặc định hôm nay
-document.getElementById('skNgay').valueAsDate = new Date();
-</script>
-</body>
-</html>
-```
-
-### Route serve
+### Endpoints LMS
 
 ```python
-@app.get("/phong-thuy", response_class=HTMLResponse)
-def phong_thuy_page():
-    return FileResponse("../frontend/phong-thuy.html")
+# main.py
+from lms import (Course, Lesson, Enrollment, LessonProgress, AI TutorChat,
+                   init_lms, ask_ai_tutor, danh_gia_tien_do)
 
-@app.get("/su-kien", response_class=HTMLResponse)
-def su_kien_page():
-    return FileResponse("../frontend/su-kien.html")
+# Seed courses lúc startup
+_db = SessionLocal()
+try:
+    init_lms(_db)
+finally:
+    _db.close()
+
+
+@app.get("/api/courses")
+def api_list_courses(category: str = None, level: str = None,
+                       user: User = Depends(get_current_user),
+                       db: Session = Depends(get_db)):
+    q = db.query(Course)
+    if category:
+        q = q.filter_by(category=category)
+    if level:
+        q = q.filter_by(level=level)
+    courses = q.all()
+
+    return {"courses": [{
+        "id": c.id, "slug": c.slug, "ten": c.ten,
+        "mo_ta": c.mo_ta, "level": c.level, "category": c.category,
+        "gia_vnd": c.gia_vnd, "is_free": c.is_free,
+        "so_bai": db.query(Lesson).filter_by(course_id=c.id).count(),
+    } for c in courses]}
+
+
+@app.get("/api/courses/{slug}")
+def api_course_detail(slug: str,
+                        user: User = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
+    course = db.query(Course).filter_by(slug=slug).first()
+    if not course:
+        raise HTTPException(404, "Không tìm thấy khóa học")
+
+    lessons = db.query(Lesson).filter_by(course_id=course.id).order_by(
+        Lesson.order_num
+    ).all()
+
+    # Check enrolled
+    enroll = db.query(Enrollment).filter_by(
+        user_id=user.id, course_id=course.id
+    ).first()
+
+    return {
+        "course": {
+            "id": course.id, "slug": course.slug, "ten": course.ten,
+            "mo_ta": course.mo_ta, "level": course.level,
+            "gia_vnd": course.gia_vnd, "is_free": course.is_free,
+        },
+        "lessons": [{
+            "id": l.id, "order": l.order_num, "ten": l.ten,
+            "duration_min": l.duration_min,
+        } for l in lessons],
+        "enrolled": enroll is not None,
+        "progress": danh_gia_tien_do(user.id, course.id, db) if enroll else None,
+    }
+
+
+@app.post("/api/courses/{slug}/enroll")
+def api_enroll(slug: str,
+                 user: User = Depends(get_current_user),
+                 db: Session = Depends(get_db)):
+    course = db.query(Course).filter_by(slug=slug).first()
+    if not course:
+        raise HTTPException(404, "Không tìm thấy khóa học")
+
+    if not course.is_free and course.gia_vnd > 0:
+        # TODO: check payment
+        pass
+
+    existing = db.query(Enrollment).filter_by(
+        user_id=user.id, course_id=course.id
+    ).first()
+    if existing:
+        return {"ok": True, "message": "Đã đăng ký từ trước"}
+
+    db.add(Enrollment(user_id=user.id, course_id=course.id))
+    db.commit()
+    return {"ok": True}
+
+
+@app.get("/api/lessons/{lesson_id}")
+def api_lesson_detail(lesson_id: int,
+                        user: User = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
+    lesson = db.query(Lesson).filter_by(id=lesson_id).first()
+    if not lesson:
+        raise HTTPException(404, "Không tìm thấy bài học")
+
+    prog = db.query(LessonProgress).filter_by(
+        user_id=user.id, lesson_id=lesson_id
+    ).first()
+
+    return {
+        "id": lesson.id, "ten": lesson.ten,
+        "noi_dung_md": lesson.noi_dung_md,
+        "video_url": lesson.video_url,
+        "duration_min": lesson.duration_min,
+        "completed": prog.completed if prog else False,
+    }
+
+
+@app.post("/api/lessons/{lesson_id}/complete")
+def api_complete_lesson(lesson_id: int,
+                          quiz_score: float = None,
+                          time_spent_sec: int = 0,
+                          user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
+    prog = db.query(LessonProgress).filter_by(
+        user_id=user.id, lesson_id=lesson_id
+    ).first()
+    if not prog:
+        prog = LessonProgress(user_id=user.id, lesson_id=lesson_id)
+        db.add(prog)
+
+    prog.completed = True
+    prog.quiz_score = quiz_score
+    prog.time_spent_sec = time_spent_sec
+    prog.updated_at = datetime.utcnow()
+    db.commit()
+
+    # Update enrollment progress
+    lesson = db.query(Lesson).filter_by(id=lesson_id).first()
+    if lesson:
+        enroll = db.query(Enrollment).filter_by(
+            user_id=user.id, course_id=lesson.course_id
+        ).first()
+        if enroll:
+            total = db.query(Lesson).filter_by(course_id=lesson.course_id).count()
+            completed = db.query(LessonProgress).join(Lesson).filter(
+                Lesson.course_id == lesson.course_id,
+                LessonProgress.user_id == user.id,
+                LessonProgress.completed == True,
+            ).count()
+            enroll.progress_pct = round(completed / total * 100, 1) if total else 0
+            enroll.last_activity = datetime.utcnow()
+            if enroll.progress_pct >= 100:
+                enroll.completed_at = datetime.utcnow()
+            db.commit()
+
+    return {"ok": True}
+
+
+class TutorQuestion(BaseModel):
+    question: str
+    course_id: int = None
+    lesson_id: int = None
+
+
+@app.post("/api/tutor/ask")
+async def api_ask_tutor(data: TutorQuestion,
+                          user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
+    return await ask_ai_tutor(user.id, data.question,
+                                data.course_id, data.lesson_id, db)
+
+
+@app.get("/api/my/learning")
+def api_my_learning(user: User = Depends(get_current_user),
+                      db: Session = Depends(get_db)):
+    enrolls = db.query(Enrollment).filter_by(user_id=user.id).all()
+    return {"courses": [{
+        "course_id": e.course_id,
+        "progress_pct": e.progress_pct,
+        "enrolled_at": e.enrolled_at.isoformat(),
+        "completed": e.completed_at is not None,
+    } for e in enrollments]}
 ```
 
 ---
 
-## 🎯 Kiến trúc "Vũ trụ huyền học" hoàn chỉnh
+## 🎯 Script chạy toàn bộ (đã mở rộng)
 
-```
-                    ┌────────────────────────────────────────┐
-                    │           VŨ TRỤ HUYỀN HỌC             │
-                    └────────────────┬───────────────────────┘
-                                     │
-        ┌────────────────────────────┼───────────────────────────┐
-        │                            │                           │
-        ▼                            ▼                           ▼
-┌───────────────┐         ┌──────────────────┐         ┌──────────────┐
-│  VĨ MÔ        │         │  MỆNH CHỦ         │         │  MÔI TRƯỜNG  │
-│  (Vũ trụ)     │         │  (Cá nhân)        │         │  (Xung quanh)│
-├───────────────┤         ├──────────────────┤         ├──────────────┤
-│ • Tiết khí    │         │ • Can Chi         │         │ • Thời tiết  │
-│ • Vận 9       │         │ • Bát tự          │         │ • Không khí  │
-│ • Niên tinh   │◄────────┤ • Cung phi        │────────►│ • Địa lý     │
-│ • Sao hạn     │ kết hợp │ • Số chủ đạo      │ ảnh     │ • Vị trí     │
-│ • Lịch vạn    │         │ • Tử Vi 12 cung   │ hưởng   │ • Phương vị  │
-│   niên        │         │ • Tarot, Dịch     │         │              │
-└───────────────┘         └─────────┬────────┘         └──────────────┘
-                                    │
-                                    │ Tương tác
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │      SỰ KIỆN TRỰC TIẾP        │
-                    ├───────────────────────────────┤
-                    │ • Sinh nhật, ký HĐ, cưới hỏi  │
-                    │ • Phẫu thuật, chuyển nhà      │
-                    │ • Khởi nghiệp, thi cử         │
-                    └───────────────┬───────────────┘
-                                    │
-                                    │ Lan tỏa / Đón nhận
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │      SỰ KIỆN GIÁN TIẾP        │
-                    ├───────────────────────────────┤
-                    │ • Kinh tế, chính trị          │
-                    │ • Dịch bệnh, thiên tai        │
-                    │ • Công nghệ, văn hóa          │
-                    │ • Ngày rằm/mùng 1, tiết khí   │
-                    └───────────────┬───────────────┘
-                                    │
-                                    │ Cộng hưởng
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │       CASCADE EFFECT          │
-                    ├───────────────────────────────┤
-                    │ Sức khỏe ↓ → Sự nghiệp ↓      │
-                    │ Tài vận ↓ + CV ↓ → Tinh thần ↓│
-                    │ ...                            │
-                    └───────────────────────────────┘
+### `param.ps1` — Script chính đã cập nhật
+
+```powershell
+param(
+    [string]$Model = "qwen2.5:7b",
+    [switch]$Production = $false,
+    [switch]$SkipTests = $false
+)
+
+$ErrorActionPreference = "Stop"
+Set-Location -LiteralPath $PSScriptRoot
+
+# ==== BANNER ====
+Write-Host ""
+Write-Host "╔═══════════════════════════════════════════════════╗" -ForegroundColor Magenta
+Write-Host "║     🔮 HUYỀN BẢO AI — ENTERPRISE EDITION 🔮       ║" -ForegroundColor Magenta
+Write-Host "║            https://huyenbao.com                   ║" -ForegroundColor Magenta
+Write-Host "╚═══════════════════════════════════════════════════╝" -ForegroundColor Magenta
+Write-Host ""
+
+# ==== CHECK PYTHON & OLLAMA ====
+$pythonCommand = Get-Command python -ErrorAction SilentlyContinue
+if (-not $pythonCommand) {
+    throw "❌ Python không tìm thấy. Cài Python 3.10+ và thêm vào PATH."
+}
+
+$ollamaCommand = Get-Command ollama -ErrorAction SilentlyContinue
+if (-not $ollamaCommand) {
+    throw "❌ Ollama không tìm thấy. Tải tại https://ollama.com/download"
+}
+
+# ==== VENV ====
+$venvPython = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
+if (-not (Test-Path -LiteralPath $venvPython)) {
+    Write-Host "📦 Đang tạo Python venv..." -ForegroundColor Cyan
+    & $pythonCommand.Source -m venv (Join-Path $PSScriptRoot ".venv")
+    if ($LASTEXITCODE -ne 0) { throw "❌ Không tạo được venv." }
+}
+
+# ==== CÀI DEPENDENCIES ====
+Write-Host "📥 Đang cài dependencies..." -ForegroundColor Cyan
+& $venvPython -m pip install --quiet --upgrade pip
+& $venvPython -m pip install --quiet -r (Join-Path $PSScriptRoot "backend\requirements.txt")
+if ($LASTEXITCODE -ne 0) { throw "❌ Cài đặt thất bại." }
+
+# ==== LOAD ENV ====
+function Read-EnvVar($file, $key) {
+    if (-not (Test-Path -LiteralPath $file)) { return $null }
+    foreach ($line in Get-Content -LiteralPath $file) {
+        if ($line -match "^\s*$key\s*=\s*(.*?)\s*$") {
+            $val = $matches[1]
+            if ($val.Length -ge 2 -and
+                (($val.StartsWith('"') -and $val.EndsWith('"')) -or
+                 ($val.StartsWith("'") -and $val.EndsWith("'")))) {
+                $val = $val.Substring(1, $val.Length - 2)
+            }
+            return $val
+        }
+    }
+    return $null
+}
+
+$envFile = Join-Path $PSScriptRoot ".env.local"
+
+# Secret key
+if (-not $env:HUYEN_HOC_SECRET_KEY) {
+    $storedSecret = Read-EnvVar $envFile "HUYEN_HOC_SECRET_KEY"
+    if ($storedSecret -and $storedSecret.Length -ge 32) {
+        $env:HUYEN_HOC_SECRET_KEY = $storedSecret
+    } else {
+        $env:HUYEN_HOC_SECRET_KEY = (& $venvPython -c "import secrets; print(secrets.token_urlsafe(48))").Trim()
+        Add-Content -LiteralPath $envFile -Value "HUYEN_HOC_SECRET_KEY=$env:HUYEN_HOC_SECRET_KEY" -Encoding UTF8
+        Write-Host "🔐 Đã tạo JWT secret (lưu tại .env.local)" -ForegroundColor Green
+    }
+}
+
+# All API keys
+$apiKeys = @(
+    "TELEGRAM_BOT_TOKEN", "OPENWEATHER_API_KEY", "GOOGLE_MAPS_API_KEY",
+    "ALPHA_VANTAGE_KEY", "FINNHUB_KEY",
+    "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET",
+    "ELEVENLABS_API_KEY", "GOOGLE_TTS_KEY",
+    "CLOUDFLARE_API_TOKEN",
+    "TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET",
+    "YOUTUBE_API_KEY", "META_APP_SECRET",
+    "PINATA_JWT", "NFT_CONTRACT_ADDRESS", "WALLET_PRIVATE_KEY",
+    "WEB3_PROVIDER"
+)
+
+$loadedKeys = @()
+foreach ($key in $apiKeys) {
+    if (-not (Get-Item -Path "env:$key" -ErrorAction SilentlyContinue)) {
+        $val = Read-EnvVar $envFile $key
+        if (-not $val) {
+            $val = Read-EnvVar (Join-Path $PSScriptRoot "deploy\.env.prod") $key
+        }
+        if ($val -and $val -notmatch '^(CHANGE|PLACEHOLDER|REPLACE)') {
+            Set-Item -Path "env:$key" -Value $val
+            $loadedKeys += $key
+        }
+    } else {
+        $loadedKeys += $key
+    }
+}
+
+# ==== OLLAMA ====
+if (-not $env:OLLAMA_URL) { $env:OLLAMA_URL = "http://localhost:11434" }
+if ($env:OLLAMA_MODEL) { $Model = $env:OLLAMA_MODEL } else { $env:OLLAMA_MODEL = $Model }
+
+$ollamaReady = $false
+try {
+    Invoke-RestMethod -Uri "$($env:OLLAMA_URL.TrimEnd('/'))/api/tags" -TimeoutSec 2 | Out-Null
+    $ollamaReady = $true} catch {
+    Write-Host "🚀 Đang khởi động Ollama server..." -ForegroundColor Cyan
+    Start-Process -FilePath $ollamaCommand.Source -ArgumentList "serve" -WindowStyle Hidden
+    for ($i = 0; $i -lt 30; $i++) {
+        Start-Sleep -Seconds 1
+        try {
+            Invoke-RestMethod -Uri "$($env:OLLAMA_URL.TrimEnd('/'))/api/tags" -TimeoutSec 2 | Out-Null
+            $ollamaReady = $true; break
+        } catch { }
+    }
+}
+
+if (-not $ollamaReady) { throw "❌ Ollama không khả dụng tại $($env:OLLAMA_URL)" }
+
+# Pull model nếu chưa có
+$installedModels = & $ollamaCommand.Source list
+if (-not ($installedModels | Select-String -SimpleMatch $Model)) {
+    Write-Host "📥 Đang tải model '$Model'..." -ForegroundColor Cyan
+    & $ollamaCommand.Source pull $Model
+    if ($LASTEXITCODE -ne 0) { throw "❌ Không tải được model." }
+}
+
+# ==== CHECK CLOUDFLARE ====
+$cloudflareReady = $false
+if ($env:CLOUDFLARE_API_TOKEN) {
+    $wranglerCmd = Get-Command wrangler -ErrorAction SilentlyContinue
+    if ($wranglerCmd) {
+        $cloudflareReady = $true
+    }
+}
+
+# ==== STOP PROCESSES CŨ ====
+Get-Process | Where-Object {
+    $_.ProcessName -match "uvicorn|python" -and $_.Path -like "*$PSScriptRoot*"
+} | ForEach-Object {
+    Write-Host "🛑 Dừng process cũ ($($_.Id))..." -ForegroundColor Yellow
+    Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+}
+Start-Sleep -Seconds 1
+
+# ==== START BACKEND ====
+Write-Host ""
+Write-Host "🚀 Khởi động backend..." -ForegroundColor Green
+
+$backendJob = Start-Job -ScriptBlock {
+    param($venvPython, $backendDir, $envVars)
+    Set-Location $backendDir
+    foreach ($kv in $envVars.GetEnumerator()) {
+        [Environment]::SetEnvironmentVariable($kv.Key, $kv.Value, "Process")
+    }
+    & $venvPython -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+} -ArgumentList $venvPython, (Join-Path $PSScriptRoot "backend"), [Environment]::GetEnvironmentVariables("Process")
+
+# ==== HEALTH CHECK ====
+Write-Host "⏳ Đợi backend sẵn sàng..." -ForegroundColor Cyan
+$backendReady = $false
+for ($i = 0; $i -lt 30; $i++) {
+    Start-Sleep -Seconds 1
+    try {
+        Invoke-RestMethod -Uri "http://localhost:8000/health" -TimeoutSec 2 | Out-Null
+        $backendReady = $true; break
+    } catch { }
+}
+
+# ==== SUMMARY ====
+Write-Host ""
+Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
+if ($backendReady) {
+    Write-Host "  ✅ HUYỀN BẢO AI ĐÃ SẴN SÀNG" -ForegroundColor Green
+} else {
+    Write-Host "  ⚠️  Backend chưa phản hồi — kiểm tra log" -ForegroundColor Yellow
+}
+Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host ""
+Write-Host "  🌐 Local:       http://localhost:8000"
+Write-Host "  🌍 Production:  https://huyenbao.com"
+Write-Host "  📚 API Docs:    http://localhost:8000/docs"
+Write-Host "  🎨 Dashboard:   http://localhost:8000/dashboard"
+Write-Host ""
+Write-Host "  🤖 LLM Model:      $Model"
+Write-Host "  🔌 Ollama:         $($env:OLLAMA_URL)"
+Write-Host ""
+Write-Host "  📋 Services:" -ForegroundColor Cyan
+Write-Host "     • Telegram Bot:  $(if ($env:TELEGRAM_BOT_TOKEN) { '✅' } else { '❌' })"
+Write-Host "     • Stripe:        $(if ($env:STRIPE_SECRET_KEY) { '✅' } else { '❌' })"
+Write-Host "     • Google Maps:   $(if ($env:GOOGLE_MAPS_API_KEY) { '✅' } else { '❌' })"
+Write-Host "     • ElevenLabs:    $(if ($env:ELEVENLABS_API_KEY) { '✅' } else { '❌' })"
+Write-Host "     • Cloudflare:    $(if ($cloudflareReady) { '✅' } else { '❌' })"
+Write-Host "     • Web3/NFT:      $(if ($env:NFT_CONTRACT_ADDRESS) { '✅' } else { '❌' })"
+Write-Host "     • OpenWeather:   $(if ($env:OPENWEATHER_API_KEY) { '✅' } else { '❌' })"
+Write-Host ""
+Write-Host "  📊 Modules đã cài:" -ForegroundColor Cyan
+Write-Host "     ✅ Tử Vi 12 cung        ✅ Bát Tự"
+Write-Host "     ✅ Tarot                ✅ Kinh Dịch"
+Write-Host "     ✅ Phong Thủy           ✅ Bản đồ"
+Write-Host "     ✅ Gia đạo              ✅ Trạch cát"
+Write-Host "     ✅ Tâm linh             ✅ Video AI"
+Write-Host "     ✅ Kinh tế vĩ mô        ✅ Đông-Tây"
+Write-Host "     ✅ White-label          ✅ Auto-posting"
+Write-Host "     ✅ Stripe               ✅ i18n"
+Write-Host "     ✅ Mobile app           ✅ NFT"
+Write-Host "     ✅ Voice AI             ✅ LMS + AI Tutor"
+Write-Host ""
+Write-Host "  💡 Ctrl+C để dừng" -ForegroundColor Yellow
+Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host ""
+
+# ==== MAIN LOOP ====
+try {
+    while ($true) {
+        $jobs = Get-Job -State Completed
+        foreach ($job in $jobs) {
+            $output = Receive-Job -Job $job -Keep
+            if ($output) {
+                Write-Host $output
+            }
+        }
+        Start-Sleep -Seconds 2
+    }
+} finally {
+    Write-Host ""
+    Write-Host "🛑 Đang tắt các service..." -ForegroundColor Yellow
+    Get-Job | Stop-Job -ErrorAction SilentlyContinue
+    Get-Job | Remove-Job -Force -ErrorAction SilentlyContinue
+    Write-Host "✅ Đã tắt sạch" -ForegroundColor Green
+}
 ```
 
 ---
 
-## 📋 Tóm tắt 4 module mới
+## 📦 Cập nhật `requirements.txt`
 
-| Module | File chính | Nội dung |
-|--------|-----------|----------|
-| 🏠 **Phong Thủy** | `phong_thuy.py` | Bát trạch 8 hướng, Huyền không phi tinh, Dương trạch tam yếu, hóa giải |
-| 📅 **Sự Kiện** | `su_kien.py` | Sự kiện trực tiếp (cá nhân) + gián tiếp (xã hội), chu kỳ, dự báo năm |
-| 🌍 **Môi Trường** | `moi_truong.py` | Thời tiết, AQI, vị trí, ảnh hưởng ngũ hành |
-| 🔗 **Kết Nối** | `ket_noi.py` | Bức tranh tổng thể, cascade effect, lịch hành động |
+```txt
+# Core
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+httpx==0.27.2
+sqlalchemy==2.0.36
+pydantic==2.9.2
+python-multipart==0.0.12
 
----
+# Auth
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
 
-## ⚙️ API endpoint mới
+# PDF
+weasyprint==62.3
+jinja2==3.1.4
 
+# Scheduler
+apscheduler==3.10.4
+
+# Redis (share links)
+redis==5.0.8
+
+# Stripe
+stripe==11.1.0
+
+# Web3 (NFT)
+web3==7.5.0
+eth-account==0.13.3
+
+# Voice (optional)
+# TTS==0.22.0       # Coqui TTS — nặng, chỉ cài khi cần
+# pydub==0.25.1
+
+# Video
+moviepy==1.0.3
+Pillow==10.4.0
+
+# Translation
+deep-translator==1.11.4  # optional
+
+# Utils
+python-dotenv==1.0.1
+aiofiles==24.1.0
 ```
-POST /api/phong-thuy/phan-tich         — Bát trạch + phi tinh
-POST /api/phong-thuy/llm-tu-van        — AI tư vấn phong thủy
-GET  /api/phong-thuy/phi-tinh          — Phi tinh ngày
 
-POST /api/su-kien/quet-tuan            — Quét sự kiện tuần
-POST /api/su-kien/llm-tu-van           — AI tư vấn sự kiện
-GET  /api/su-kien/du-bao-nam           — Dự báo năm
-GET  /api/su-kien/loai                 — Danh mục sự kiện
+---
 
-POST /api/moi-truong/hien-tai          — Thời tiết + AQI
-POST /api/moi-truong/goi-y-vi-tri      — Gợi ý vị trí
+## 🚀 Tóm tắt toàn bộ hệ thống
 
-POST /api/tong-the                     — Bức tranh tổng thể (gộp tất cả)
+| # | Module | File chính | Endpoint chính |
+|---|--------|-----------|----------------|
+| 1 | 🌐 Cloudflare | `worker.js` | `huyenbao.com/*` |
+| 2 | 🏛️ White-label | `white_label.py` | `/api/tenant/*` |
+| 3 | 🤖 Auto-posting | `auto_posting.py` | `/api/social/*` |
+| 4 | 💰 Stripe | `monetization.py` | `/api/payments/*` |
+| 5 | 🌐 i18n | `i18n.py` | `/api/i18n/*` |
+| 6 | 📱 Mobile | `mobile/` | React Native app |
+| 7 | 🔗 NFT | `blockchain_nft.py` | `/api/nft/*` |
+| 8 | 🎙️ Voice | `voice_ai.py` | `/api/voice/*` |
+| 9 | 🏫 LMS | `lms.py` | `/api/courses/*` |
+
+### Điểm đột phá mở rộng lần này
+
+1. **Tên + Giờ sinh**: Thần số học tên (Ngũ cách) + Can Chi giờ → phân tích sâu hơn nhiều lần.
+
+2. **Cloudflare Worker**: Xử lý rate limit, CORS, cache, proxy ngay tại edge → backend nhẹ, latency thấp.
+
+3. **White-label**: 1 backend phục vụ N doanh nghiệp với branding riêng — mô hình SaaS B2B2C.
+
+4. **Auto-posting**: Từ video render → đăng multi-platform tự động → viral marketing engine.
+
+5. **Stripe**: Monetize 4 tier (Free / Premium / VIP / Enterprise) với quota động.
+
+6. **i18n**: Mở rộng ra thị trường quốc tế (Anh, Trung, Nhật) — đặc biệt Trung Quốc cực lớn.
+
+7. **Mobile**: React Native wrap web + native notifications → retention cao hơn.
+
+8. **NFT**: Lưu lá số on-chain → immutable, có thể trade, marketing "web3 huyền học".
+
+9. **Voice AI**: Đọc dự đoán → accessibility + podcast marketing + Telegram voice messages.
+
+10. **LMS + AI Tutor**: Từ app "xem bói" → nền tảng học tập có AI giáo viên → retention dài hạn + doanh thu khóa học.
+
+---
+
+## 📋 Checklist setup từ đầu
+
+```powershell
+# 1. Chuẩn bị
+git clone <repo> huyenbao
+cd huyenbao
+cp deploy/.env.prod.example .env.local
+
+# 2. Điền API keys vào .env.local
+notepad .env.local
+
+# 3. Chạy script
+.\param.ps1 -Model "qwen2.5:7b"
+
+# 4. Truy cập
+start http://localhost:8000
 ```
 
----
+## 🌍 Deploy production
 
-## 🌟 Điểm đột phá của mở rộng này
+```bash
+# 1. Setup server (Ubuntu 22.04)
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin nginx certbot
 
-1. **Từ cá nhân → hệ sinh thái**: Mệnh chủ không đứng một mình — chịu ảnh hưởng từ nhà, khu vực, xã hội, vũ trụ.
+# 2. DNS: huyenbao.com → IP server
+#    api.huyenbao.com → IP server
+#    www.huyenbao.com → IP server
 
-2. **Cascade effect (domino)**: Phát hiện chuỗi hệ quả — sức khỏe yếu → sự nghiệp trì trệ → tài vận sa sút. Cảnh báo sớm.
+# 3. Deploy backend
+cd deploy
+cp .env.prod.example .env.prod
+# Sửa .env.prod
+docker compose up -d
 
-3. **Trực tiếp vs Gián tiếp**: Phân biệt rõ — sự kiện cá nhân (điểm cao) vs sự kiện xã hội (điểm thấp nhưng lan tỏa rộng).
+# 4. Deploy Cloudflare Worker
+cd cloudflare
+wrangler login
+bash deploy.sh
 
-4. **Phong thủy động**: Kết hợp Bát trạch tĩnh (cung phi) + Huyền không động (phi tinh thay đổi theo ngày/tháng/năm).
+# 5. Setup SSL cho api.huyenbao.com (nếu không dùng Cloudflare proxy)
+sudo certbot --nginx -d api.huyenbao.com
 
-5. **Môi trường realtime**: Thời tiết + AQI ảnh hưởng ngũ hành mệnh chủ → khuyến nghị cụ thể từng ngày.
+# 6. Build mobile app
+cd ../mobile
+npm install
+eas login
+bash build.sh
 
-6. **LLM tổng hợp**: AI không chỉ luận từng phần mà kết nối mọi yếu tố → nhận định holistic + lịch hành động 7 ngày.
+# 7. Deploy smart contract NFT (optional)
+cd ../contracts
+npm install
+npx hardhat run deploy.js --network polygon
 
----
+# Done!
+```

@@ -20,6 +20,8 @@ Trên Windows, có thể khởi động ứng dụng local bằng một lệnh P
 
 Script tạo virtual environment, cài dependencies, khởi động Ollama nếu cần, tải model `qwen2.5:7b` khi chưa có, rồi chạy API. Lần đầu có thể mất thời gian tải model. Mở <http://localhost:8000/> và giữ cửa sổ PowerShell mở; nhấn `Ctrl+C` để dừng backend. Secret đăng nhập local được lưu trong `.env.local` (gitignored) để không đổi mỗi lần chạy. Nếu cần dùng Telegram, script đọc `TELEGRAM_BOT_TOKEN` từ `.env.local`, rồi fallback sang `deploy/.env.prod`; hãy đặt token bot hợp lệ trong một trong hai file riêng này. Cần cài Python 3.10+ và Ollama trước.
 
+Tính năng thời tiết/AQI là tùy chọn: đặt `OPENWEATHER_API_KEY` trong `.env.local`, `deploy/.env.prod` hoặc biến môi trường trước khi khởi động. Người dùng phải chủ động nhập tọa độ và đồng ý gửi chúng tới OpenWeather; tọa độ không được lưu. Trên trang Bản đồ, độ cao cũng là tùy chọn và chỉ gửi tới Google Maps Elevation API khi người dùng đánh dấu đồng ý; cần cấu hình `GOOGLE_MAPS_API_KEY`.
+
 Tải model Ollama:
 
 ```powershell
@@ -41,15 +43,26 @@ Mở <http://localhost:8000/> để đăng ký/đăng nhập. Sau khi đăng nh�
 
 Cấu hình bằng các biến môi trường `HUYEN_HOC_SECRET_KEY`, `OLLAMA_MODEL`, `OLLAMA_URL`, `CORS_ORIGINS` (origin phân tách bằng dấu phẩy). Không dùng lại JWT secret giữa môi trường hoặc công khai secret; nếu mất secret, token hiện có sẽ không còn hợp lệ.
 
+Form phân tích hỗ trợ họ tên tùy chọn và giờ sinh địa phương (0–23). Chúng được lưu trong hồ sơ riêng của tài khoản như ngày sinh hiện tại; bỏ trống ở lần phân tích sau sẽ giữ giá trị đã có. Số tên theo bảng chữ cái Latin và Can Chi giờ chỉ là quy ước văn hóa/giải trí, không phải đánh giá tính cách hay dự đoán. Giờ sinh không hiệu chỉnh theo múi giờ/địa điểm; Ngũ cách không được tính từ chữ Latin vì cần dữ liệu nét chữ Hán. Bốn ngôn ngữ `vi`, `en`, `zh`, `ja` hiện áp dụng cho điều hướng và form hồ sơ chính; nội dung các module còn lại có thể vẫn bằng tiếng Việt.
+
 ## API
 
-- Các trang mới sau đăng nhập: `/phong-thuy`, `/su-kien` và `/timeline-vi-mo`.
+- Các trang sau đăng nhập gồm `/phong-thuy`, `/su-kien`, `/timeline-vi-mo`, `/ban-do`, `/gia-dao`, `/kinh-te`, `/trach-cat`, `/tam-linh`, `/video` và `/so-sanh`.
 - `POST /api/phong-thuy/phan-tich`, `/api/phong-thuy/llm-tu-van` — Bát Trạch tham khảo và diễn giải Ollama; `GET /api/phong-thuy/phi-tinh` — sao năm giản lược.
 - `GET/POST/DELETE /api/su-kien` — quản lý lịch riêng tư theo tài khoản; `/api/su-kien/tuan` và `/api/su-kien/dai-han` chỉ tổng hợp sự kiện do người dùng nhập.
 - `GET /api/vi-mo/timeline` — mốc tiết khí nội bộ xấp xỉ, không phải nguồn tin tức hoặc cảnh báo thời tiết.
 - `POST /api/moi-truong/hien-tai` — thời tiết/AQI theo tọa độ; cần `OPENWEATHER_API_KEY`. Tọa độ chỉ chuyển tới OpenWeather khi người dùng chủ động đồng ý truy vấn và không được lưu trong hồ sơ.
 - `POST /api/tong-the` — tổng hợp phong thủy, lịch cá nhân, mốc tiết khí và (nếu chủ động nhập tọa độ) dữ liệu môi trường.
+- `POST /api/ban-do/phan-tich` — hiển thị vị trí đã nhập và thông tin độ cao tùy chọn; hướng mặt tiền phải do người dùng nhập, tọa độ không lưu. Google Maps chỉ được gọi khi có opt-in và API key.
+- `POST /api/gia-dao/phan-tich` — nhóm cung phi/hướng tham khảo tối đa 10 thành viên; ngày sinh không lưu và không chấm điểm hòa hợp.
+- `GET /api/kinh-te/thi-truong` — quan sát VN-Index và tỷ giá USD/VND từ nguồn công khai; có thể bị trễ/không sẵn có, không phải tư vấn đầu tư.
+- `POST /api/trach-cat/tim-ngay` — tra ngày theo lịch dân gian giản lược cho các hoạt động phổ thông; không dùng để trì hoãn chăm sóc y tế hoặc nghĩa vụ.
+- `GET /api/tam-linh/thoi-khoa` — gợi ý thực hành chánh niệm tự chọn, không chẩn đoán hoặc điều trị.
+- `POST /api/tu-vi-tay/chart` — cung Mặt Trời tham khảo theo ngày sinh; không giả lập Mặt Trăng/cung Mọc.
+- Trang `/video` tạo video WebM hoàn toàn trong trình duyệt; nội dung không tải lên server, không hỗ trợ MP4.
 - `POST /api/analyze` — phân tích ngày sinh hợp lệ, lưu hồ sơ và kết quả.
+- Schema phân tích ngày sinh nhận thêm `gio_sinh` tùy chọn (0–23); kết quả hồ sơ có chỉ số tên/giờ sinh tham khảo khi được cung cấp.
+- `GET /api/i18n`, `/api/i18n/{lang}` — từ điển tĩnh vi/en/zh/ja; giao diện chính lưu lựa chọn ngôn ngữ trong trình duyệt.
 - `POST /api/analyze/stream` — stream metadata, token, lỗi và kết quả cuối qua SSE; yêu cầu Bearer token.
 - `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` — tạo tài khoản, đăng nhập và lấy tài khoản hiện tại.
 - `GET/PUT /api/auth/preferences` — đọc/cập nhật opt-in dataset, lịch Telegram hằng ngày và gửi kết quả phân tích Telegram.
@@ -93,6 +106,12 @@ Script đợi API và Ollama sẵn sàng, rồi tự tải model `OLLAMA_MODEL` 
 WeasyPrint cần thư viện đồ họa hệ thống; Dockerfile cài Pango, HarfBuzz và font tiếng Việt. Trên Windows, cài các gói Python chưa đủ nếu thiếu DLL/native libraries phù hợp. Nếu PDF không khả dụng, API trả lỗi 503.
 
 Liên kết chia sẻ chứa token ngẫu nhiên chỉ lưu dạng hash trong database, mặc định hết hạn sau 30 ngày và có thể thu hồi. Nội dung công khai không gồm tên/ngày sinh; lá số tùy chọn cũng đã lược bỏ ngày sinh. Tarot/Kinh Dịch không lưu câu hỏi hay kết quả; diễn giải gửi câu hỏi tới Ollama đã cấu hình. Hợp tuổi chỉ chạy phép tính cục bộ.
+
+### Cloudflare Worker (tùy chọn)
+
+Worker cấu hình tại `deploy/cloudflare/wrangler.jsonc` chuyển tiếp tới backend HTTPS, giới hạn yêu cầu API bằng Rate Limiting bindings và không cache response hồ sơ/API. CORS chỉ cho phép các origin khai báo; Worker loại bỏ header chuyển tiếp do client tự gửi và không ghi body/token/IP vào log. Nếu binding giới hạn tạm thời lỗi, Worker từ chối request. Rate Limiting binding là biện pháp giảm tải theo điểm hiện diện, không thay thế quota/billing chính xác.
+
+Trước khi triển khai, xác nhận quyền quản lý zone `huyenbao.com`, backend thật ở `https://api.huyenbao.com`, TLS hợp lệ và firewall/origin chỉ nhận lưu lượng Cloudflare hoặc dùng Cloudflare Tunnel để tránh bypass Worker. Thay ba `namespace_id` mẫu bằng số nguyên chưa dùng trong tài khoản Cloudflare và cấu hình đúng `CORS_ALLOWED_ORIGINS`. Cần Wrangler 4.36.0 trở lên. Kiểm tra Worker bằng `node --test deploy/cloudflare/worker.test.js`; chỉ chạy `wrangler deploy` sau khi xác nhận đúng tài khoản/zone và môi trường đích. Worker chưa được deploy hay gắn với tài khoản/domain thật trong thay đổi này. Thanh toán, tự đăng bài mạng xã hội, NFT, voice AI, LMS và ứng dụng di động vẫn được hoãn cho giai đoạn sau.
 
 Thử nghiệm A/B chỉ thay đổi hướng dẫn diễn đạt, gán biến thể ổn định theo tài khoản/nhiệm vụ và không xem feedback là “nhãn sự thật”. Reward chỉ được tạo khi feedback gắn với đúng prediction. Trọng số biến thể phải không âm, có tổng dương, được chuẩn hóa và cập nhật qua endpoint quản trị. Nếu `ADMIN_USER_IDS` trống thì không có tài khoản quản trị A/B.
 

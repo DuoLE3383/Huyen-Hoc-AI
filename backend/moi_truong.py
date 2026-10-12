@@ -48,8 +48,14 @@ async def lay_du_lieu_moi_truong(lat: float, lon: float) -> dict[str, Any]:
 
     main = weather.get("main")
     conditions = weather.get("weather")
+    wind = weather.get("wind", {})
     air_items = air.get("list")
-    if not isinstance(main, dict) or not isinstance(conditions, list) or not conditions:
+    if (
+        not isinstance(main, dict)
+        or not isinstance(conditions, list)
+        or not conditions
+        or not isinstance(wind, dict)
+    ):
         raise WeatherProviderError("Nhà cung cấp trả về thời tiết thiếu trường bắt buộc.")
     if not isinstance(air_items, list) or not air_items or not isinstance(air_items[0], dict):
         raise WeatherProviderError("Nhà cung cấp trả về chất lượng không khí không hợp lệ.")
@@ -67,7 +73,7 @@ async def lay_du_lieu_moi_truong(lat: float, lon: float) -> dict[str, Any]:
             "nhiet_do_c": main.get("temp"),
             "do_am_phan_tram": main.get("humidity"),
             "mo_ta": condition.get("description", ""),
-            "gio_m_s": weather.get("wind", {}).get("speed"),
+            "gio_m_s": wind.get("speed"),
             "thanh_pho": weather.get("name", ""),
         },
         "khong_khi": {
