@@ -1,5 +1,5 @@
 param(
-    [string]$Model = "qwen2.5:7b"
+    [string]$Model = "qwen2.5:3b"
 )
 
 $ErrorActionPreference = "Stop"

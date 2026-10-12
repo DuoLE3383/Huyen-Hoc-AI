@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
-MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
+MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
 OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 if not 512 <= OLLAMA_NUM_CTX <= 32768:
     raise ValueError("OLLAMA_NUM_CTX must be between 512 and 32768.")
@@ -133,6 +133,8 @@ class OllamaClient:
             async with client.stream(
                 "POST", f"{self.base_url}/api/generate", json=payload
             ) as response:
+                if response.is_error:
+                    await response.aread()
                 response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line.strip():

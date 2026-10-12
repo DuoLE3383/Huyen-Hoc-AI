@@ -62,6 +62,19 @@ class StreamingClientTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(ValueError):
             OllamaClient(num_ctx=262144)
 
+    async def test_generate_stream_reads_error_body_before_raising(self) -> None:
+        def error_response(request: httpx.Request) -> httpx.Response:
+            self.assertEqual(request.url.path, "/api/generate")
+            return httpx.Response(500, json={"error": "model runner terminated"})
+
+        client = OllamaClient(transport=httpx.MockTransport(error_response))
+        with self.assertRaises(httpx.HTTPStatusError) as raised:
+            _ = [chunk async for chunk in client.generate_stream("prompt")]
+        self.assertEqual(
+            raised.exception.response.json(),
+            {"error": "model runner terminated"},
+        )
+
 
 class LevelTwoDatabaseTests(unittest.TestCase):
     def setUp(self) -> None:
