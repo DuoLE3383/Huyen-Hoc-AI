@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,45 +9,164 @@
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <title>Dashboard · Huyền Học AI</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 22px 16px; color: #e8dff5; font: 16px system-ui,sans-serif; background: #0f0524; }
-    main { width: min(1150px,100%); margin: auto; }
-    h1 { color: #c4a3ff; text-align: center; }
-    nav { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:22px 0; }
-    nav a, nav button { padding:8px 13px; border:1px solid #c4a3ff; border-radius:8px; color:#d0b5ff; background:transparent; text-decoration:none; cursor:pointer; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:16px; }
-    .card { min-width:0; padding:18px; border:1px solid #c4a3ff33; border-radius:14px; background:#ffffff0b; }
-    h2 { margin-top:0; color:#d0b5ff; font-size:1.1rem; }
-    .kpis { display:flex; justify-content:space-around; gap:12px; text-align:center; }
-    .value { color:#ffd700; font-size:1.8rem; font-weight:700; }
-    .muted { color:#b6a1d2; font-size:.86rem; line-height:1.5; }
-    canvas { width:100%; height:240px; }
-    .row { display:flex; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid #c4a3ff1c; }
-    .bar { height:8px; margin-top:5px; border-radius:6px; background:#0006; }
-    .bar span { display:block; height:100%; border-radius:6px; background:linear-gradient(90deg,#7138d6,#ffd700); }
-    #error { color:#ff9999; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 22px 16px;
+      color: #e8dff5;
+      font: 16px system-ui, sans-serif;
+      background: #0f0524;
+    }
+
+    main {
+      width: min(1150px, 100%);
+      margin: auto;
+    }
+
+    h1 {
+      color: #c4a3ff;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 22px 0;
+    }
+
+    nav a,
+    nav button {
+      padding: 8px 13px;
+      border: 1px solid #c4a3ff;
+      border-radius: 8px;
+      color: #d0b5ff;
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid #c4a3ff33;
+      border-radius: 14px;
+      background: #ffffff0b;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #d0b5ff;
+      font-size: 1.1rem;
+    }
+
+    .kpis {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .value {
+      color: #ffd700;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: #b6a1d2;
+      font-size: .86rem;
+      line-height: 1.5;
+    }
+
+    canvas {
+      width: 100%;
+      height: 240px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #c4a3ff1c;
+    }
+
+    .bar {
+      height: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      background: #0006;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #7138d6, #ffd700);
+    }
+
+    #error {
+      color: #ff9999;
+    }
   </style>
 </head>
+
 <body>
   <main>
     <h1>📈 Dashboard phản hồi</h1>
     <nav aria-label="Điều hướng">
-      <a href="/app">🏠 Tổng quan</a><a href="/tu-vi">🀄 Tử Vi</a><a href="/hop-tuoi">🤝 Hợp tuổi</a><a href="/tarot">🃏 Tarot</a><a href="/kinh-dich">☯ Kinh Dịch</a><button id="logout" type="button">🚪 Đăng xuất</button>
+      <a href="/app">🏠 Tổng quan</a><a href="/tu-vi">🀄 Tử Vi</a><a href="/hop-tuoi">🤝 Hợp tuổi</a><a href="/tarot">🃏
+        Tarot</a><a href="/kinh-dich">☯ Kinh Dịch</a><button id="logout" type="button">🚪 Đăng xuất</button>
     </nav>
-    <p class="muted">Các chỉ số chỉ mô tả feedback người dùng (MAE và sai lệch), không chứng minh độ chính xác dự đoán huyền học.</p>
+    <p class="muted">Các chỉ số chỉ mô tả feedback người dùng (MAE và sai lệch), không chứng minh độ chính xác dự đoán
+      huyền học.</p>
     <p id="error" role="alert"></p>
     <div class="grid">
-      <section class="card"><h2>🎯 Tổng quan</h2><div class="kpis" id="kpis"></div></section>
-      <section class="card"><h2>📉 Theo tuần (12 tuần)</h2><canvas id="timeline" aria-label="Biểu đồ độ chính xác theo tuần"></canvas></section>
-      <section class="card"><h2>🎯 Theo lĩnh vực</h2><div id="fields"></div></section>
-      <section class="card"><h2>⚖️ Sai lệch trung bình</h2><div id="bias"></div></section>
-      <section class="card"><h2>🔮 Chỉ số so với đánh giá</h2><canvas id="scatter" aria-label="Biểu đồ chỉ số so với đánh giá"></canvas></section>
-      <section class="card"><h2>⚙️ Hệ số tham khảo</h2><div id="weights"></div></section>
-      <section class="card"><h2>🧪 Thử nghiệm A/B</h2><div id="ab-results" class="muted">Đang tải…</div><p class="muted">Thống kê cá nhân theo biến thể đã gán; phản hồi chỉ gắn với đúng dự đoán.</p></section>
+      <section class="card">
+        <h2>🎯 Tổng quan</h2>
+        <div class="kpis" id="kpis"></div>
+      </section>
+      <section class="card">
+        <h2>📉 Theo tuần (12 tuần)</h2><canvas id="timeline" aria-label="Biểu đồ độ chính xác theo tuần"></canvas>
+      </section>
+      <section class="card">
+        <h2>🎯 Theo lĩnh vực</h2>
+        <div id="fields"></div>
+      </section>
+      <section class="card">
+        <h2>⚖️ Sai lệch trung bình</h2>
+        <div id="bias"></div>
+      </section>
+      <section class="card">
+        <h2>🔮 Chỉ số so với đánh giá</h2><canvas id="scatter" aria-label="Biểu đồ chỉ số so với đánh giá"></canvas>
+      </section>
+      <section class="card">
+        <h2>⚙️ Hệ số tham khảo</h2>
+        <div id="weights"></div>
+      </section>
+      <section class="card">
+        <h2>🧪 Thử nghiệm A/B</h2>
+        <div id="ab-results" class="muted">Đang tải…</div>
+        <p class="muted">Thống kê cá nhân theo biến thể đã gán; phản hồi chỉ gắn với đúng dự đoán.</p>
+      </section>
     </div>
   </main>
   <script>
-    const API = window.location.origin;
+    const API = window.location.hostname === "localhost"
+      || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8000"           // Dev local
+      : window.location.origin; // Production: Cloudflare Worker proxies /api/*
     const token = localStorage.getItem("token");
     const FIELD_NAMES = {
       tai_van: "💰 Tài vận", tinh_duyen: "💕 Tình duyên", su_nghiep: "💼 Sự nghiệp",
@@ -189,4 +309,5 @@
     });
   </script>
 </body>
+
 </html>

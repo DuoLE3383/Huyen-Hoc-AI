@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,15 +15,29 @@
       background: #160a27;
       color: #e8dff5;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       min-height: 100vh;
       margin: 0;
       padding: 24px 16px;
       background: linear-gradient(135deg, #1a0b2e, #2d1b4e 50%, #0f0524);
     }
-    button, input, select { font: inherit; }
-    .container { width: min(900px, 100%); margin: 0 auto; }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .container {
+      width: min(900px, 100%);
+      margin: 0 auto;
+    }
+
     h1 {
       margin: 0;
       text-align: center;
@@ -33,7 +48,13 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .subtitle { margin: 8px 0 24px; text-align: center; color: #b6a1d2; }
+
+    .subtitle {
+      margin: 8px 0 24px;
+      text-align: center;
+      color: #b6a1d2;
+    }
+
     .card {
       margin-bottom: 18px;
       padding: 22px;
@@ -42,10 +63,29 @@
       background: rgba(255, 255, 255, .055);
       box-shadow: 0 8px 32px rgba(0, 0, 0, .24);
     }
-    h2 { margin: 0 0 14px; color: #d0b5ff; font-size: 1.25rem; }
-    .form-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 12px; margin-bottom: 16px; }
-    label { display: block; margin-bottom: 5px; color: #b6a1d2; font-size: .84rem; }
-    input, select {
+
+    h2 {
+      margin: 0 0 14px;
+      color: #d0b5ff;
+      font-size: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.2fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #b6a1d2;
+      font-size: .84rem;
+    }
+
+    input,
+    select {
       min-width: 0;
       width: 100%;
       padding: 10px 11px;
@@ -54,7 +94,13 @@
       color: #fff;
       background: rgba(0, 0, 0, .3);
     }
-    input:focus, select:focus { outline: 2px solid #c4a3ff; outline-offset: 1px; }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid #c4a3ff;
+      outline-offset: 1px;
+    }
+
     button {
       padding: 12px 16px;
       border: 0;
@@ -64,58 +110,262 @@
       font-weight: 650;
       cursor: pointer;
     }
-    button:hover:not(:disabled) { filter: brightness(1.12); }
-    button:disabled { opacity: .55; cursor: wait; }
-    .primary { width: 100%; }
-    .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }
-    .stat { padding: 12px; border-left: 3px solid #c4a3ff; border-radius: 8px; background: rgba(0, 0, 0, .22); }
-    .stat-label { color: #b6a1d2; font-size: .75rem; text-transform: uppercase; }
-    .stat-value { margin-top: 4px; color: #ffd700; font-weight: 650; overflow-wrap: anywhere; }
-    .chiso-bar { margin: 10px 0; }
-    .bar-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; font-size: .88rem; }
-    .bar-bg { height: 8px; overflow: hidden; border-radius: 4px; background: rgba(0, 0, 0, .4); }
-    .bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7b3fe4, #ffd700); }
-    .summary { line-height: 1.65; }
-    .strengths { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; line-height: 1.7; }
-    .strengths h3 { margin: 0 0 6px; font-size: 1rem; }
-    .strengths ul, .warnings { margin: 0; padding-left: 21px; }
-    .action { margin-bottom: 11px; padding: 13px; border-left: 3px solid #ffd700; border-radius: 9px; background: rgba(123, 63, 228, .15); }
-    .tag { display: inline-block; margin-bottom: 8px; padding: 3px 9px; border-radius: 12px; background: #7138d6; font-size: .78rem; }
-    .action-text { margin-bottom: 6px; font-weight: 550; color: #fff; line-height: 1.55; }
-    .meta { color: #b6a1d2; font-size: .85rem; line-height: 1.6; }
-    .loading, .center { text-align: center; }
-    .loading { padding: 34px; color: #b6a1d2; }
+
+    button:hover:not(:disabled) {
+      filter: brightness(1.12);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .primary {
+      width: 100%;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      padding: 12px;
+      border-left: 3px solid #c4a3ff;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .stat-label {
+      color: #b6a1d2;
+      font-size: .75rem;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      color: #ffd700;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+
+    .chiso-bar {
+      margin: 10px 0;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+      font-size: .88rem;
+    }
+
+    .bar-bg {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, .4);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #7b3fe4, #ffd700);
+    }
+
+    .summary {
+      line-height: 1.65;
+    }
+
+    .strengths {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      line-height: 1.7;
+    }
+
+    .strengths h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .strengths ul,
+    .warnings {
+      margin: 0;
+      padding-left: 21px;
+    }
+
+    .action {
+      margin-bottom: 11px;
+      padding: 13px;
+      border-left: 3px solid #ffd700;
+      border-radius: 9px;
+      background: rgba(123, 63, 228, .15);
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: #7138d6;
+      font-size: .78rem;
+    }
+
+    .action-text {
+      margin-bottom: 6px;
+      font-weight: 550;
+      color: #fff;
+      line-height: 1.55;
+    }
+
+    .meta {
+      color: #b6a1d2;
+      font-size: .85rem;
+      line-height: 1.6;
+    }
+
+    .loading,
+    .center {
+      text-align: center;
+    }
+
+    .loading {
+      padding: 34px;
+      color: #b6a1d2;
+    }
+
     .spinner {
-      width: 42px; height: 42px; margin: 0 auto 14px;
-      border: 4px solid rgba(196, 163, 255, .2); border-top-color: #c4a3ff;
-      border-radius: 50%; animation: spin 1s linear infinite;
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 14px;
+      border: 4px solid rgba(196, 163, 255, .2);
+      border-top-color: #c4a3ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .error { color: #ff9999; overflow-wrap: anywhere; }
-    .disclaimer { color: #c7b8d8; font-size: .85rem; line-height: 1.55; }
-    .fb-row { display: grid; grid-template-columns: minmax(150px, 1fr) 100px 100px auto; gap: 8px; align-items: end; }
-    .fb-row button { padding: 10px 14px; }
-    .feedback-item { margin-top: 5px; padding: 8px 10px; border-radius: 6px; background: rgba(0, 0, 0, .2); font-size: .86rem; }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      color: #ff9999;
+      overflow-wrap: anywhere;
+    }
+
+    .disclaimer {
+      color: #c7b8d8;
+      font-size: .85rem;
+      line-height: 1.55;
+    }
+
+    .fb-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) 100px 100px auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .fb-row button {
+      padding: 10px 14px;
+    }
+
+    .feedback-item {
+      margin-top: 5px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, .2);
+      font-size: .86rem;
+    }
+
     .toast {
-      position: fixed; top: 16px; right: 16px; z-index: 2;
-      max-width: min(420px, calc(100vw - 32px)); padding: 12px 16px;
-      border: 1px solid #c4a3ff; border-radius: 9px; background: #2d1b4e;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      max-width: min(420px, calc(100vw - 32px));
+      padding: 12px 16px;
+      border: 1px solid #c4a3ff;
+      border-radius: 9px;
+      background: #2d1b4e;
     }
-    .nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-bottom: 18px; }
-    .nav a { padding: 8px 13px; border: 1px solid #c4a3ff; border-radius: 8px; color: #d0b5ff; text-decoration: none; }
-    .calendar-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-    .calendar-buttons button { flex: 1; min-width: 145px; }
-    .calendar-day { padding: 10px; margin-bottom: 6px; border-left: 3px solid #ffd700; border-radius: 8px; background: rgba(0,0,0,.2); }
-    .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-    .month-day { min-height: 58px; padding: 5px; border-radius: 6px; background: rgba(123,63,228,.3); font-size: .7rem; overflow-wrap: anywhere; }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .nav a {
+      padding: 8px 13px;
+      border: 1px solid #c4a3ff;
+      border-radius: 8px;
+      color: #d0b5ff;
+      text-decoration: none;
+    }
+
+    .calendar-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-buttons button {
+      flex: 1;
+      min-width: 145px;
+    }
+
+    .calendar-day {
+      padding: 10px;
+      margin-bottom: 6px;
+      border-left: 3px solid #ffd700;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .month-day {
+      min-height: 58px;
+      padding: 5px;
+      border-radius: 6px;
+      background: rgba(123, 63, 228, .3);
+      font-size: .7rem;
+      overflow-wrap: anywhere;
+    }
+
     @media (max-width: 620px) {
-      .form-row { grid-template-columns: repeat(2, 1fr); }
-      .fb-row { grid-template-columns: 1fr 1fr; }
-      .fb-row select { grid-column: 1 / -1; }
-      .strengths { grid-template-columns: 1fr; }
+      .form-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .fb-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .fb-row select {
+        grid-column: 1 / -1;
+      }
+
+      .strengths {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="container">
     <h1 data-i18n="app.title">🔮 Huyền Học AI</h1>
@@ -159,23 +409,31 @@
           </div>
         </div>
         <div class="form-row">
-          <div><label for="hoTen" data-i18n="profile.name">Họ tên (không bắt buộc)</label><input id="hoTen" name="ho_ten" maxlength="100" placeholder="Nguyễn Văn A"></div>
-          <div><label for="ngay" data-i18n="profile.day">Ngày</label><input id="ngay" name="ngay" type="number" value="15" min="1" max="31" required></div>
-          <div><label for="thang" data-i18n="profile.month">Tháng</label><input id="thang" name="thang" type="number" value="6" min="1" max="12" required></div>
-          <div><label for="nam" data-i18n="profile.year">Năm</label><input id="nam" name="nam" type="number" value="1995" min="1900" max="2100" required></div>
-          <div><label for="gioSinh" data-i18n="profile.birth_hour">Giờ sinh địa phương (không bắt buộc, 0–23)</label><input id="gioSinh" name="gio_sinh" type="number" min="0" max="23" placeholder="14"></div>
+          <div><label for="hoTen" data-i18n="profile.name">Họ tên (không bắt buộc)</label><input id="hoTen"
+              name="ho_ten" maxlength="100" placeholder="Nguyễn Văn A"></div>
+          <div><label for="ngay" data-i18n="profile.day">Ngày</label><input id="ngay" name="ngay" type="number"
+              value="15" min="1" max="31" required></div>
+          <div><label for="thang" data-i18n="profile.month">Tháng</label><input id="thang" name="thang" type="number"
+              value="6" min="1" max="12" required></div>
+          <div><label for="nam" data-i18n="profile.year">Năm</label><input id="nam" name="nam" type="number"
+              value="1995" min="1900" max="2100" required></div>
+          <div><label for="gioSinh" data-i18n="profile.birth_hour">Giờ sinh địa phương (không bắt buộc,
+              0–23)</label><input id="gioSinh" name="gio_sinh" type="number" min="0" max="23" placeholder="14"></div>
         </div>
-        <p class="disclaimer">Tên và giờ sinh được lưu trong hồ sơ của tài khoản. Phân tích tên chỉ là tham khảo văn hóa; giờ Can Chi giản lược, không phải dự đoán khoa học.</p>
+        <p class="disclaimer">Tên và giờ sinh được lưu trong hồ sơ của tài khoản. Phân tích tên chỉ là tham khảo văn
+          hóa; giờ Can Chi giản lược, không phải dự đoán khoa học.</p>
         <button class="primary" id="btnAnalyze" type="submit" data-i18n="profile.analyze">✨ Phân tích bản mệnh</button>
         <button id="exportProfilePdf" type="button" data-i18n="profile.export">📄 Xuất bản mệnh PDF</button>
         <button id="abAnalyze" type="button" data-i18n="profile.ab">🧪 Phân tích trong thử nghiệm A/B</button>
       </form>
-      <p class="disclaimer">Thử nghiệm A/B là tùy chọn; kết quả phân tích gắn với phản hồi tương ứng để so sánh biến thể.</p>
+      <p class="disclaimer">Thử nghiệm A/B là tùy chọn; kết quả phân tích gắn với phản hồi tương ứng để so sánh biến
+        thể.</p>
     </section>
     <section class="card" aria-label="Tùy chọn quyền riêng tư và Telegram">
       <h2>🔐 Quyền riêng tư &amp; thông báo</h2>
       <label><input id="trainingConsent" type="checkbox" style="width:auto">
-        Cho phép dùng các mẫu phân tích đã được tôi đồng ý và duyệt thủ công để tạo dataset đã gỡ thông tin nhận diện trực tiếp.
+        Cho phép dùng các mẫu phân tích đã được tôi đồng ý và duyệt thủ công để tạo dataset đã gỡ thông tin nhận diện
+        trực tiếp.
       </label>
       <label><input id="notificationsEnabled" type="checkbox" style="width:auto">
         Nhận lịch tham khảo hằng ngày qua Telegram (cần liên kết bot).
@@ -194,7 +452,10 @@
   </main>
   <script src="/i18n.js" defer></script>
   <script>
-    const API = window.location.origin;
+    const API = window.location.hostname === "localhost"
+      || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8000"           // Dev local
+      : window.location.origin; // Production: Cloudflare Worker proxies /api/*
     const token = localStorage.getItem("token");
     if (!token) window.location.replace("/");
     document.getElementById("logout").addEventListener("click", event => {
@@ -521,9 +782,9 @@
         <section class="card">
           <h2>📊 Chỉ số tham khảo</h2>
           ${Object.entries(scores).map(([key, value]) => {
-            const score = Math.max(0, Math.min(100, Number(value) || 0));
-            return `<div class="chiso-bar"><div class="bar-label"><span>${escapeHtml(EVENT_NAMES[key] || key)}</span><span>${score.toFixed(0)}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${score}%"></div></div></div>`;
-          }).join("")}
+        const score = Math.max(0, Math.min(100, Number(value) || 0));
+        return `<div class="chiso-bar"><div class="bar-label"><span>${escapeHtml(EVENT_NAMES[key] || key)}</span><span>${score.toFixed(0)}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${score}%"></div></div></div>`;
+      }).join("")}
         </section>
         <section class="card">
           <h2>🌟 Tổng quan</h2>
@@ -759,4 +1020,5 @@
     }
   </script>
 </body>
+
 </html>

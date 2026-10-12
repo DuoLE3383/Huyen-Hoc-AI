@@ -1,0 +1,12 @@
+name = "huyenbao"
+main = "deploy/cloudflare/worker.js"
+compatibility_date = "2024-10-01"
+
+# Tùy chọn: routes
+# routes = [
+#   { pattern = "huyenbao.com/*", zone_name = "huyenbao.com" }
+# ]
+
+[vars]
+ENVIRONMENT = "production"
+BACKEND_ORIGIN = "https://api.huyenbao.com"

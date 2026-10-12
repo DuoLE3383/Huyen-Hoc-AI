@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,60 +9,246 @@
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <title>Lá số Tử Vi · Huyền Học AI</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin:0; padding:22px 14px; color:#e8dff5; font:15px system-ui,sans-serif; background:#0f0524; }
-    main { width:min(1200px,100%); margin:auto; }
-    h1 { color:#c4a3ff; text-align:center; }
-    nav { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; margin:20px 0; }
-    nav a, nav button { padding:8px 13px; border:1px solid #c4a3ff; border-radius:8px; color:#d0b5ff; background:transparent; text-decoration:none; cursor:pointer; }
-    .card { margin-bottom:16px; padding:18px; border:1px solid #c4a3ff33; border-radius:13px; background:#ffffff0b; }
-    .inputs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
-    label { display:block; margin-bottom:5px; color:#b6a1d2; font-size:.85rem; }
-    input { width:100%; padding:10px; border:1px solid #c4a3ff55; border-radius:8px; color:white; background:#0005; }
-    .buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
-    .buttons button { padding:10px 14px; border:0; border-radius:8px; color:white; background:#7138d6; font-weight:600; cursor:pointer; }
-    .buttons button:disabled { opacity:.55; }
-    .info { color:#c7b8d8; text-align:center; line-height:1.7; }
-    .la-so { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-template-rows:repeat(4,minmax(125px,auto)); gap:5px; }
-    .cung { min-width:0; padding:9px; border:1px solid #c4a3ff44; border-radius:7px; background:#2d1b4e; font-size:.76rem; overflow-wrap:anywhere; }
-    .cung.menh { border:2px solid #ffd700; }
-    .cung.than { background:#52318a; }
-    .ten { margin-bottom:4px; color:#ffd700; font-weight:700; font-size:.85rem; }
-    .chi { margin-bottom:6px; color:#c4a3ff; }
-    .chinh { margin-top:3px; color:white; font-weight:600; }
-    .state { color:#7bffa0; font-weight:400; }
-    .phu { margin-top:5px; color:#b6a1d2; }
-    .center-chart { grid-column:2/4; grid-row:2/4; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; border-radius:8px; background:#0007; text-align:center; }
-    .center-chart strong { color:#ffd700; font-size:1.15rem; }
-    .muted { color:#b6a1d2; font-size:.84rem; line-height:1.5; }
-    .interpretation { border-left:3px solid #ffd700; line-height:1.6; }
-    .error { color:#ff9999; }
-    @media(max-width:700px) {
-      .la-so { grid-template-rows:repeat(4,minmax(105px,auto)); gap:3px; }
-      .cung { padding:5px; font-size:.67rem; }
-      .ten { font-size:.72rem; }
-      .inputs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    * {
+      box-sizing: border-box;
     }
+
+    body {
+      margin: 0;
+      padding: 22px 14px;
+      color: #e8dff5;
+      font: 15px system-ui, sans-serif;
+      background: #0f0524;
+    }
+
+    main {
+      width: min(1200px, 100%);
+      margin: auto;
+    }
+
+    h1 {
+      color: #c4a3ff;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin: 20px 0;
+    }
+
+    nav a,
+    nav button {
+      padding: 8px 13px;
+      border: 1px solid #c4a3ff;
+      border-radius: 8px;
+      color: #d0b5ff;
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .card {
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid #c4a3ff33;
+      border-radius: 13px;
+      background: #ffffff0b;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #b6a1d2;
+      font-size: .85rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #c4a3ff55;
+      border-radius: 8px;
+      color: white;
+      background: #0005;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .buttons button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      background: #7138d6;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .buttons button:disabled {
+      opacity: .55;
+    }
+
+    .info {
+      color: #c7b8d8;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .la-so {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(4, minmax(125px, auto));
+      gap: 5px;
+    }
+
+    .cung {
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid #c4a3ff44;
+      border-radius: 7px;
+      background: #2d1b4e;
+      font-size: .76rem;
+      overflow-wrap: anywhere;
+    }
+
+    .cung.menh {
+      border: 2px solid #ffd700;
+    }
+
+    .cung.than {
+      background: #52318a;
+    }
+
+    .ten {
+      margin-bottom: 4px;
+      color: #ffd700;
+      font-weight: 700;
+      font-size: .85rem;
+    }
+
+    .chi {
+      margin-bottom: 6px;
+      color: #c4a3ff;
+    }
+
+    .chinh {
+      margin-top: 3px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .state {
+      color: #7bffa0;
+      font-weight: 400;
+    }
+
+    .phu {
+      margin-top: 5px;
+      color: #b6a1d2;
+    }
+
+    .center-chart {
+      grid-column: 2/4;
+      grid-row: 2/4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      border-radius: 8px;
+      background: #0007;
+      text-align: center;
+    }
+
+    .center-chart strong {
+      color: #ffd700;
+      font-size: 1.15rem;
+    }
+
+    .muted {
+      color: #b6a1d2;
+      font-size: .84rem;
+      line-height: 1.5;
+    }
+
+    .interpretation {
+      border-left: 3px solid #ffd700;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: #ff9999;
+    }
+
+    @media(max-width:700px) {
+      .la-so {
+        grid-template-rows: repeat(4, minmax(105px, auto));
+        gap: 3px;
+      }
+
+      .cung {
+        padding: 5px;
+        font-size: .67rem;
+      }
+
+      .ten {
+        font-size: .72rem;
+      }
+
+      .inputs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     @media(max-width:420px) {
-      .la-so { grid-template-rows:repeat(4,minmax(87px,auto)); }
-      .cung { padding:3px; font-size:.59rem; }
-      .ten { font-size:.65rem; }
+      .la-so {
+        grid-template-rows: repeat(4, minmax(87px, auto));
+      }
+
+      .cung {
+        padding: 3px;
+        font-size: .59rem;
+      }
+
+      .ten {
+        font-size: .65rem;
+      }
     }
   </style>
 </head>
+
 <body>
   <main>
     <h1>🀄 Lá số Tử Vi</h1>
     <nav aria-label="Điều hướng">
-      <a href="/app">🏠 Tổng quan</a><a href="/dashboard">📈 Dashboard</a><a href="/hop-tuoi">🤝 Hợp tuổi</a><a href="/tarot">🃏 Tarot</a><a href="/kinh-dich">☯ Kinh Dịch</a><button id="logout" type="button">🚪 Đăng xuất</button>
+      <a href="/app">🏠 Tổng quan</a><a href="/dashboard">📈 Dashboard</a><a href="/hop-tuoi">🤝 Hợp tuổi</a><a
+        href="/tarot">🃏 Tarot</a><a href="/kinh-dich">☯ Kinh Dịch</a><button id="logout" type="button">🚪 Đăng
+        xuất</button>
     </nav>
     <section class="card">
       <form id="chartForm">
         <div class="inputs">
-          <div><label for="ngay">Ngày dương lịch</label><input id="ngay" type="number" min="1" max="31" value="15" required></div>
-          <div><label for="thang">Tháng</label><input id="thang" type="number" min="1" max="12" value="6" required></div>
-          <div><label for="nam">Năm</label><input id="nam" type="number" min="1900" max="2100" value="1995" required></div>
-          <div><label for="gio">Giờ sinh địa phương (0–23)</label><input id="gio" type="number" min="0" max="23" value="10" required></div>
+          <div><label for="ngay">Ngày dương lịch</label><input id="ngay" type="number" min="1" max="31" value="15"
+              required></div>
+          <div><label for="thang">Tháng</label><input id="thang" type="number" min="1" max="12" value="6" required>
+          </div>
+          <div><label for="nam">Năm</label><input id="nam" type="number" min="1900" max="2100" value="1995" required>
+          </div>
+          <div><label for="gio">Giờ sinh địa phương (0–23)</label><input id="gio" type="number" min="0" max="23"
+              value="10" required></div>
         </div>
         <div class="buttons">
           <button id="makeChart" type="submit">📜 Lập lá số</button>
@@ -71,11 +258,15 @@
         </div>
       </form>
     </section>
-    <p class="muted">Lịch âm được tính theo UTC+7. Cách an sao trong ứng dụng là giản lược và có thể khác các trường phái Tử Vi; kết quả chỉ để tham khảo/giải trí.</p>
+    <p class="muted">Lịch âm được tính theo UTC+7. Cách an sao trong ứng dụng là giản lược và có thể khác các trường
+      phái Tử Vi; kết quả chỉ để tham khảo/giải trí.</p>
     <div id="output" aria-live="polite"></div>
   </main>
   <script>
-    const API = window.location.origin;
+    const API = window.location.hostname === "localhost"
+      || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8000"           // Dev local
+      : window.location.origin; // Production: Cloudflare Worker proxies /api/*
     const token = localStorage.getItem("token");
     if (!token) window.location.replace("/");
     document.getElementById("logout").addEventListener("click", () => {
@@ -120,9 +311,9 @@
       return data;
     }
     const gridPosition = {
-      "Tý":[4,2], "Sửu":[4,3], "Dần":[4,4], "Mão":[3,4],
-      "Thìn":[2,4], "Tỵ":[1,4], "Ngọ":[1,3], "Mùi":[1,2],
-      "Thân":[1,1], "Dậu":[2,1], "Tuất":[3,1], "Hợi":[4,1]
+      "Tý": [4, 2], "Sửu": [4, 3], "Dần": [4, 4], "Mão": [3, 4],
+      "Thìn": [2, 4], "Tỵ": [1, 4], "Ngọ": [1, 3], "Mùi": [1, 2],
+      "Thân": [1, 1], "Dậu": [2, 1], "Tuất": [3, 1], "Hợi": [4, 1]
     };
     function renderChart(chart) {
       const palaceHtml = chart.cung.map(palace => {
@@ -219,4 +410,5 @@
     });
   </script>
 </body>
+
 </html>
