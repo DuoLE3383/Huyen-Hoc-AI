@@ -1,6 +1,7 @@
 import json
 import os
 from collections.abc import AsyncIterator
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import httpx
@@ -11,6 +12,45 @@ OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 if not 512 <= OLLAMA_NUM_CTX <= 32768:
     raise ValueError("OLLAMA_NUM_CTX must be between 512 and 32768.")
 
+BUSINESS_TIMEZONE = timezone(timedelta(hours=7), name="ICT")
+WEEKDAYS_VI = (
+    "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"
+)
+
+
+def build_time_context(now: datetime | None = None) -> str:
+    """Return current calendar context using Vietnam local time."""
+    if now is None:
+        current = datetime.now(BUSINESS_TIMEZONE)
+    elif now.tzinfo is None:
+        current = now.replace(tzinfo=BUSINESS_TIMEZONE)
+    else:
+        current = now.astimezone(BUSINESS_TIMEZONE)
+    today = current.date()
+    week_start = today - timedelta(days=today.weekday())
+    week_end = week_start + timedelta(days=6)
+    quarter = (today.month - 1) // 3 + 1
+
+    return (
+        "THÔNG TIN THỜI GIAN HIỆN TẠI (múi giờ Việt Nam):\n"
+        f"- Hôm nay: {WEEKDAYS_VI[today.weekday()]}, {today:%d/%m/%Y}\n"
+        f"- Tuần này: {week_start:%d/%m/%Y} — {week_end:%d/%m/%Y}\n"
+        f"- Tháng này: {today:%m/%Y}\n"
+        f"- Quý này: Q{quarter}/{today.year}\n"
+        f"- Năm nay: {today.year}\n"
+        f"- Năm sau: {today.year + 1}"
+    )
+
+
+def _with_time_context(prompt: str, system: str) -> tuple[str, str]:
+    context = build_time_context()
+    time_instruction = (
+        "Dùng thông tin thời gian hiện tại bên dưới khi diễn giải các cụm như "
+        "hôm nay, tuần này, tháng này, quý này, năm nay hoặc năm sau. "
+        "Không suy ra ngày hiện tại từ kiến thức đã học."
+    )
+    return f"{prompt}\n\n{context}", f"{system}\n\n{time_instruction}"
+
 
 def build_analysis_prompt(
     profile: dict[str, Any],
@@ -18,6 +58,10 @@ def build_analysis_prompt(
     lich_su: list[dict[str, Any]] | None = None,
 ) -> tuple[str, str]:
     system = (
+        "Mọi giá trị văn bản trong JSON phải viết hoàn toàn bằng tiếng Việt; không dùng chữ Hán, "
+        "chữ Trung Quốc hoặc tiếng Anh. Giữ nguyên tên khóa JSON theo schema được yêu cầu. "
+        "Chỉ sử dụng thông tin có trong dữ liệu đầu vào, không tự thêm cung, sao hay sự kiện. "
+        "Nếu thiếu dữ liệu cho một ý, để nội dung ý đó trống hoặc bỏ qua ý đó. "
         "Bạn tạo nội dung huyền học Việt Nam với mục đích tham khảo, giải trí. "
         "Đưa ra gợi ý thực tế, không khẳng định chắc chắn về tương lai. "
         "Không đưa lời khuyên y tế, pháp lý hoặc tài chính mang tính quyết định. "
@@ -47,6 +91,10 @@ HỒ SƠ:
 CHỈ SỐ THAM KHẢO (0-100, không phải xác suất):
 {json.dumps(chi_so, ensure_ascii=False, indent=2)}
 {history_text}
+
+QUY TẮC NGÔN NGỮ VÀ NGUỒN DỮ LIỆU: Viết toàn bộ giá trị văn bản bằng tiếng Việt, không dùng chữ Hán
+hoặc tiếng Anh. Chỉ dùng dữ liệu trong hồ sơ và chỉ số phía trên; không bịa thêm sao, cung, sự kiện,
+hoặc thông tin cá nhân. Nội dung huyền học chỉ mang tính tham khảo, không khẳng định chắc chắn.
 
 Trả về duy nhất object JSON theo schema:
 {{
@@ -92,7 +140,9 @@ class OllamaClient:
         system: str = "",
         temperature: float = 0.7,
         json_mode: bool = False,
+        timeout: float | httpx.Timeout = 120.0,
     ) -> str:
+        prompt, system = _with_time_context(prompt, system)
         payload: dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,
@@ -102,7 +152,7 @@ class OllamaClient:
         }
         if json_mode:
             payload["format"] = "json"
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(f"{self.base_url}/api/generate", json=payload)
             response.raise_for_status()
             result = response.json()
@@ -118,6 +168,7 @@ class OllamaClient:
         temperature: float = 0.7,
         json_mode: bool = False,
     ) -> AsyncIterator[dict[str, Any]]:
+        prompt, system = _with_time_context(prompt, system)
         payload: dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,

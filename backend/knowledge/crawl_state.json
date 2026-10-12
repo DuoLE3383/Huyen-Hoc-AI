@@ -1,0 +1,15 @@
+{
+  "completed": [
+    "https://tuvi.cohoc.net/luan-giai-cung-menh-nid-1238.html"
+    
+  ],
+  "failed": {
+    "https://tuvi.cohoc.net/sao-thai-duong-nid-4975.html": {
+      "attempts": 3,
+      "error": "Timeout",
+      "last_attempt": "2026-10-13T20:15:33"
+    }
+  },
+  "last_run": "2026-10-13T20:20:00",
+  "total_crawled": 24
+}

@@ -3,6 +3,7 @@ import json
 import logging
 import math
 import os
+import re
 import secrets
 import asyncio
 import time
@@ -49,6 +50,7 @@ from database import (
     User,
     get_db,
     init_db,
+    SessionLocal,
     utcnow_naive,
 )
 from lich_van_nien import (
@@ -157,6 +159,63 @@ def _parse_llm_json(raw: str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("Ollama phải trả về một object JSON.")
     return data
+
+
+_CJK_IDEOGRAPHS = re.compile(
+    r"[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\U00020000-\U0002FA1F]+"
+)
+
+
+def _clean_llm_strings(value: Any) -> Any:
+    if isinstance(value, str):
+        return _CJK_IDEOGRAPHS.sub("", value).strip()
+    if isinstance(value, list):
+        return [_clean_llm_strings(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            _CJK_IDEOGRAPHS.sub("", key).strip() if isinstance(key, str) else key:
+            _clean_llm_strings(item)
+            for key, item in value.items()
+        }
+    return value
+
+
+def validate_and_clean_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
+    """Clean generated text, remove duplicate advice, and cap list sizes."""
+    cleaned = _clean_llm_strings(analysis)
+
+    for field in ("diem_manh", "diem_yeu", "canh_bao"):
+        values = cleaned.get(field)
+        if isinstance(values, list):
+            unique_values = []
+            seen = set()
+            for item in values:
+                if not isinstance(item, str):
+                    continue
+                normalized = item.casefold()
+                if item and normalized not in seen:
+                    seen.add(normalized)
+                    unique_values.append(item)
+            cleaned[field] = unique_values[:5]
+
+    actions = cleaned.get("hanh_dong_cu_the")
+    if isinstance(actions, list):
+        unique_actions = []
+        seen_actions = set()
+        for action in actions:
+            if not isinstance(action, dict):
+                continue
+            description = action.get("hanh_dong")
+            if not isinstance(description, str) or not description:
+                continue
+            category = action.get("linh_vuc", "")
+            key = (str(category).casefold(), description[:30].casefold())
+            if key not in seen_actions:
+                seen_actions.add(key)
+                unique_actions.append(action)
+        cleaned["hanh_dong_cu_the"] = unique_actions[:5]
+
+    return cleaned
 
 
 def _normalize_weekly_text_list(value: Any) -> list[str]:
@@ -1219,6 +1278,7 @@ async def analyze(
         db.rollback()
         raise _ollama_http_error(exc) from exc
 
+    result = validate_and_clean_analysis(result)
     prediction = Prediction(
         profile_id=db_profile.id,
         scope="general",
@@ -1248,6 +1308,10 @@ async def analyze_stream(
         _prepare_analysis(data, user, db)
     )
     system, prompt = build_analysis_prompt(profile_data, adjusted_scores, history_data)
+    profile_id = db_profile.id
+    user_id = user.id
+    user_chat_id = user.telegram_chat_id
+    user_notif_enabled = user.analysis_notifications_enabled
 
     def encode_event(name: str, payload: dict[str, Any]) -> str:
         body = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -1299,27 +1363,30 @@ async def analyze_stream(
             return
 
         try:
-            result = _parse_llm_json("".join(generated))
-            prediction = Prediction(
-                profile_id=db_profile.id,
-                scope="general",
-                chi_so_json=json.dumps(adjusted_scores, ensure_ascii=False),
-                du_doan_json=json.dumps(result, ensure_ascii=False),
+            result = validate_and_clean_analysis(
+                _parse_llm_json("".join(generated))
             )
-            db.add(prediction)
-            db.commit()
+            with SessionLocal() as stream_db:
+                prediction = Prediction(
+                    profile_id=profile_id,
+                    scope="general",
+                    chi_so_json=json.dumps(adjusted_scores, ensure_ascii=False),
+                    du_doan_json=json.dumps(result, ensure_ascii=False),
+                )
+                stream_db.add(prediction)
+                stream_db.commit()
+                stream_db.refresh(prediction)
+                prediction_id = prediction.id
         except ValueError as exc:
-            db.rollback()
             yield encode_event("error", {"message": str(exc)})
             return
         except SQLAlchemyError:
-            db.rollback()
             yield encode_event(
                 "error", {"message": "Không thể lưu kết quả phân tích vào cơ sở dữ liệu."}
             )
             return
         notification_status = "not_enabled"
-        if user.analysis_notifications_enabled and user.telegram_chat_id is not None:
+        if user_notif_enabled and user_chat_id is not None:
             try:
                 from notifications import telegram
 
@@ -1329,8 +1396,8 @@ async def analyze_stream(
                     indent=2,
                 ).encode("utf-8")
                 await telegram.send_document(
-                    user.telegram_chat_id,
-                    f"phan-tich-{prediction.id}.json",
+                    user_chat_id,
+                    f"phan-tich-{prediction_id}.json",
                     attachment,
                     "Kết quả diễn giải đã hoàn tất. Tệp đính kèm gồm hồ sơ và toàn bộ nội dung.",
                 )
@@ -1338,7 +1405,7 @@ async def analyze_stream(
             except (httpx.HTTPError, RuntimeError, ValueError) as exc:
                 logger.warning(
                     "Telegram analysis delivery failed for user %s (%s).",
-                    user.id,
+                    user_id,
                     type(exc).__name__,
                 )
                 notification_status = "failed"
@@ -1346,7 +1413,7 @@ async def analyze_stream(
             "done",
             {
                 "parsed": result,
-                "prediction_id": prediction.id,
+                "prediction_id": prediction_id,
                 "telegram_notification": notification_status,
             },
         )
@@ -1545,7 +1612,7 @@ ngay, viec_nen_lam, viec_nen_tranh, gio_tot), loi_khuyen_tuan (string).
 Gợi ý phải an toàn, không đưa tư vấn y tế, pháp lý hay tài chính."""
     try:
         raw = await ollama.generate(prompt, temperature=0.5, json_mode=True)
-        result = _parse_llm_json(raw)
+        result = _clean_llm_strings(_parse_llm_json(raw))
         actions = result.get("lich_hanh_dong", [])
         if not isinstance(actions, list) or any(
             not isinstance(item, dict) for item in actions
@@ -1608,15 +1675,37 @@ async def _interpret_chart(chart: dict[str, Any]) -> dict[str, Any]:
             for palace in chart["cung"]
         ],
     }
-    prompt = f"""Lá số dưới đây được tạo bằng thuật toán Tử Vi giản lược, có thể khác
-các trường phái. Hãy diễn giải như nội dung văn hóa/giải trí, không khẳng định tương
-lai, không đưa quyết định y tế, pháp lý, tài chính.
-{json.dumps(compact_chart, ensure_ascii=False)}
-Chỉ trả JSON object: tong_quan (string), diem_manh (array), diem_can_luu_y (array),
-cac_cung_noi_bat (array gồm cung, luan_giai, hanh_dong), loi_khuyen_tong_the (string)."""
+    prompt = f"""Diễn giải lá số Tử Vi sau như nội dung văn hóa tham khảo, không khẳng định tương lai và không đưa quyết định y tế, pháp lý hoặc tài chính.
+
+QUY TẮC NGHIÊM NGẶT:
+- Chỉ luận giải các cung, sao và trạng thái xuất hiện trong dữ liệu JSON bên dưới.
+- Không tự thêm, suy đoán hoặc nhắc đến sao, cung, vị trí hay dữ kiện không có trong JSON.
+- Nếu một cung có danh sách chính tinh rỗng, chỉ nói cung đó không có chính tinh; không tự mượn sao ở cung khác.
+- Viết mọi giá trị văn bản hoàn toàn bằng tiếng Việt, không dùng chữ Hán hoặc tiếng Anh.
+- Chỉ nêu tối đa bốn cung nổi bật và chỉ chọn cung có chính tinh trong dữ liệu.
+- Gợi ý phải thực tế, cụ thể, tự nguyện; không biến diễn giải truyền thống thành sự thật khoa học.
+
+DỮ LIỆU LÁ SỐ:
+{json.dumps(compact_chart, ensure_ascii=False, indent=2)}
+
+Trả về duy nhất một object JSON theo schema:
+{{
+  "tong_quan": "...",
+  "diem_manh": ["..."],
+  "diem_can_luu_y": ["..."],
+  "cac_cung_noi_bat": [
+    {{"cung": "...", "luan_giai": "...", "hanh_dong": "..."}}
+  ],
+  "loi_khuyen_tong_the": "..."
+}}"""
     try:
-        raw = await ollama.generate(prompt, temperature=0.5, json_mode=True)
-        return _parse_llm_json(raw)
+        raw = await ollama.generate(
+            prompt,
+            temperature=0.5,
+            json_mode=True,
+            timeout=httpx.Timeout(connect=10.0, read=300.0, write=30.0, pool=10.0),
+        )
+        return _clean_llm_strings(_parse_llm_json(raw))
     except (httpx.HTTPError, ValueError) as exc:
         raise _ollama_http_error(exc) from exc
 
@@ -1840,7 +1929,7 @@ async def analyze_ab(
     started = time.perf_counter()
     try:
         raw = await ollama.generate(prompt, system=system, temperature=0.6, json_mode=True)
-        result = _parse_llm_json(raw)
+        result = validate_and_clean_analysis(_parse_llm_json(raw))
     except (httpx.HTTPError, ValueError) as exc:
         record_experiment(
             db, user.id, None, task, variant,
