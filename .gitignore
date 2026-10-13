@@ -54,11 +54,3 @@ Thumbs.db
 task.txt
 backend/.env.local
 backend/.env
-
-# SQLite DB — không commit user data
-*.db
-*.db-journal
-*.db-shm
-*.db-wal
-backend/core/huyen_hoc.db
-backend/data/knowledge/*.db
