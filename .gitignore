@@ -52,3 +52,5 @@ cloudflared.deb
 Thumbs.db
 .idea/
 task.txt
+backend/.env.local
+backend/.env

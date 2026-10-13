@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from core.database import User, get_db
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env.local")
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 load_dotenv()
 
 ALGORITHM = "HS256"
