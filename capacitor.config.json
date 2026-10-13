@@ -3,7 +3,7 @@
   "appName": "Huyền Học AI",
   "webDir": "frontend",
   "server": {
-    "url": "https://eyed-control-optimum-cheapest.trycloudflare.com",
+    "url": "https://app.huyenbao.com",
     "cleartext": false,
     "androidScheme": "https"
   },
