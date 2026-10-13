@@ -50,3 +50,5 @@ cloudflared.deb
 *.log
 .DS_Store
 Thumbs.db
+.idea/
+task.txt
