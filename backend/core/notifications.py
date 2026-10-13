@@ -58,7 +58,11 @@ class TelegramBot:
         await self._request(
             "POST",
             path="sendDocument",
-            data={"chat_id": chat_id, "caption": caption},
+            data={
+                "chat_id": chat_id,
+                "caption": caption[:1024],       # Telegram limit
+                "parse_mode": "HTML",             # Hỗ trợ <b>, <i>, <code>
+            },
             files={"document": (filename, content, "application/json")},
         )
 

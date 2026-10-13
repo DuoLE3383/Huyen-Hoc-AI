@@ -1520,11 +1520,53 @@ async def analyze_stream(
                     ensure_ascii=False,
                     indent=2,
                 ).encode("utf-8")
+                # Extract thông tin từ profile_data (robust)
+                pd = profile_data or {}
+                ho_ten = pd.get("ho_ten") or "Không rõ"
+
+                # Thử nhiều dạng field: ngay_sinh string "1983-03-03", hoặc ngay/thang/nam riêng
+                ngay_sinh_raw = pd.get("ngay_sinh") or pd.get("date_of_birth") or ""
+                ngay = pd.get("ngay")
+                thang = pd.get("thang")
+                nam = pd.get("nam")
+
+                if ngay_sinh_raw and not (ngay and thang and nam):
+                    # Parse "1983-03-03" hoặc "03/03/1983"
+                    raw = str(ngay_sinh_raw).replace("/", "-")
+                    parts = raw.split("-")
+                    if len(parts) == 3:
+                        # Thử cả 2 dạng: YYYY-MM-DD và DD-MM-YYYY
+                        if len(parts[0]) == 4:
+                            nam, thang, ngay = parts[0], parts[1], parts[2]
+                        else:
+                            ngay, thang, nam = parts[0], parts[1], parts[2]
+
+                dob = f"{ngay}/{thang}/{nam}" if (ngay and thang and nam) else "Không rõ"
+
+                # Giờ sinh: thử nhiều field
+                gio = pd.get("gio_sinh") or pd.get("gio") or data.gio_sinh
+                gio_str = f" lúc {gio}h" if gio is not None and gio != "" else ""
+
+                # Escape HTML cho an toàn
+                def esc(v):
+                    return str(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+                caption = (
+                    f"🔮 <b>Huyền Học AI — Phân tích hoàn tất</b>\n"
+                    f"━━━━━━━━━━━━━━━━━━\n"
+                    f"👤 Hồ sơ: <b>{esc(ho_ten)}</b>\n"
+                    f"📅 Ngày sinh: {esc(dob)}{esc(gio_str)}\n"
+                    f"🆔 Mã phân tích: #{prediction_id}\n"
+                    f"\n"
+                    f"📎 File JSON đầy đủ đính kèm bên dưới.\n"
+                    f"🔗 Mở app: http://localhost:8000/app"
+                )
+
                 await telegram.send_document(
                     user_chat_id,
                     f"phan-tich-{prediction_id}.json",
                     attachment,
-                    "Kết quả diễn giải đã hoàn tất. Tệp đính kèm gồm hồ sơ và toàn bộ nội dung.",
+                    caption,
                 )
                 notification_status = "sent"
             except (httpx.HTTPError, RuntimeError, ValueError) as exc:

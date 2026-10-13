@@ -672,7 +672,7 @@
             const p = parsed.profile || {};
             document.getElementById("streamMeta").textContent =
               `${p.ngay_sinh || ""} · ${p.can_chi_nam || ""} · ${p.menh_nap_am || ""} · Số chủ đạo ${p.so_chu_dao ?? ""}`;
-            document.getElementById("streamStatus").textContent = "Ollama đang sinh phản hồi…";
+            document.getElementById("streamStatus").textContent = "Thầy AI đang phản hồi…";
           } else if (eventName === "token") {
             const pre = document.getElementById("streamRaw");
             pre.textContent += parsed.token || "";
