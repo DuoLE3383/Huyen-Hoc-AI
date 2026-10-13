@@ -20,7 +20,7 @@ Trên Windows, có thể khởi động ứng dụng local bằng một lệnh P
 
 Script tạo virtual environment, cài dependencies, khởi động Ollama nếu cần, tải model `qwen2.5:7b` khi chưa có, rồi chạy API. Lần đầu có thể mất thời gian tải model. Mở <http://localhost:8000/> và giữ cửa sổ PowerShell mở; nhấn `Ctrl+C` để dừng backend. Secret đăng nhập local được lưu trong `.env.local` (gitignored) để không đổi mỗi lần chạy. Nếu cần dùng Telegram, script đọc `TELEGRAM_BOT_TOKEN` từ `.env.local`, rồi fallback sang `deploy/.env.prod`; hãy đặt token bot hợp lệ trong một trong hai file riêng này. Cần cài Python 3.10+ và Ollama trước.
 
-Tính năng thời tiết/AQI là tùy chọn: đặt `OPENWEATHER_API_KEY` trong `.env.local`, `deploy/.env.prod` hoặc biến môi trường trước khi khởi động. Người dùng phải chủ động nhập tọa độ và đồng ý gửi chúng tới OpenWeather; tọa độ không được lưu. Trên trang Bản đồ, độ cao cũng là tùy chọn và chỉ gửi tới Google Maps Elevation API khi người dùng đánh dấu đồng ý; cần cấu hình `GOOGLE_MAPS_API_KEY`.
+Tính năng thời tiết/AQI là tùy chọn: đặt `OPENWEATHER_API_KEY` trong `.env.local`, `deploy/.env.prod` hoặc biến môi trường trước khi khởi động. Người dùng phải chủ động nhập tọa độ và đồng ý gửi chúng tới OpenWeather. Địa chỉ, tọa độ tra cứu và snapshot thời tiết/AQI được lưu trong lịch sử riêng theo tài khoản; snapshot được dùng lại trong 15 phút, sau đó lần phân tích kế tiếp lấy dữ liệu mới. Lịch sử địa chỉ có thể chọn lại hoặc xóa trong giao diện. Trên trang Bản đồ, độ cao cũng là tùy chọn và chỉ gửi tới Google Maps Elevation API khi người dùng đánh dấu đồng ý; cần cấu hình `GOOGLE_MAPS_API_KEY`. Tra cứu địa chỉ trong trang Phong thủy cần `GEOAPIFY_API_KEY` trong `.env.local`, `deploy/.env.prod` hoặc biến môi trường. Backend nạp `.env.local` ở thư mục gốc khi khởi động; `start.ps1` cũng nạp các key OpenWeather và Geoapify từ `.env.local` hoặc `deploy/.env.prod`.
 
 Tải model Ollama:
 
@@ -52,6 +52,7 @@ Form phân tích hỗ trợ họ tên tùy chọn và giờ sinh địa phương
 - `GET/POST/DELETE /api/su-kien` — quản lý lịch riêng tư theo tài khoản; `/api/su-kien/tuan` và `/api/su-kien/dai-han` chỉ tổng hợp sự kiện do người dùng nhập.
 - `GET /api/vi-mo/timeline` — mốc tiết khí nội bộ xấp xỉ, không phải nguồn tin tức hoặc cảnh báo thời tiết.
 - `POST /api/moi-truong/hien-tai` — thời tiết/AQI theo tọa độ; cần `OPENWEATHER_API_KEY`. Tọa độ chỉ chuyển tới OpenWeather khi người dùng chủ động đồng ý truy vấn và không được lưu trong hồ sơ.
+- `POST /api/geocode/` — tra địa chỉ bằng Geoapify, tự lưu theo tài khoản; `GET /api/geocode/history` — xem tối đa 50 địa chỉ đã lưu; `DELETE /api/geocode/history/{id}` — xóa địa chỉ của tài khoản hiện tại.
 - `POST /api/tong-the` — tổng hợp phong thủy, lịch cá nhân, mốc tiết khí và (nếu chủ động nhập tọa độ) dữ liệu môi trường.
 - `POST /api/ban-do/phan-tich` — hiển thị vị trí đã nhập và thông tin độ cao tùy chọn; hướng mặt tiền phải do người dùng nhập, tọa độ không lưu. Google Maps chỉ được gọi khi có opt-in và API key.
 - `POST /api/gia-dao/phan-tich` — nhóm cung phi/hướng tham khảo tối đa 10 thành viên; ngày sinh không lưu và không chấm điểm hòa hợp.

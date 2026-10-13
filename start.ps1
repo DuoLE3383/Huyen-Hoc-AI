@@ -120,6 +120,37 @@ if (-not $env:OPENWEATHER_API_KEY) {
     }
 }
 
+if (-not $env:GEOAPIFY_API_KEY) {
+    $geoapifyConfigFiles = @(
+        $envFile,
+        (Join-Path $PSScriptRoot "deploy\.env.prod")
+    )
+    foreach ($configFile in $geoapifyConfigFiles) {
+        if (-not (Test-Path -LiteralPath $configFile)) {
+            continue
+        }
+
+        foreach ($line in Get-Content -LiteralPath $configFile) {
+            if ($line -match '^\s*GEOAPIFY_API_KEY\s*=\s*(.*?)\s*$') {
+                $key = $matches[1]
+                if ($key.Length -ge 2 -and
+                    (($key.StartsWith('"') -and $key.EndsWith('"')) -or
+                     ($key.StartsWith("'") -and $key.EndsWith("'")))) {
+                    $key = $key.Substring(1, $key.Length - 2)
+                }
+                if ($key -and $key -notmatch '^(CHANGE|PLACEHOLDER|REPLACE)') {
+                    $env:GEOAPIFY_API_KEY = $key
+                    break
+                }
+            }
+        }
+
+        if ($env:GEOAPIFY_API_KEY) {
+            break
+        }
+    }
+}
+
 if (-not $env:OLLAMA_URL) {
     $env:OLLAMA_URL = "http://localhost:11434"
 }

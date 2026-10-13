@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Annotated, Any
 
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from database import User, get_db
 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env.local")
 load_dotenv()
 
 ALGORITHM = "HS256"

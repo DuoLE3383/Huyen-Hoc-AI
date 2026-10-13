@@ -33,7 +33,7 @@ MAX_RETRIES = 3
 RETRY_DELAY_BASE = 30          # 30s, 60s, 120s (exponential)
 RATE_LIMIT_WAIT = 600          # 10 phút khi bị 429/403
 DEFAULT_DELAY = 3           # 3s giữa các request bình thường
-
+    
 
 class CrawlState:
     """Quản lý state: URLs đã crawl, lỗi, lần chạy cuối"""

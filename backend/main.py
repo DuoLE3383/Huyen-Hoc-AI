@@ -8,8 +8,7 @@ import secrets
 import asyncio
 import time
 from contextlib import asynccontextmanager
-from datetime import timedelta
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -43,6 +42,7 @@ from auth import (
 )
 from database import (
     EventFeedback,
+    LocationHistory,
     Prediction,
     Profile,
     SavedEvent,
@@ -83,6 +83,7 @@ from trach_cat import ACTIVITIES as TRACH_CAT_ACTIVITIES, tim_ngay_dep
 from tam_linh import tao_thoi_khoa_tam_linh
 from tu_vi_tay_phuong import lap_natal_chart, so_sanh_dong_tay
 from i18n import LANG_SUPPORTED, TRANSLATIONS, detect_lang
+from services.narrative import stream_tong_the_narrative
 
 
 @asynccontextmanager
@@ -130,10 +131,78 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+from routes import action_advice, geocode
+app.include_router(geocode.router)
+app.include_router(action_advice.router)
+
 init_db()
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 EVENT_TYPES = {"tai_van", "tinh_duyen", "su_nghiep", "suc_khoe", "gap_go", "thay_doi"}
 SCOPE_TYPES = {"general", "daily", "weekly", "monthly"}
+WEATHER_CACHE_TTL = timedelta(minutes=15)
+
+
+async def _get_environment_for_user(
+    lat: float, lon: float, user: User, db: Session
+) -> dict[str, Any]:
+    latitude_key = round(lat, 5)
+    longitude_key = round(lon, 5)
+    location = (
+        db.query(LocationHistory)
+        .filter(
+            LocationHistory.user_id == user.id,
+            LocationHistory.lat.between(latitude_key - 0.000005, latitude_key + 0.000005),
+            LocationHistory.lon.between(longitude_key - 0.000005, longitude_key + 0.000005),
+        )
+        .order_by(LocationHistory.updated_at.desc(), LocationHistory.id.desc())
+        .first()
+    )
+    now = utcnow_naive()
+    reused = (
+        location is not None
+        and location.weather_json is not None
+        and location.weather_fetched_at is not None
+        and now - location.weather_fetched_at <= WEATHER_CACHE_TTL
+    )
+    if reused:
+        environment = json.loads(location.weather_json)
+        fetched_at = location.weather_fetched_at
+    else:
+        if not os.getenv("OPENWEATHER_API_KEY", "").strip():
+            raise HTTPException(
+                status_code=503,
+                detail="Dịch vụ môi trường chưa được cấu hình. Tọa độ chưa được gửi đi.",
+            )
+        try:
+            environment = await lay_du_lieu_moi_truong(lat, lon)
+        except WeatherProviderError as exc:
+            logger.warning("Weather provider request failed: %s", exc)
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+        if location is None:
+            location_key = f"coords:{latitude_key:.5f}:{longitude_key:.5f}"
+            location = LocationHistory(
+                user_id=user.id,
+                address_key=location_key,
+                address=f"Tọa độ {latitude_key:.5f}, {longitude_key:.5f}",
+                formatted_address=f"Tọa độ {latitude_key:.5f}, {longitude_key:.5f}",
+                lat=lat,
+                lon=lon,
+            )
+            db.add(location)
+        fetched_at = now
+        location.weather_json = json.dumps(environment, ensure_ascii=False)
+        location.weather_fetched_at = fetched_at
+        db.commit()
+        db.refresh(location)
+
+    result = dict(environment)
+    result["danh_gia"] = danh_gia_anh_huong_moi_truong(result)
+    result["lich_su"] = {
+        "tai_su_dung": reused,
+        "thoi_diem_lay": fetched_at.isoformat(),
+    }
+    return result
 
 
 def _get_owned_profile(
@@ -1121,27 +1190,17 @@ def api_timeline_vi_mo(
 async def api_moi_truong_hien_tai(
     data: EnvironmentInput,
     user: Annotated[User, Depends(get_current_user)],
-) -> dict[str, Any]:
-    del user
-    if not os.getenv("OPENWEATHER_API_KEY", "").strip():
-        raise HTTPException(
-            status_code=503,
-            detail="Dịch vụ môi trường chưa được cấu hình. Tọa độ chưa được gửi đi.",
-        )
-    try:
-        data_result = await lay_du_lieu_moi_truong(data.lat, data.lon)
-    except WeatherProviderError as exc:
-        logger.warning("Weather provider request failed: %s", exc)
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
-    data_result["danh_gia"] = danh_gia_anh_huong_moi_truong(data_result)
-    return data_result
-
-
-@app.post("/api/tong-the")
-async def api_tong_the(
-    data: CombinedInput,
-    user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
+) -> dict[str, Any]:
+    return await _get_environment_for_user(data.lat, data.lon, user, db)
+
+
+def _local_today() -> date:
+    return datetime.now(timezone(timedelta(hours=7), name="ICT")).date()
+
+
+async def _build_tong_the_data(
+    data: CombinedInput, user: User, db: Session
 ) -> dict[str, Any]:
     try:
         phong_thuy = phan_tich_toan_dien(
@@ -1150,7 +1209,8 @@ async def api_tong_the(
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    start = data.ngay_bat_dau or date.today()
+
+    start = data.ngay_bat_dau or _local_today()
     end = start + timedelta(days=6)
     events = db.query(SavedEvent).filter(
         SavedEvent.user_id == user.id,
@@ -1162,27 +1222,66 @@ async def api_tong_the(
         start,
     )
     profile = phan_tich_ngay_sinh(data.ngay, data.thang, data.nam)
+    environment = None
+    environment_note = None
     if data.lat is not None and data.lon is not None:
-        if not os.getenv("OPENWEATHER_API_KEY", "").strip():
-            raise HTTPException(
-                status_code=503,
-                detail="Dịch vụ môi trường chưa được cấu hình. Tọa độ chưa được gửi đi.",
+        if os.getenv("OPENWEATHER_API_KEY", "").strip():
+            environment = await _get_environment_for_user(data.lat, data.lon, user, db)
+        else:
+            environment_note = (
+                "Chưa có OPENWEATHER_API_KEY; dữ liệu thời tiết và AQI được bỏ qua. "
+                "Có thể cấu hình khóa này để bật phần môi trường."
             )
-        try:
-            environment = await lay_du_lieu_moi_truong(data.lat, data.lon)
-        except WeatherProviderError as exc:
-            logger.warning("Weather provider request failed: %s", exc)
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
-        environment["danh_gia"] = danh_gia_anh_huong_moi_truong(environment)
-    else:
-        environment = None
+    vi_mo = timeline_vi_mo(start, 90)
+    tong_hop = buc_tranh_tong_the(profile, phong_thuy, event_summary, environment)
     return {
         "phong_thuy": phong_thuy,
         "su_kien": event_summary,
         "moi_truong": environment,
-        "vi_mo": timeline_vi_mo(start, 90),
-        "tong_hop": buc_tranh_tong_the(profile, phong_thuy, event_summary, environment),
+        "moi_truong_ghi_chu": environment_note,
+        "vi_mo": vi_mo,
+        "profile": profile,
+        "tong_hop": tong_hop,
     }
+
+
+@app.post("/api/tong-the")
+async def api_tong_the(
+    data: CombinedInput,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, Any]:
+    return await _build_tong_the_data(data, user, db)
+
+
+@app.post("/api/tong-the/stream")
+async def api_tong_the_stream(
+    data: CombinedInput,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> StreamingResponse:
+    result = await _build_tong_the_data(data, user, db)
+
+    async def event_stream():
+        yield _sse_event("metadata", result)
+        async for chunk in stream_tong_the_narrative(result):
+            if chunk["type"] == "token":
+                yield _sse_event("token", {"content": chunk["content"]})
+            elif chunk["type"] == "done":
+                yield _sse_event("done", {"parsed": chunk["parsed"]})
+            elif chunk["type"] == "error":
+                yield _sse_event("error", {"message": chunk["message"]})
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"},
+    )
+
+
+def _sse_event(name: str, payload: dict[str, Any]) -> str:
+    body = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    return f"event: {name}\ndata: {body}\n\n"
 
 
 def _prepare_analysis(

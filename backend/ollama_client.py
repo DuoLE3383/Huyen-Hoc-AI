@@ -167,6 +167,7 @@ class OllamaClient:
         system: str = "",
         temperature: float = 0.7,
         json_mode: bool = False,
+        timeout: float = 120.0,
     ) -> AsyncIterator[dict[str, Any]]:
         prompt, system = _with_time_context(prompt, system)
         payload: dict[str, Any] = {
@@ -179,8 +180,10 @@ class OllamaClient:
         if json_mode:
             payload["format"] = "json"
 
-        timeout = httpx.Timeout(connect=10.0, read=120.0, write=30.0, pool=10.0)
-        async with httpx.AsyncClient(timeout=timeout, transport=self.transport) as client:
+        request_timeout = httpx.Timeout(
+            connect=10.0, read=timeout, write=30.0, pool=10.0
+        )
+        async with httpx.AsyncClient(timeout=request_timeout, transport=self.transport) as client:
             async with client.stream(
                 "POST", f"{self.base_url}/api/generate", json=payload
             ) as response:

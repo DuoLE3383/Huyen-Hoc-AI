@@ -1,3 +1,4 @@
+"""Database models and initialization for Huyền Học AI."""
 from datetime import datetime, timezone
 import os
 from pathlib import Path
@@ -35,6 +36,10 @@ Base = declarative_base()
 def utcnow_naive() -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
+
+# ─────────────────────────────────────────────
+# MODELS
+# ─────────────────────────────────────────────
 
 class User(Base):
     __tablename__ = "users"
@@ -77,6 +82,30 @@ class SavedEvent(Base):
     ngay = Column(String(10), nullable=False, index=True)
     ghi_chu = Column(String(500), default="", nullable=False)
     created_at = Column(DateTime, default=utcnow_naive, nullable=False)
+
+
+class LocationHistory(Base):
+    __tablename__ = "location_history"
+    __table_args__ = (
+        Index("uq_location_history_user_address", "user_id", "address_key", unique=True),
+        Index("ix_location_history_user_coords", "user_id", "lat", "lon"),
+    )
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    address_key = Column(String(220), nullable=False)
+    address = Column(String(200), nullable=False)
+    formatted_address = Column(String(300), nullable=False)
+    city = Column(String(120), nullable=True)
+    country = Column(String(80), nullable=True)
+    lat = Column(Float, nullable=False)
+    lon = Column(Float, nullable=False)
+    weather_json = Column(Text, nullable=True)
+    weather_fetched_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=utcnow_naive, nullable=False)
+    updated_at = Column(
+        DateTime, default=utcnow_naive, onupdate=utcnow_naive, nullable=False
+    )
 
 
 class Prediction(Base):
@@ -184,6 +213,25 @@ class ABReward(Base):
     created_at = Column(DateTime, default=utcnow_naive, nullable=False)
 
 
+# ─── MỚI: Action Advice Log ───
+class ActionAdviceLog(Base):
+    __tablename__ = "action_advice_logs"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    hanh_dong = Column(String(32), nullable=False)
+    xem_ngay = Column(String(10), nullable=False, index=True)
+    thanh_pho = Column(String(120), nullable=True)
+    lat = Column(Float, nullable=True)
+    lon = Column(Float, nullable=True)
+    payload_json = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=utcnow_naive, nullable=False, index=True)
+
+
+# ─────────────────────────────────────────────
+# SESSION
+# ─────────────────────────────────────────────
+
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
@@ -191,6 +239,10 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         db.close()
 
+
+# ─────────────────────────────────────────────
+# MIGRATION HELPERS
+# ─────────────────────────────────────────────
 
 def _add_missing_columns(connection, table: str, columns: dict[str, str]) -> None:
     existing = {column["name"] for column in inspect(connection).get_columns(table)}
@@ -230,10 +282,19 @@ def _remove_legacy_birth_uniqueness(connection) -> None:
     connection.execute(text("ALTER TABLE __profiles_multiuser RENAME TO profiles"))
 
 
+# ─────────────────────────────────────────────
+# INIT
+# ─────────────────────────────────────────────
+
 def init_db(database_engine: Engine = engine) -> None:
+    # 1. Tạo tất cả bảng (bao gồm action_advice_logs mới)
+    Base.metadata.create_all(bind=database_engine)
     User.__table__.create(bind=database_engine, checkfirst=True)
+
     with database_engine.begin() as connection:
         tables = set(inspect(connection).get_table_names())
+
+        # ── users ──
         if "users" in tables:
             _add_missing_columns(
                 connection,
@@ -251,6 +312,8 @@ def init_db(database_engine: Engine = engine) -> None:
                     "ON users (telegram_chat_id)"
                 )
             )
+
+        # ── profiles ──
         if "profiles" in tables:
             _remove_legacy_birth_uniqueness(connection)
             _add_missing_columns(
@@ -271,13 +334,34 @@ def init_db(database_engine: Engine = engine) -> None:
             connection.execute(
                 text("CREATE INDEX IF NOT EXISTS ix_profiles_user_id ON profiles (user_id)")
             )
+
+        if "location_history" in tables:
+            _add_missing_columns(
+                connection,
+                "location_history",
+                {"city": "VARCHAR(120)", "country": "VARCHAR(80)"},
+            )
+
+        # ── predictions ──
         if "predictions" in tables:
             _add_missing_columns(
-                connection, "predictions", {"scope": "VARCHAR(20) NOT NULL DEFAULT 'general'", "scope_key": "VARCHAR(20)"}
+                connection,
+                "predictions",
+                {
+                    "scope": "VARCHAR(20) NOT NULL DEFAULT 'general'",
+                    "scope_key": "VARCHAR(20)",
+                },
             )
+
+        # ── event_feedback ──
         if "event_feedback" in tables:
             _add_missing_columns(
-                connection, "event_feedback", {"scope": "VARCHAR(20) NOT NULL DEFAULT 'general'", "scope_key": "VARCHAR(20)"}
+                connection,
+                "event_feedback",
+                {
+                    "scope": "VARCHAR(20) NOT NULL DEFAULT 'general'",
+                    "scope_key": "VARCHAR(20)",
+                },
             )
             _add_missing_columns(
                 connection,
@@ -293,4 +377,31 @@ def init_db(database_engine: Engine = engine) -> None:
                     "ON event_feedback (prediction_id)"
                 )
             )
-    Base.metadata.create_all(bind=database_engine)
+
+        # ── action_advice_logs (MỚI) ──
+        if "action_advice_logs" in tables:
+            _add_missing_columns(
+                connection,
+                "action_advice_logs",
+                {
+                    "hanh_dong": "VARCHAR(32) NOT NULL DEFAULT ''",
+                    "xem_ngay": "VARCHAR(10) NOT NULL DEFAULT ''",
+                    "thanh_pho": "VARCHAR(120)",
+                    "lat": "REAL",
+                    "lon": "REAL",
+                    "payload_json": "TEXT NOT NULL DEFAULT '{}'",
+                    "created_at": "DATETIME",
+                },
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_action_advice_logs_user_created "
+                    "ON action_advice_logs (user_id, created_at)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_action_advice_logs_xem_ngay "
+                    "ON action_advice_logs (xem_ngay)"
+                )
+            )

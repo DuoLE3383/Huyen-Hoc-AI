@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import unittest
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -195,6 +195,118 @@ class ExpansionAPITests(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             no_key = self.client.post("/api/moi-truong/hien-tai", json={"lat": 0, "lon": 0})
         self.assertEqual(no_key.status_code, 503)
+
+    def test_geocode_is_persisted_per_user_and_reused_without_provider_call(self) -> None:
+        from auth import get_current_user
+
+        provider_response = httpx.Response(
+            200,
+            json={
+                "features": [{
+                    "properties": {
+                        "lat": 10.234,
+                        "lon": 106.367,
+                        "formatted": "Bến Tre, Việt Nam",
+                        "city": "Bến Tre",
+                        "country": "Việt Nam",
+                        "place_id": "place-1",
+                    }
+                }]
+            },
+            request=httpx.Request("GET", "https://api.geoapify.com/v1/geocode/search"),
+        )
+        with patch.dict(os.environ, {"GEOAPIFY_API_KEY": "test-key"}):
+            with patch("routes.geocode.httpx.AsyncClient") as client_class:
+                provider = client_class.return_value.__aenter__.return_value
+                provider.get = AsyncMock(return_value=provider_response)
+                first = self.client.post(
+                    "/api/geocode/", json={"address": " Nguyễn Văn Tư Bến Tre "}
+                )
+                second = self.client.post(
+                    "/api/geocode/", json={"address": "nguyễn   văn tư bến tre"}
+                )
+
+        self.assertEqual(first.status_code, 200, first.text)
+        self.assertFalse(first.json()["cached"])
+        self.assertEqual(second.status_code, 200, second.text)
+        self.assertTrue(second.json()["cached"])
+        self.assertEqual(provider.get.await_count, 1)
+        saved_location = self.client.get("/api/geocode/history").json()["items"][0]
+        self.assertEqual(saved_location["lat"], 10.234)
+
+        self.app.dependency_overrides[get_current_user] = lambda: self.other_user
+        self.assertEqual(self.client.get("/api/geocode/history").json()["items"], [])
+        self.assertEqual(
+            self.client.delete(
+                f"/api/geocode/history/{saved_location['id']}"
+            ).status_code,
+            404,
+        )
+        with patch.dict(os.environ, {}, clear=True):
+            uncached = self.client.post(
+                "/api/geocode/", json={"address": "Nguyễn Văn Tư Bến Tre"}
+            )
+        self.assertEqual(uncached.status_code, 503)
+        self.assertEqual(provider.get.await_count, 1)
+
+    def test_recent_weather_snapshot_is_reused_without_api_key_or_provider_call(self) -> None:
+        environment = {
+            "thoi_tiet": {
+                "nhiet_do_c": 30.0,
+                "do_am_phan_tram": 60,
+                "mo_ta": "trời quang",
+                "gio_m_s": 2.0,
+                "thanh_pho": "Bến Tre",
+            },
+            "khong_khi": {"aqi": 2, "muc_do": "Khá", "pm2_5": 10, "pm10": 20},
+            "nguon": "OpenWeather",
+            "ghi_chu": "Tọa độ chỉ dùng để truy vấn.",
+        }
+        payload = {
+            "ngay": 15,
+            "thang": 6,
+            "nam": 1995,
+            "gioi_tinh": "nam",
+            "huong_nha": "Nam",
+            "lat": 10.234,
+            "lon": 106.367,
+        }
+        with patch.dict(os.environ, {"OPENWEATHER_API_KEY": "test-key"}):
+            with patch(
+                "main.lay_du_lieu_moi_truong",
+                new_callable=AsyncMock,
+                return_value=environment,
+            ) as provider:
+                first = self.client.post("/api/tong-the", json=payload)
+                with patch.dict(os.environ, {}, clear=True):
+                    second = self.client.post("/api/tong-the", json=payload)
+
+        self.assertEqual(first.status_code, 200, first.text)
+        self.assertFalse(first.json()["moi_truong"]["lich_su"]["tai_su_dung"])
+        self.assertEqual(second.status_code, 200, second.text)
+        self.assertTrue(second.json()["moi_truong"]["lich_su"]["tai_su_dung"])
+        self.assertEqual(provider.await_count, 1)
+        saved = self.client.get("/api/geocode/history").json()["items"]
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0]["weather"]["nguon"], "OpenWeather")
+        self.assertIsNotNone(saved[0]["weatherFetchedAt"])
+
+        from database import LocationHistory, utcnow_naive
+
+        with self.factory() as db:
+            location = db.query(LocationHistory).one()
+            location.weather_fetched_at = utcnow_naive() - timedelta(minutes=16)
+            db.commit()
+        with patch.dict(os.environ, {"OPENWEATHER_API_KEY": "test-key"}):
+            with patch(
+                "main.lay_du_lieu_moi_truong",
+                new_callable=AsyncMock,
+                return_value=environment,
+            ) as refresh_provider:
+                refreshed = self.client.post("/api/tong-the", json=payload)
+        self.assertEqual(refreshed.status_code, 200, refreshed.text)
+        self.assertFalse(refreshed.json()["moi_truong"]["lich_su"]["tai_su_dung"])
+        refresh_provider.assert_awaited_once()
 
     def test_level_four_routes_validate_input_and_do_not_store_submitted_locations(self) -> None:
         from auth import get_current_user

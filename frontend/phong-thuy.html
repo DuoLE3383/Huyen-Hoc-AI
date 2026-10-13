@@ -1,77 +1,606 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phong thủy & môi trường — Huyền Học AI</title>
   <style>
-    :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}
-    main{max-width:850px;margin:auto}nav,.row{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
-    a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
-    label{display:block;margin:12px 0 5px;color:#b6a1d2}input,select,button{font:inherit;padding:10px;border-radius:7px}
-    input,select{max-width:100%;background:#201432;color:white;border:1px solid #705d83}button{background:#7138d6;color:white;border:0;cursor:pointer}
-    .row>label{flex:1;min-width:130px}pre{white-space:pre-wrap;overflow-wrap:anywhere}.note{color:#b6a1d2}
+    :root {
+      color-scheme: dark;
+      font: 16px system-ui;
+      background: #160a27;
+      color: #e8dff5
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px
+    }
+
+    main {
+      max-width: 850px;
+      margin: auto
+    }
+
+    nav,
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0
+    }
+
+    a {
+      color: #d0b5ff
+    }
+
+    section {
+      padding: 20px;
+      margin: 16px 0;
+      border: 1px solid #563c77;
+      border-radius: 12px;
+      background: #ffffff09
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
+      color: #b6a1d2
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+      padding: 10px;
+      border-radius: 7px
+    }
+
+    input,
+    select {
+      max-width: 100%;
+      background: #201432;
+      color: white;
+      border: 1px solid #705d83
+    }
+
+    button {
+      background: #7138d6;
+      color: white;
+      border: 0;
+      cursor: pointer
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait
+    }
+
+    .row>label {
+      flex: 1;
+      min-width: 130px
+    }
+
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere
+    }
+
+    .note {
+      color: #b6a1d2
+    }
+
+    /* ── Environment section ── */
+    .env-section {
+      margin: 16px 0;
+      padding: 14px 16px;
+      border: 1px solid #4c3670;
+      border-radius: 10px;
+      background: #1b1030
+    }
+
+    .env-section summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #d0b5ff
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #b6a1d2;
+      margin: 10px 0 12px;
+      line-height: 1.5
+    }
+
+    .address-row {
+      margin-bottom: 12px
+    }
+
+    .address-input {
+      display: flex;
+      gap: 8px
+    }
+
+    .address-input input {
+      flex: 1
+    }
+
+    .btn-secondary {
+      background: #4c2f8f;
+      border: 1px solid #705d83;
+      white-space: nowrap
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #5a3aa8
+    }
+
+    .geocode-result {
+      margin: 12px 0;
+      padding: 12px 14px;
+      border-left: 3px solid #10b981;
+      border-radius: 6px;
+      background: #10b98115;
+      font-size: 14px
+    }
+
+    .geocode-result p {
+      margin: 4px 0
+    }
+
+    .muted {
+      color: #9ca3af;
+      font-size: 12px
+    }
+
+    .consent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #b6a1d2;
+      cursor: pointer
+    }
+
+    .consent-row input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: #7c3aed
+    }
+    .advice-summary { padding: 14px 16px; border-left: 4px solid #a78bfa; border-radius: 8px; background: #7c3aed20; line-height: 1.6; }
+    #advice-details li { margin: 8px 0; line-height: 1.5; }
+    .advice-ai { padding: 12px; border-left: 3px solid #a855f7; background: #a855f710; }
   </style>
 </head>
-<body><main>
-  <h1>🏠 Phong thủy & môi trường</h1>
-  <nav><a href="/app">Tổng quan</a><a href="/su-kien">Sự kiện cá nhân</a><a href="/timeline-vi-mo">Timeline vĩ mô</a></nav>
-  <p class="note">Phong thủy là diễn giải văn hóa tham khảo, không phải dự báo khoa học hay căn cứ cho quyết định y tế, pháp lý, tài chính.</p>
-  <section><h2>Thông tin phân tích</h2>
-    <form id="analysis">
+
+<body>
+  <main>
+    <h1>🏠 Phong thủy & môi trường</h1>
+    <nav><a href="/app">Tổng quan</a><a href="/su-kien">Sự kiện cá nhân</a><a href="/timeline-vi-mo">Timeline vĩ mô</a>
+    </nav>
+    <p class="note">Phong thủy là diễn giải văn hóa tham khảo, không phải dự báo khoa học hay căn cứ cho quyết định y
+      tế, pháp lý, tài chính.</p>
+    <section>
+      <h2>Thông tin phân tích</h2>
+      <form id="analysis">
+        <div class="row">
+          <label>Ngày sinh<input name="ngay" type="number" min="1" max="31" value="15" required></label>
+          <label>Tháng<input name="thang" type="number" min="1" max="12" value="6" required></label>
+          <label>Năm<input name="nam" type="number" min="1900" max="2100" value="1995" required></label>
+          <label>Giới tính<input name="gioi_tinh" value="nam" pattern="nam|nu" title="Nhập nam hoặc nu"
+              required></label>
+        </div>
+        <div class="row">
+          <label>Hướng nhà<select name="huong_nha"></select></label>
+          <label>Hướng bếp (không bắt buộc)<select name="huong_bep"></select></label>
+          <label>Hướng phòng ngủ (không bắt buộc)<select name="huong_phong_ngu"></select></label>
+        </div>
+        <label>Mục đích tham khảo<select name="muc_dich">
+            <option value="tai_van">Tài vận</option>
+            <option value="suc_khoe">Sức khỏe</option>
+            <option value="tinh_cam">Tình cảm</option>
+            <option value="su_nghiep">Sự nghiệp</option>
+            <option value="hoc_tap">Học tập</option>
+            <option value="tam_linh">Tâm linh</option>
+          </select></label>
+
+        <details class="env-section">
+          <summary>Dữ liệu môi trường hiện tại (tùy chọn)</summary>
+
+          <p class="hint">
+            Nhập địa chỉ để lấy thời tiết/AQI. Ứng dụng sẽ gửi địa chỉ qua máy chủ
+            tới Geoapify (để lấy tọa độ) và OpenWeather (để lấy thời tiết/AQI).
+            Địa chỉ, tọa độ và lần tra cứu thời tiết gần nhất được lưu riêng trong lịch sử tài khoản.
+            Thời tiết được dùng lại trong 15 phút; dữ liệu cũ hơn sẽ được lấy mới.
+          </p>
+
+          <label for="saved-locations">Địa chỉ đã lưu</label>
+          <div class="address-input">
+            <select id="saved-locations">
+              <option value="">— Chọn địa chỉ đã tra —</option>
+            </select>
+            <button type="button" id="btn-delete-location" class="btn-secondary" disabled>Xóa</button>
+          </div>
+
+          <div class="address-row">
+            <label for="dia-chi">Địa chỉ</label>
+            <div class="address-input">
+              <input type="text" id="dia-chi" placeholder="Ví dụ: 123 Nguyễn Huệ, Quận 1, TP.HCM"
+                autocomplete="off" />
+              <button type="button" id="btn-geocode" class="btn-secondary">Tra cứu</button>
+            </div>
+          </div>
+
+          <div id="geocode-result" class="geocode-result" hidden>
+            <p>📍 <span id="geocode-address"></span></p>
+            <p class="muted">Tọa độ: <span id="geocode-lat"></span>, <span id="geocode-lon"></span></p>
+            <p id="geocode-status" class="muted"></p>
+          </div>
+
+          <input type="hidden" id="vi-do" name="lat" />
+          <input type="hidden" id="kinh-do" name="lon" />
+
+          <label class="consent-row">
+            <input type="checkbox" id="consent-env" />
+            Tôi đồng ý gửi địa chỉ tới Geoapify và tọa độ tới OpenWeather.
+          </label>
+        </details>
+
+        <button type="submit" id="btn-submit">Phân tích và tổng hợp</button>
+      </form>
+    </section>
+    <section aria-live="polite" id="action-advice-section">
+      <h2>Gợi ý hành động theo thời gian và địa điểm</h2>
+      <p class="note">Kết hợp lịch vạn niên, hướng theo cung phi, thời tiết và chất lượng không khí. Kết quả chỉ mang tính tham khảo.</p>
       <div class="row">
-        <label>Ngày sinh<input name="ngay" type="number" min="1" max="31" value="15" required></label>
-        <label>Tháng<input name="thang" type="number" min="1" max="12" value="6" required></label>
-        <label>Năm<input name="nam" type="number" min="1900" max="2100" value="1995" required></label>
-        <label>Giới tính<input name="gioi_tinh" value="nam" pattern="nam|nu" title="Nhập nam hoặc nu" required></label>
+        <label>Ngày cần xem<input id="advice-date" type="date"></label>
+        <label>Hành động
+          <select id="advice-action">
+            <option value="xuat_hanh">Xuất hành / đi xa</option><option value="ky_ket">Ký kết hợp đồng</option>
+            <option value="gap_doi_tac">Gặp đối tác</option><option value="khai_truong">Khai trương</option>
+            <option value="mua_sam_lon">Mua sắm lớn</option><option value="phong_van">Phỏng vấn / gặp gỡ</option>
+            <option value="hoc_tap">Học tập</option><option value="the_thao">Thể thao</option><option value="nghi_ngoi">Nghỉ ngơi</option>
+          </select>
+        </label>
       </div>
-      <div class="row">
-        <label>Hướng nhà<select name="huong_nha"></select></label>
-        <label>Hướng bếp (không bắt buộc)<select name="huong_bep"></select></label>
-        <label>Hướng phòng ngủ (không bắt buộc)<select name="huong_phong_ngu"></select></label>
-      </div>
-      <label>Mục đích tham khảo<select name="muc_dich">
-        <option value="tai_van">Tài vận</option><option value="suc_khoe">Sức khỏe</option>
-        <option value="tinh_cam">Tình cảm</option><option value="su_nghiep">Sự nghiệp</option>
-        <option value="hoc_tap">Học tập</option><option value="tam_linh">Tâm linh</option>
-      </select></label>
-      <details><summary>Dữ liệu môi trường hiện tại (tùy chọn)</summary>
-        <p class="note">Nếu nhập tọa độ, ứng dụng sẽ gửi chúng qua máy chủ tới OpenWeather để lấy thời tiết/AQI; không lưu tọa độ. Cần máy chủ cấu hình OPENWEATHER_API_KEY.</p>
-        <div class="row"><label>Vĩ độ<input name="lat" type="number" min="-90" max="90" step="any"></label>
-          <label>Kinh độ<input name="lon" type="number" min="-180" max="180" step="any"></label></div>
-        <label><input id="locationConsent" type="checkbox"> Tôi đồng ý gửi tọa độ đã nhập tới nhà cung cấp thời tiết.</label>
-      </details>
-      <button type="submit">Phân tích và tổng hợp</button>
-    </form>
-  </section>
-  <section aria-live="polite"><h2>Kết quả</h2><pre id="result">Chưa có kết quả.</pre></section>
-</main>
-<script>
-  const token=localStorage.getItem("token");
-  if(!token) location.replace("/");
-  const directions=["","Bắc","Đông Bắc","Đông","Đông Nam","Nam","Tây Nam","Tây","Tây Bắc"];
-  for(const select of document.querySelectorAll('select[name="huong_nha"],select[name="huong_bep"],select[name="huong_phong_ngu"]')){
-    if(select.name!=="huong_nha"){const option=document.createElement("option");option.value="";option.textContent="— Không chọn —";select.append(option)}
-    for(const direction of directions.slice(1)){const option=document.createElement("option");option.value=direction;option.textContent=direction;select.append(option)}
-    if(select.name==="huong_nha")select.value="Nam";
-  }
-  document.getElementById("analysis").addEventListener("submit",async event=>{
-    event.preventDefault();
-    const form=Object.fromEntries(new FormData(event.currentTarget));
-    const payload={...form,ngay:Number(form.ngay),thang:Number(form.thang),nam:Number(form.nam)};
-    for(const key of ["huong_bep","huong_phong_ngu"])if(!payload[key])delete payload[key];
-    const hasCoordinates=form.lat!==""||form.lon!=="";
-    if(hasCoordinates){
-      if(!form.lat||!form.lon){document.getElementById("result").textContent="Cần nhập cả vĩ độ và kinh độ.";return}
-      if(!document.getElementById("locationConsent").checked){document.getElementById("result").textContent="Cần đồng ý gửi tọa độ trước khi truy vấn thời tiết.";return}
-      payload.lat=Number(form.lat);payload.lon=Number(form.lon);
+      <button type="button" id="btn-advice">Xem gợi ý và diễn giải AI</button>
+      <div id="advice-result" hidden><p id="advice-summary" class="advice-summary"></p><ul id="advice-details"></ul><pre id="advice-ai" class="advice-ai" hidden></pre></div>
+    </section>
+    <section aria-live="polite">
+      <h2>Kết quả</h2>
+      <pre id="result">Chưa có kết quả.</pre>
+    </section>
+  </main>
+
+  <script>
+    // ─────────────────────────────────────────
+    // AUTH
+    // ─────────────────────────────────────────
+    const token = localStorage.getItem("token");
+    let currentGeocodedLocation = null;
+    if (!token) location.replace("/");
+
+    // ─────────────────────────────────────────
+    // SETUP DIRECTION DROPDOWNS
+    // ─────────────────────────────────────────
+    const directions = ["", "Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc"];
+    for (const select of document.querySelectorAll(
+      'select[name="huong_nha"],select[name="huong_bep"],select[name="huong_phong_ngu"]'
+    )) {
+      if (select.name !== "huong_nha") {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "— Không chọn —";
+        select.append(option);
+      }
+      for (const direction of directions.slice(1)) {
+        const option = document.createElement("option");
+        option.value = direction;
+        option.textContent = direction;
+        select.append(option);
+      }
+      if (select.name === "huong_nha") select.value = "Nam";
     }
-    const output=document.getElementById("result");output.textContent="Đang phân tích…";
-    try{
-      const response=await fetch("/api/tong-the",{method:"POST",headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
-      const data=await response.json();if(!response.ok)throw new Error(data.detail||`Lỗi ${response.status}`);
-      output.textContent=JSON.stringify(data,null,2);
-    }catch(error){output.textContent=`Không thể hoàn tất: ${error.message}`}
-  });
-</script>
-</body></html>
+
+    // ─────────────────────────────────────────
+    // GEOCODE: Địa chỉ → Tọa độ
+    // ─────────────────────────────────────────
+    const btnGeocode = document.getElementById("btn-geocode");
+    const inputAddress = document.getElementById("dia-chi");
+    const resultBox = document.getElementById("geocode-result");
+    const resultAddress = document.getElementById("geocode-address");
+    const resultLat = document.getElementById("geocode-lat");
+    const resultLon = document.getElementById("geocode-lon");
+    const hiddenLat = document.getElementById("vi-do");
+    const hiddenLon = document.getElementById("kinh-do");
+    const consentEnv = document.getElementById("consent-env");
+    const savedLocations = document.getElementById("saved-locations");
+    const btnDeleteLocation = document.getElementById("btn-delete-location");
+    let locationHistory = [];
+
+    function clearGeocode() {
+      hiddenLat.value = "";
+      hiddenLon.value = "";
+      currentGeocodedLocation = null;
+      resultBox.hidden = true;
+      resultAddress.textContent = "";
+      resultLat.textContent = "";
+      resultLon.textContent = "";
+      document.getElementById("geocode-status").textContent = "";
+    }
+
+    function showGeocode(data, cached) {
+      hiddenLat.value = data.lat;
+      hiddenLon.value = data.lon;
+      currentGeocodedLocation = data;
+      inputAddress.value = data.address || inputAddress.value;
+      resultAddress.textContent = data.formattedAddress || data.address || "";
+      resultLat.textContent = Number(data.lat).toFixed(5);
+      resultLon.textContent = Number(data.lon).toFixed(5);
+      document.getElementById("geocode-status").textContent = cached
+        ? "Đã nạp từ lịch sử tài khoản."
+        : "Đã tự lưu vào lịch sử tài khoản.";
+      resultBox.hidden = false;
+    }
+
+    async function loadLocationHistory() {
+      try {
+        const response = await fetch("/api/geocode/history", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`Lỗi ${response.status}`);
+        const data = await response.json();
+        locationHistory = data.items || [];
+        savedLocations.replaceChildren(new Option("— Chọn địa chỉ đã tra —", ""));
+        for (const item of locationHistory) {
+          const weatherDate = item.weatherFetchedAt
+            ? new Date(item.weatherFetchedAt).toLocaleString()
+            : "chưa có thời tiết";
+          savedLocations.add(new Option(
+            `${item.formattedAddress} (${weatherDate})`,
+            String(item.id)
+          ));
+        }
+      } catch (error) {
+        console.error("Không tải được lịch sử địa chỉ:", error);
+      }
+    }
+
+    savedLocations.addEventListener("change", () => {
+      const selected = locationHistory.find(
+        item => String(item.id) === savedLocations.value
+      );
+      btnDeleteLocation.disabled = !selected;
+      if (selected) {
+        showGeocode(selected, true);
+      } else {
+        clearGeocode();
+      }
+    });
+
+    btnDeleteLocation.addEventListener("click", async () => {
+      const locationId = savedLocations.value;
+      if (!locationId) return;
+      btnDeleteLocation.disabled = true;
+      try {
+        const response = await fetch(`/api/geocode/history/${locationId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.detail || `Lỗi ${response.status}`);
+        }
+        savedLocations.value = "";
+        clearGeocode();
+        await loadLocationHistory();
+      } catch (error) {
+        alert("Không xóa được địa chỉ đã lưu: " + error.message);
+        btnDeleteLocation.disabled = false;
+      }
+    });
+
+    btnGeocode.addEventListener("click", async () => {
+      const address = inputAddress.value.trim();
+
+      if (address.length < 3) {
+        alert("Vui lòng nhập địa chỉ (ít nhất 3 ký tự).");
+        return;
+      }
+      if (!consentEnv.checked) {
+        alert("Vui lòng tick vào ô đồng ý trước khi tra cứu.");
+        return;
+      }
+
+      btnGeocode.disabled = true;
+      btnGeocode.textContent = "Đang tra...";
+
+      try {
+        const res = await fetch("/api/geocode/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ address })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Lỗi ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        showGeocode(data, data.cached);
+        await loadLocationHistory();
+      } catch (err) {
+        alert("Không tra được địa chỉ: " + err.message);
+        clearGeocode();
+      } finally {
+        btnGeocode.disabled = false;
+        btnGeocode.textContent = "Tra cứu";
+      }
+    });
+
+    inputAddress.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnGeocode.click();
+      }
+    });
+
+    inputAddress.addEventListener("input", () => {
+      clearGeocode();
+      savedLocations.value = "";
+      btnDeleteLocation.disabled = true;
+    });
+    loadLocationHistory();
+
+    consentEnv.addEventListener("change", () => {
+      if (!consentEnv.checked) {
+        clearGeocode();
+        inputAddress.value = "";
+        savedLocations.value = "";
+        btnDeleteLocation.disabled = true;
+      }
+    });
+
+    async function readSSE(response, handlers) {
+      if (!response.body) throw new Error("Trình duyệt không hỗ trợ luồng phản hồi.");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const dispatch = (block) => {
+        let eventName = "message";
+        const dataLines = [];
+        for (const line of block.split(/\r?\n/)) {
+          if (line.startsWith("event:")) eventName = line.slice(6).trim();
+          else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
+        }
+        if (!dataLines.length) return;
+        try { handlers[eventName]?.(JSON.parse(dataLines.join("\n"))); }
+        catch (error) { console.warn("SSE parse error:", error); }
+      };
+      while (true) {
+        const { done, value } = await reader.read();
+        buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+        const blocks = buffer.split(/\r?\n\r?\n/);
+        buffer = blocks.pop() || "";
+        for (const block of blocks) dispatch(block);
+        if (done) break;
+      }
+      if (buffer.trim()) dispatch(buffer);
+    }
+
+    function renderActionAdvice(data) {
+      const summary = document.getElementById("advice-summary");
+      const details = document.getElementById("advice-details");
+      const time = data.thoi_gian || {};
+      const place = data.dia_diem || {};
+      const weather = data.thoi_tiet;
+      const aqi = data.aqi;
+      summary.textContent = data.ket_luan || "Đã nhận dữ liệu gợi ý.";
+      details.replaceChildren();
+      const rows = [
+        ["Ngày theo lịch", `${time.can_chi_ngay || "—"}; ${time.tiet_khi || "—"}; điểm tham khảo ${time.diem_tong_hop ?? "—"}/100`],
+        ["Giờ hoàng đạo phù hợp", (time.gio_vang || []).map(item => `${item.chi} (${item.range})`).join(", ") || "Chưa có dữ liệu"],
+        ["Giờ nên tránh", (time.gio_kieng || []).map(item => `${item.chi} (${item.range})`).join(", ") || "Không có gợi ý riêng"],
+        ["Hướng theo mục đích", (place.huong_cho_hanh_dong || []).map(item => `${item.huong} — ${item.cung}`).join(", ") || "Chưa xác định"],
+        ["Đánh giá hướng nhà", place.huong_nha ? `${place.huong_nha.huong_nha}: ${place.huong_nha.cung}` : "—"],
+        ["Địa điểm", [place.thanh_pho, place.quoc_gia].filter(Boolean).join(", ") || "Chưa chọn địa điểm"],
+        ["Thời tiết", weather ? `${weather.nhiet_do}°C, ${weather.mo_ta}` : "Chưa có dữ liệu thời tiết"],
+        ["Chất lượng không khí", aqi ? `${aqi.label} (PM2.5 ${aqi.pm2_5})` : "Chưa có dữ liệu AQI"],
+        ["Lưu ý", (data.canh_bao || []).map(item => item.noi_dung).join("; ") || "Không có cảnh báo từ dữ liệu hiện có"],
+        ["Gợi ý thực tế", (data.goi_y_chi_tiet || []).join("; ") || "—"],
+      ];
+      for (const [label, value] of rows) {
+        const item = document.createElement("li");
+        item.textContent = `${label}: ${value}`;
+        details.append(item);
+      }
+      document.getElementById("advice-result").hidden = false;
+    }
+
+    const adviceDate = document.getElementById("advice-date");
+    const now = new Date();
+    adviceDate.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+    document.getElementById("btn-advice").addEventListener("click", async () => {
+      const form = Object.fromEntries(new FormData(document.getElementById("analysis")));
+      const payload = {
+        ngay: Number(form.ngay), thang: Number(form.thang), nam: Number(form.nam),
+        gioi_tinh: form.gioi_tinh, huong_nha: form.huong_nha,
+        muc_dich: form.muc_dich, hanh_dong: document.getElementById("advice-action").value,
+        xem_ngay: adviceDate.value || null,
+      };
+      if (form.lat && form.lon) {
+        if (!consentEnv.checked) { alert("Cần đồng ý gửi tọa độ tới OpenWeather trước khi lấy dữ liệu môi trường."); return; }
+        payload.lat = Number(form.lat);
+        payload.lon = Number(form.lon);
+        payload.thanh_pho = currentGeocodedLocation?.city || resultAddress.textContent || null;
+        payload.quoc_gia = currentGeocodedLocation?.country || null;
+      }
+      const button = document.getElementById("btn-advice");
+      const result = document.getElementById("advice-result");
+      const summary = document.getElementById("advice-summary");
+      const details = document.getElementById("advice-details");
+      const ai = document.getElementById("advice-ai");
+      button.disabled = true; result.hidden = false;
+      summary.textContent = "Đang tính lịch, hướng, thời tiết và AQI…";
+      details.replaceChildren(); ai.hidden = true; ai.textContent = "";
+      try {
+        const response = await fetch("/api/action-advice/stream", {
+          method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(error.detail || `Lỗi ${response.status}`); }
+        let streamed = "";
+        await readSSE(response, {
+          metadata: renderActionAdvice,
+          token: ({ content }) => { streamed += content; ai.hidden = false; ai.textContent = streamed; },
+          done: ({ parsed }) => { ai.hidden = false; ai.textContent = [parsed.tom_tat, parsed.ly_do, ...(parsed.luu_y || [])].filter(Boolean).join("\n\n"); },
+          error: ({ message }) => { ai.hidden = false; ai.textContent = `Không có diễn giải AI: ${message}`; },
+        });
+      } catch (error) { summary.textContent = `Không thể hoàn tất: ${error.message}`; }
+      finally { button.disabled = false; }
+    });
+
+    document.getElementById("analysis").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = Object.fromEntries(new FormData(event.currentTarget));
+      const payload = { ...form, ngay: Number(form.ngay), thang: Number(form.thang), nam: Number(form.nam) };
+      for (const key of ["huong_bep", "huong_phong_ngu"]) if (!payload[key]) delete payload[key];
+      const hasLat = Boolean(form.lat), hasLon = Boolean(form.lon);
+      if (hasLat !== hasLon) { document.getElementById("result").textContent = "Cần tra cứu địa chỉ đầy đủ trước khi phân tích."; return; }
+      if (hasLat && !consentEnv.checked) { document.getElementById("result").textContent = "Cần đồng ý gửi tọa độ trước khi truy vấn môi trường."; return; }
+      if (hasLat) { payload.lat = Number(form.lat); payload.lon = Number(form.lon); }
+      const output = document.getElementById("result");
+      const button = document.getElementById("btn-submit");
+      let raw = ""; button.disabled = true; output.textContent = "Đang phân tích…";
+      try {
+        const response = await fetch("/api/tong-the/stream", {
+          method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(error.detail || `Lỗi ${response.status}`); }
+        await readSSE(response, {
+          metadata: data => {
+            const note = data.moi_truong_ghi_chu ? ` ${data.moi_truong_ghi_chu}` : "";
+            output.textContent = `Đã nhận dữ liệu tuần ${data.su_kien?.danh_sach?.length || 0} ngày.${note} Đang tạo diễn giải AI…`;
+          },
+          token: ({ content }) => { raw += content; output.textContent = raw; },
+          done: ({ parsed }) => {
+            output.textContent = [parsed.tieu_de, parsed.tom_tat, ...(parsed.diem_manh || []).map(item => `• ${item}`), ...(parsed.diem_luu_y || []).map(item => `• Lưu ý: ${item}`), ...(parsed.hanh_dong || []).map(item => `• ${item}`)].filter(Boolean).join("\n\n");
+          },
+          error: ({ message }) => { output.textContent = `Lỗi diễn giải AI: ${message}`; },
+        });
+      } catch (error) { output.textContent = `Không thể hoàn tất: ${error.message}`; }
+      finally { button.disabled = false; }
+    });
+
+  </script>
+</body>
+
+</html>
