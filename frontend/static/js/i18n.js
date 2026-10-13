@@ -29,7 +29,7 @@
     }
   }
 
-  languagePicker.addEventListener("change", () => loadLanguage(languagePicker.value));
+  if (languagePicker) languagePicker?.addEventListener("change", () => loadLanguage(languagePicker.value));
   const savedLanguage = localStorage.getItem("lang");
   const browserLanguage = navigator.language.split("-")[0].toLowerCase();
   loadLanguage(
