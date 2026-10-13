@@ -5,7 +5,7 @@
 
   async function loadLanguage(language) {
     if (!supported.includes(language)) language = "vi";
-    status.textContent = "";
+    if (status) status.textContent = "";
     try {
       const response = await fetch(`/api/i18n/${language}`, {
         headers: { Accept: "application/json" }
@@ -21,15 +21,15 @@
         if (translated !== undefined) element.setAttribute("aria-label", translated);
       }
       document.documentElement.lang = language;
-      languagePicker.value = language;
+      if (languagePicker) languagePicker.value = language;
       localStorage.setItem("lang", language);
     } catch (error) {
       console.error("Could not load interface translations.", error);
-      status.textContent = "Không tải được bản dịch; giao diện giữ nguyên ngôn ngữ hiện tại.";
+      if (status) status.textContent = "Không tải được bản dịch; giao diện giữ nguyên ngôn ngữ hiện tại.";
     }
   }
 
-  if (languagePicker) languagePicker?.addEventListener("change", () => loadLanguage(languagePicker.value));
+  languagePicker?.addEventListener("change", () => loadLanguage(languagePicker.value));
   const savedLanguage = localStorage.getItem("lang");
   const browserLanguage = navigator.language.split("-")[0].toLowerCase();
   loadLanguage(
