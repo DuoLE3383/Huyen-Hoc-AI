@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Timeline vĩ mô — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}
+  main{max-width:800px;margin:auto}nav{display:flex;gap:14px;flex-wrap:wrap}a{color:#d0b5ff}
+  section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  input,button{font:inherit;padding:10px;border-radius:7px}input{background:#201432;color:white;border:1px solid #705d83}
+  button{background:#7138d6;color:white;border:0;cursor:pointer}.note{color:#b6a1d2}
+</style>  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body><main><h1>🌏 Timeline lịch vĩ mô</h1>
+  <p class="note">Trang này hiển thị mốc tiết khí nội bộ xấp xỉ, không phải feed tin tức hoặc cảnh báo thiên tai/thị trường.</p>
+  <section><label>Số ngày (1–366) <input id="days" type="number" min="1" max="366" value="90"></label>
+    <button id="load">Tải timeline</button><p id="error" role="alert"></p><ul id="timeline"></ul><pre id="summary"></pre></section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  document.getElementById("load").addEventListener("click",async()=>{
+    const list=document.getElementById("timeline"),error=document.getElementById("error");error.textContent="";list.replaceChildren();document.getElementById("summary").textContent="Đang tải…";
+    try{const days=Number(document.getElementById("days").value);const response=await fetch(`/api/vi-mo/timeline?so_ngay=${encodeURIComponent(days)}`,{headers:{Authorization:`Bearer ${token}`}});
+      const data=await response.json();if(!response.ok)throw new Error(data.detail||`Lỗi ${response.status}`);
+      for(const item of data.su_kien){const li=document.createElement("li");li.textContent=`${item.ngay} · ${item.ten} (${item.loai})`;list.append(li)}
+      document.getElementById("summary").textContent=`${data.tu_ngay} – ${data.den_ngay}\n${data.ghi_chu}\nSao tham khảo năm: ${data.phi_tinh_nam.ten} — ${data.phi_tinh_nam.y_nghia}`;
+    }catch(e){document.getElementById("summary").textContent="";error.textContent=e.message}
+  });document.getElementById("load").click();
+</script>  <script src="/nav.js"></script>
+</body>
+</html>

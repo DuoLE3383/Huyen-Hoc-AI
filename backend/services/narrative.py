@@ -4,7 +4,7 @@ import json
 from collections.abc import AsyncIterator
 from typing import Any
 
-from ollama_client import ollama
+from services.ollama_client import ollama
 
 
 SYSTEM_ACTION = """Bạn là trợ lý cung cấp thông tin văn hóa tham khảo.

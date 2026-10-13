@@ -1,12 +1,52 @@
-.venv/
-node_modules/
+# ─── Environment (secrets) ───
+.env
+.env.*
+*.env
+!.env.example
+backend/.env
+backend/.env.*
 .env.local
+/deploy/.env.prod
+
+# ─── Python ───
+.venv/
+venv/
 __pycache__/
 *.py[cod]
-backend/huyen_hoc.db
-/finetune/dataset/
-/finetune/output/
-/deploy/.env.prod
-/data/
-task.txt
-temp.txt
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ─── Node ───
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── Capacitor / Android build ───
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+android/.idea/
+android/captures/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/capacitor-cordova-android-plugins/
+
+# ─── iOS build ───
+ios/App/build/
+ios/App/Pods/
+ios/App/DerivedData/
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+
+# ─── Misc binaries ───
+cloudflared.deb
+*.deb
+
+# ─── Logs / OS ───
+*.log
+.DS_Store
+Thumbs.db

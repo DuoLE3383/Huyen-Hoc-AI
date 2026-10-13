@@ -42,7 +42,7 @@
       margin: 0;
       text-align: center;
       font-size: clamp(1.8rem, 6vw, 2.4rem);
-      background: linear-gradient(90deg, #c4a3ff, #ffd700, #c4a3ff);
+      background: linear-gradient(90deg, #a78bfa, #ec4899, #22d3ee);
       color: #d7bfff;
       -webkit-background-clip: text;
       background-clip: text;
@@ -364,41 +364,14 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/static/css/app.css">
 </head>
 
 <body>
   <main class="container">
     <h1 data-i18n="app.title">🔮 Huyền Học AI</h1>
     <p class="subtitle" data-i18n="app.subtitle">Phân tích bản mệnh · Gợi ý tham khảo · Ghi nhận phản hồi</p>
-    <nav class="nav" aria-label="Điều hướng" data-i18n-aria-label="nav.label">
-      <a href="/app" data-i18n="nav.home">🏠 Tổng quan</a>
-      <a href="/tu-vi" data-i18n="nav.tuvi">🀄 Tử Vi</a>
-      <a href="/dashboard" data-i18n="nav.dashboard">📈 Dashboard</a>
-      <a href="/hop-tuoi" data-i18n="nav.compatibility">🤝 Hợp tuổi &amp; chia sẻ</a>
-      <a href="/tarot" data-i18n="nav.tarot">🃏 Tarot</a>
-      <a href="/kinh-dich" data-i18n="nav.iching">☯ Kinh Dịch</a>
-      <a href="/phong-thuy" data-i18n="nav.fengshui">🏠 Phong thủy</a>
-      <a href="/su-kien" data-i18n="nav.events">📅 Sự kiện</a>
-      <a href="/timeline-vi-mo" data-i18n="nav.timeline">🌏 Timeline</a>
-      <a href="/ban-do" data-i18n="nav.map">🗺️ Bản đồ</a>
-      <a href="/gia-dao" data-i18n="nav.family">👨‍👩‍👧 Gia đạo</a>
-      <a href="/kinh-te" data-i18n="nav.economy">📊 Kinh tế</a>
-      <a href="/trach-cat" data-i18n="nav.almanac">🏯 Trạch cát</a>
-      <a href="/tam-linh" data-i18n="nav.mindfulness">🕉️ Tâm linh</a>
-      <a href="/video" data-i18n="nav.video">🎥 Video</a>
-      <a href="/so-sanh" data-i18n="nav.comparison">🔮 Đông–Tây</a>
-      <a href="#" id="logout" data-i18n="nav.logout">🚪 Đăng xuất</a>
-      <label for="language" style="margin:0;align-self:center" data-i18n="language.label">Ngôn ngữ</label>
-      <select id="language" aria-label="Ngôn ngữ" style="width:auto">
-        <option value="vi">🇻🇳 Tiếng Việt</option>
-        <option value="en">🇬🇧 English</option>
-        <option value="zh">🇨🇳 中文</option>
-        <option value="ja">🇯🇵 日本語</option>
-      </select>
-      <span id="i18nStatus" class="disclaimer" role="status" aria-live="polite"></span>
-    </nav>
-
-    <section class="card" aria-label="Thông tin ngày sinh" data-i18n-aria-label="profile.heading">
+<section class="card" aria-label="Thông tin ngày sinh" data-i18n-aria-label="profile.heading">
       <form id="birthForm">
         <div class="form-row" style="margin-bottom:12px">
           <div style="grid-column:1/-1">
@@ -458,11 +431,6 @@
       : window.location.origin; // Production: Cloudflare Worker proxies /api/*
     const token = localStorage.getItem("token");
     if (!token) window.location.replace("/");
-    document.getElementById("logout").addEventListener("click", event => {
-      event.preventDefault();
-      localStorage.clear();
-      window.location.replace("/");
-    });
     const EVENT_NAMES = {
       tai_van: "💰 Tài vận", tinh_duyen: "💕 Tình duyên",
       su_nghiep: "💼 Sự nghiệp", suc_khoe: "🌿 Sức khỏe",
@@ -595,6 +563,11 @@
       const profiles = JSON.parse(event.currentTarget.dataset.profiles || "[]");
       const saved = profiles.find(item => String(item.id) === event.currentTarget.value);
       if (!saved) return;
+      // Lưu profile này làm active cho toàn app
+      apiFetch(`/api/profiles/${saved.id}/set-active`, { method: "POST" })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) console.log("✅ Active profile:", d.ho_ten); })
+        .catch(err => console.warn("Không set active:", err));
       const profile = saved.profile;
       const [day, month, year] = String(profile.ngay_sinh || "").split("/");
       document.getElementById("hoTen").value = profile.ho_ten || "";
@@ -921,7 +894,12 @@
           data.items.map(item => {
             const difference = Number(item.chenh_lech) || 0;
             const color = Math.abs(difference) < 15 ? "#7bffa0" : difference > 0 ? "#ffd700" : "#ff8080";
-            return `<div class="feedback-item">${escapeHtml(EVENT_NAMES[item.loai_su_kien] || item.loai_su_kien)}: chỉ số ${Number(item.du_doan).toFixed(0)} / đánh giá ${Number(item.thuc_te).toFixed(0)} <span style="color:${color}">(${difference > 0 ? "+" : ""}${difference.toFixed(0)})</span></div>`;
+            const safeId = Number(item.id);
+            return `<div class="feedback-item" data-id="${safeId}">
+              <span class="feedback-text">${escapeHtml(EVENT_NAMES[item.loai_su_kien] || item.loai_su_kien)}: chỉ số ${Number(item.du_doan).toFixed(0)} / đánh giá ${Number(item.thuc_te).toFixed(0)} <span style="color:${color}">(${difference > 0 ? "+" : ""}${difference.toFixed(0)})</span></span>
+              <button type="button" class="fb-edit" data-id="${safeId}">✏️</button>
+              <button type="button" class="fb-delete" data-id="${safeId}">🗑️</button>
+            </div>`;
           }).join("");
       } catch (error) {
         element.textContent = `Không tải được lịch sử: ${error.message}`;
@@ -996,7 +974,7 @@
 
     async function loadAiWeek() {
       const output = calendarElement();
-      output.textContent = "Đang chờ Ollama diễn giải tuần…";
+      output.textContent = "Đang chờ Thaầy AI diễn giải tuần tới…";
       try {
         const response = await apiFetch("/api/lich-van-nien/llm-tuan", { method: "POST" });
         if (!response.ok) throw new Error(await responseError(response));
@@ -1019,6 +997,7 @@
       });
     }
   </script>
+  <script src="/nav.js"></script>
 </body>
 
 </html>

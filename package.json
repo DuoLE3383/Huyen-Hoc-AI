@@ -8,5 +8,34 @@
   },
   "devDependencies": {
     "wrangler": "^4.36.0"
-  }
+  },
+  "description": "Ứng dụng tham khảo/giải trí gồm API FastAPI, SQLite, nhiều tài khoản đăng nhập, lịch vạn niên, lá số Tử Vi giản lược, dashboard feedback, SSE, Telegram tùy chọn, PWA, Tarot, Kinh Dịch, chia sẻ có thể thu hồi, PDF và thử nghiệm A/B.",
+  "main": "index.js",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "blake3-wasm": "^2.1.5",
+    "cookie": "^1.1.1",
+    "detect-libc": "^2.1.2",
+    "error-stack-parser-es": "^1.0.5",
+    "esbuild": "^0.28.2",
+    "kleur": "^4.1.5",
+    "miniflare": "^5.20261006.1-alpha",
+    "path-to-regexp": "^6.3.0",
+    "pathe": "^2.0.3",
+    "semver": "^7.8.5",
+    "sharp": "^0.35.5",
+    "supports-color": "^10.2.2",
+    "undici": "^7.29.1",
+    "unenv": "^2.0.0-rc.24",
+    "workerd": "^1.20261006.1",
+    "ws": "^8.21.0",
+    "youch": "^4.1.0-beta.10",
+    "youch-core": "^0.3.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

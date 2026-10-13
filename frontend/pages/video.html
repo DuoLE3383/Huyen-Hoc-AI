@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo video cục bộ — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}main{max-width:760px;margin:auto}
+  nav{display:flex;gap:12px;flex-wrap:wrap}a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:7px}input,textarea{width:100%;background:#201432;color:white;border:1px solid #705d83}
+  textarea{min-height:110px}button{background:#7138d6;color:white;border:0;cursor:pointer}canvas,video{width:100%;max-width:360px;background:#080310;border-radius:12px}#error{color:#ffaaaa}
+</style>  <link rel="stylesheet" href="/static/css/app.css">
+</head><body><main>
+  <h1>🎥 Tạo video dọc</h1><section><p>Video được vẽ và ghi ngay trong trình duyệt; nội dung bạn nhập không gửi lên máy chủ. Xuất WebM nếu trình duyệt hỗ trợ MediaRecorder.</p>
+    <label>Tiêu đề<input id="title" maxlength="70" value="Một góc nhìn văn hóa"></label>
+    <label>Thông điệp<input id="message" maxlength="140" value="Gợi ý tham khảo, hãy tự chọn điều phù hợp với bạn."></label>
+    <label>Hành động thực tế, an toàn<input id="action" maxlength="140" value="Chọn một việc nhỏ để hoàn thành hôm nay."></label>
+    <button id="render">Tạo video trong trình duyệt</button><p id="error" role="alert"></p><div id="output"></div>
+    <canvas id="frame" width="720" height="1280" hidden></canvas>
+  </section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  let currentUrl="";
+  function drawSlide(ctx,title,body,index,total){
+    const canvas=ctx.canvas,g=ctx.createLinearGradient(0,0,canvas.width,canvas.height);g.addColorStop(0,"#1a0b2e");g.addColorStop(1,"#0f0524");ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="#ffd700";ctx.textAlign="center";ctx.font="bold 38px system-ui";ctx.fillText("HUYỀN HỌC · THAM KHẢO",canvas.width/2,110);
+    ctx.fillStyle="#c4a3ff";ctx.font="bold 52px system-ui";wrapText(ctx,title,canvas.width/2,360,canvas.width-100,68);
+    ctx.fillStyle="#f0eafa";ctx.font="38px system-ui";wrapText(ctx,body,canvas.width/2,620,canvas.width-120,58);
+    ctx.fillStyle="#b6a1d2";ctx.font="26px system-ui";ctx.fillText(`${index+1}/${total} · Không phải dự đoán khoa học`,canvas.width/2,canvas.height-100);
+  }
+  function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+    const words=text.split(/\s+/);let line="",lines=[];
+    for(const word of words){const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width>maxWidth&&line){lines.push(line);line=word}else line=next}
+    if(line)lines.push(line);const start=y-(lines.length-1)*lineHeight/2;lines.forEach((item,index)=>ctx.fillText(item,x,start+index*lineHeight));
+  }
+  document.getElementById("render").addEventListener("click",async()=>{
+    const error=document.getElementById("error"),out=document.getElementById("output");error.textContent="";out.replaceChildren();
+    if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){error.textContent="Trình duyệt này không hỗ trợ ghi video từ canvas.";return}
+    const slides=[
+      [document.getElementById("title").value.trim(),"Một nội dung văn hóa để suy ngẫm."],
+      ["Góc nhìn",document.getElementById("message").value.trim()],
+      ["Bước tiếp theo",document.getElementById("action").value.trim()],
+      ["Bạn là người quyết định","Không dùng nội dung này thay cho tư vấn chuyên môn."]
+    ];
+    if(slides.some(slide=>!slide[0]||!slide[1])){error.textContent="Các trường nội dung không được để trống.";return}
+    const canvas=document.getElementById("frame"),ctx=canvas.getContext("2d"),stream=canvas.captureStream(24);
+    const mime=["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(type=>MediaRecorder.isTypeSupported(type));
+    if(!mime){error.textContent="Trình duyệt không hỗ trợ định dạng video WebM.";stream.getTracks().forEach(track=>track.stop());return}
+    const recorder=new MediaRecorder(stream,{mimeType:mime}),chunks=[];
+    recorder.addEventListener("dataavailable",event=>{if(event.data.size)chunks.push(event.data)});
+    const finished=new Promise((resolve,reject)=>{recorder.addEventListener("stop",resolve,{once:true});recorder.addEventListener("error",()=>reject(new Error("Trình duyệt không thể ghi video.")),{once:true})});
+    recorder.start();
+    for(let index=0;index<slides.length;index++){drawSlide(ctx,slides[index][0],slides[index][1],index,slides.length);await new Promise(resolve=>setTimeout(resolve,2200))}
+    recorder.stop();stream.getTracks().forEach(track=>track.stop());
+    try{await finished;if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(new Blob(chunks,{type:mime}));
+      const video=document.createElement("video");video.controls=true;video.src=currentUrl;
+      const download=document.createElement("a");download.href=currentUrl;download.download="huyen-hoc-tham-khao.webm";download.textContent="Tải video WebM";
+      out.append(video,document.createElement("br"),download)
+    }catch(e){error.textContent=e.message}
+  });
+</script>  <script src="/nav.js"></script>
+</body>
+</html>

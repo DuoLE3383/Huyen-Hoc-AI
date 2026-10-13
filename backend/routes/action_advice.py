@@ -9,8 +9,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from auth import get_current_user
-from database import ActionAdviceLog, SessionLocal, User, get_db
+from core.auth import get_current_user
+from core.database import ActionAdviceLog, SessionLocal, User, get_db
 from services.action_engine import (
     ACTIONS,
     build_action_advice,

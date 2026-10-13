@@ -1,0 +1,26 @@
+{
+  "appId": "ai.huyenhoc.app",
+  "appName": "Huyền Học AI",
+  "webDir": "frontend",
+  "server": {
+    "url": "https://eyed-control-optimum-cheapest.trycloudflare.com",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "ios": {
+    "contentInset": "always",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0f0524",
+      "showSpinner": false
+    }
+  }
+}

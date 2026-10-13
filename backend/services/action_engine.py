@@ -12,9 +12,9 @@ from typing import Any
 import os
 import httpx
 
-from astrology import phan_tich_ngay_sinh
-from lich_van_nien import phan_tich_ngay
-from phong_thuy import (
+from services.astrology import phan_tich_ngay_sinh
+from divination.lich_van_nien import phan_tich_ngay
+from divination.phong_thuy import (
     HUONG_THEO_MUC_DICH,
     hop_huong_nha,
     huong_tot_xau,
@@ -359,3 +359,6 @@ async def fetch_aqi(lat: float, lon: float) -> dict | None:
     except Exception as e:
         print(f"[AQI] ❌ Error: {e}")
         return None
+
+# ─── Alias cho narrative.py ───
+fetch_weather = fetch_weather_openweather

@@ -9,14 +9,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from ab_testing import (
+from analytics.ab_testing import (
     assign_variant,
     experiment_metrics,
     record_experiment,
     record_feedback_reward,
     update_weights,
 )
-from database import (
+from core.database import (
     ABReward,
     Base,
     EventFeedback,
@@ -25,10 +25,10 @@ from database import (
     User,
     utcnow_naive,
 )
-from kinh_dich import KING_WEN, TRIGRAM_ORDER, _NUMBER_BY_TRIGRAMS, gieo_que
-from social import compatibility, create_share_link, get_share_link, revoke_share_link
-from tarot import _deck, draw_cards
-from tu_vi import lap_la_so
+from divination.kinh_dich import KING_WEN, TRIGRAM_ORDER, _NUMBER_BY_TRIGRAMS, gieo_que
+from services.social import compatibility, create_share_link, get_share_link, revoke_share_link
+from divination.tarot import _deck, draw_cards
+from divination.tu_vi import lap_la_so
 
 
 class TarotAndIChingTests(unittest.TestCase):
@@ -177,8 +177,8 @@ class LevelThreeAPITests(unittest.TestCase):
             db.refresh(self.user)
 
         from main import app
-        from database import get_db
-        from auth import get_current_user
+        from core.database import get_db
+        from core.auth import get_current_user
 
         def override_db():
             with self.factory() as db:

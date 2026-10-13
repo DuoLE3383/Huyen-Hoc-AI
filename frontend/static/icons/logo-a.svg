@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Huyền Học AI">
+  <defs>
+    <linearGradient id="bg" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- ── BÁT QUÁI: 8 trigrams xung quanh, đường kính ngoài 340 ── -->
+  <!-- Mỗi trigram: 3 vạch ngang dài 36, cao 5, cách 5, xếp dọc -->
+  <g fill="#FCD34D" opacity="0.9">
+    <!-- Bắc (trên) -->
+    <g transform="translate(256 100)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Đông Bắc -->
+    <g transform="translate(366 146) rotate(45)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Đông (phải) -->
+    <g transform="translate(412 256) rotate(90)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Đông Nam -->
+    <g transform="translate(366 366) rotate(135)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Nam (dưới) -->
+    <g transform="translate(256 412) rotate(180)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Tây Nam -->
+    <g transform="translate(146 366) rotate(225)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Tây (trái) -->
+    <g transform="translate(100 256) rotate(270)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+    <!-- Tây Bắc -->
+    <g transform="translate(146 146) rotate(315)">
+      <rect x="-18" y="-14" width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="-4"  width="36" height="5" rx="2.5"/>
+      <rect x="-18" y="6"   width="36" height="5" rx="2.5"/>
+    </g>
+  </g>
+
+  <!-- ── ÂM DƯƠNG (Taijitu) ở trung tâm ── -->
+  <g transform="translate(256 256)">
+    <!-- Outer circle: white -->
+    <circle r="110" fill="#FFFFFF"/>
+
+    <!-- Black half (S-curve) -->
+    <path d="M 0 -110
+             A 110 110 0 0 1 0 110
+             A 55 55 0 0 1 0 0
+             A 55 55 0 0 0 0 -110 Z"
+          fill="#0F172A"/>
+
+    <!-- White small circle (top half, in black side) -->
+    <circle cx="0" cy="-55" r="18" fill="#FFFFFF"/>
+
+    <!-- Black small circle (bottom half, in white side) -->
+    <circle cx="0" cy="55" r="18" fill="#0F172A"/>
+
+    <!-- Thin accent ring -->
+    <circle r="110" fill="none" stroke="#FCD34D" stroke-width="2" stroke-opacity="0.5"/>
+  </g>
+</svg>

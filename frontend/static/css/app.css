@@ -1,0 +1,200 @@
+/* ============================================================
+   Huyền Học AI — Responsive override
+   Load SAU inline <style> để override, không phá layout cũ.
+   ============================================================ */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --hh-bg: #0f0524;
+  --hh-bg-2: #1a0b2e;
+  --hh-fg: #e8dff5;
+  --hh-accent: #c4a3ff;
+  --hh-accent-2: #d0b5ff;
+  --hh-border: #c4a3ff33;
+  --hh-card: #ffffff0b;
+  --hh-radius: 14px;
+  --hh-gap: 16px;
+  --hh-touch: 44px;               /* Apple HIG minimum */
+  --hh-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --hh-safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* ---------- Global guards ---------- */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;             /* chặn tràn ngang trên mobile */
+  -webkit-text-size-adjust: 100%; /* iOS không tự scale font */
+  -webkit-tap-highlight-color: transparent;
+}
+
+img, video, svg, canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Input ≥16px để iOS không auto-zoom */
+input, select, textarea, button {
+  font-size: max(16px, 1rem);
+  font-family: inherit;
+}
+
+/* Touch target ≥44px cho mọi control */
+button, a.btn, .btn, nav a, nav button,
+input[type="submit"], input[type="button"] {
+  min-height: var(--hh-touch);
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* ---------- Layout helpers ---------- */
+.hh-container {
+  width: min(1150px, 100% - 32px);
+  margin-inline: auto;
+}
+
+.hh-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--hh-gap);
+}
+
+.hh-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--hh-border);
+  border-radius: var(--hh-radius);
+  background: var(--hh-card);
+}
+
+/* ---------- Tables: cho phép scroll ngang thay vì vỡ layout ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------- Sticky nav mobile-safe ---------- */
+header, .hh-header {
+  padding-top: var(--hh-safe-top);
+}
+
+footer, .hh-footer {
+  padding-bottom: calc(16px + var(--hh-safe-bottom));
+}
+
+/* ============================================================
+   BREAKPOINTS
+   ============================================================ */
+
+/* ---------- Tablet: 481px – 1024px ---------- */
+@media (max-width: 1024px) {
+  .hh-container { width: min(100% - 24px, 100%); }
+  .hh-grid { gap: 14px; }
+}
+
+/* ---------- Mobile: ≤768px ---------- */
+@media (max-width: 768px) {
+  body {
+    padding: 16px 12px calc(24px + var(--hh-safe-bottom));
+    font-size: 15.5px;
+  }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.15rem; }
+  h3 { font-size: 1.02rem; }
+
+  /* Nav: wrap + thu gọn */
+  nav, .hh-nav {
+    gap: 8px;
+    margin: 14px 0;
+  }
+
+  nav a, nav button {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  /* Grid → 1 cột */
+  .grid, .hh-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Card padding gọn hơn */
+  .card, .hh-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  /* KPI: xếp dọc */
+  .kpis {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Bảng nhỏ: chữ nhỏ hơn */
+  th, td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  /* Modal / dialog full-width */
+  dialog, .modal {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 12px 12px 0 0;
+    position: fixed;
+    bottom: 0;
+  }
+}
+
+/* ---------- Small mobile: ≤480px ---------- */
+@media (max-width: 480px) {
+  body {
+    padding: 12px 10px calc(20px + var(--hh-safe-bottom));
+  }
+
+  h1 { font-size: 1.3rem; line-height: 1.25; }
+
+  nav a, nav button {
+    padding: 10px;
+    font-size: 0.9rem;
+    flex: 1 1 auto;             /* nút giãn đều hàng */
+  }
+
+  /* Nút full-width nếu cần */
+  .btn-block-mobile { width: 100%; }
+
+  /* Ẩn phần tử không cần thiết trên mobile */
+  .hide-mobile { display: none !important; }
+}
+
+/* ---------- Desktop lớn: ≥1280px ---------- */
+@media (min-width: 1280px) {
+  .hh-container { width: min(1280px, 100% - 48px); }
+}
+
+/* ---------- Landscape mobile: chiều cao thấp ---------- */
+@media (max-height: 500px) and (orientation: landscape) {
+  header, .hh-header { position: static; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Dark mode (nếu user đổi theme) ---------- */
+@media (prefers-color-scheme: light) {
+  /* Giữ dark theme mặc định — override nếu muốn */
+}

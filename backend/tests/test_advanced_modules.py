@@ -5,16 +5,16 @@ from datetime import date
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker
 
-from analytics import accuracy_by_field, get_weights_from_history
-from database import Base, EventFeedback, Profile, User, init_db, utcnow_naive
-from lich_van_nien import (
+from analytics.analytics import accuracy_by_field, get_weights_from_history
+from core.database import Base, EventFeedback, Profile, User, init_db, utcnow_naive
+from divination.lich_van_nien import (
     du_doan_thang,
     du_doan_tuan,
     ngay_can_chi,
     quan_he_chi,
     tiet_khi_cua_ngay,
 )
-from tu_vi import AmLich, CHINH_TINH, lap_la_so
+from divination.tu_vi import AmLich, CHINH_TINH, lap_la_so
 
 
 class CalendarTests(unittest.TestCase):
@@ -164,7 +164,7 @@ class DatabaseMigrationTests(unittest.TestCase):
 
 class AuthenticationTests(unittest.TestCase):
     def test_password_hash_verification_and_token_configuration(self) -> None:
-        from auth import create_access_token, hash_password, verify_password
+        from core.auth import create_access_token, hash_password, verify_password
 
         password = "strong-test-password"
         hashed = hash_password(password)

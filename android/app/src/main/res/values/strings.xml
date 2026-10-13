@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Huyen Hoc AI</string>
+    <string name="title_activity_main">Huyen Hoc AI</string>
+    <string name="package_name">ai.huyenhoc.app</string>
+    <string name="custom_url_scheme">ai.huyenhoc.app</string>
+</resources>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thực hành chánh niệm — Huyền Học AI</title>
+<style>
+  :root{color-scheme:dark;font:16px system-ui;background:#160a27;color:#e8dff5}body{margin:0;padding:24px 16px}main{max-width:760px;margin:auto}
+  nav{display:flex;gap:12px;flex-wrap:wrap}a{color:#d0b5ff}section{padding:20px;margin:16px 0;border:1px solid #563c77;border-radius:12px;background:#ffffff09}
+  button{font:inherit;padding:10px;margin:4px;border-radius:7px;background:#7138d6;color:white;border:0;cursor:pointer}.note{color:#b6a1d2}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>  <link rel="stylesheet" href="/static/css/app.css">
+</head><body><main>
+  <h1>🕉️ Thực hành tâm linh tự chọn</h1><section><p class="note">Các bài tập ngắn, tự nguyện; không chẩn đoán chakra, sức khỏe hay tâm lý. Dừng nếu thấy khó chịu; đây không thay thế hỗ trợ chuyên môn.</p>
+    <button id="load">Xem các bài thực hành</button><pre id="result">Chọn “Xem” để tải gợi ý.</pre>
+  </section>
+</main><script>
+  const token=localStorage.getItem("token");if(!token)location.replace("/");
+  document.getElementById("load").addEventListener("click",async()=>{
+    const output=document.getElementById("result");output.textContent="Đang tải…";
+    try{const response=await fetch("/api/tam-linh/thoi-khoa",{headers:{Authorization:`Bearer ${token}`}});
+      const data=await response.json();if(!response.ok)throw new Error(data.detail||`Lỗi ${response.status}`);
+      output.textContent=JSON.stringify(data,null,2);
+    }catch(e){output.textContent=e.message}
+  });
+</script>  <script src="/nav.js"></script>
+</body>
+</html>

@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
 
-from database import (
+from core.database import (
     Base,
     EventFeedback,
     Prediction,
@@ -21,9 +21,9 @@ from database import (
     User,
     utcnow_naive,
 )
-from dataset_builder import approve_feedback, build_dataset
-from notifications import handle_command
-from ollama_client import OllamaClient
+from analytics.dataset_builder import approve_feedback, build_dataset
+from core.notifications import handle_command
+from services.ollama_client import OllamaClient
 
 
 class StreamingClientTests(unittest.IsolatedAsyncioTestCase):
@@ -254,7 +254,7 @@ class StreamingEndpointTests(unittest.TestCase):
     def test_stream_endpoint_emits_metadata_tokens_and_saved_result(self) -> None:
         import main
 
-        from database import EventFeedback
+        from core.database import EventFeedback
 
         engine = create_engine(
             "sqlite://",

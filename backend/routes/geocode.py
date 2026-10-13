@@ -6,8 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from auth import get_current_user
-from database import LocationHistory, User, get_db
+from core.auth import get_current_user
+from core.database import LocationHistory, User, get_db
 
 router = APIRouter(prefix="/api/geocode", tags=["geocode"])
 

@@ -1,6 +1,6 @@
 import unittest
 
-from astrology import (
+from services.astrology import (
     phan_tich_gio_sinh,
     phan_tich_ngay_sinh,
     phan_tich_ten,

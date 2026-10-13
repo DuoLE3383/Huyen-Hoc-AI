@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a0b2e">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <title>Lá số Tử Vi · Huyền Học AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 22px 14px;
+      color: #e8dff5;
+      font: 15px system-ui, sans-serif;
+      background: #0f0524;
+    }
+
+    main {
+      width: min(1200px, 100%);
+      margin: auto;
+    }
+
+    h1 {
+      color: #c4a3ff;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin: 20px 0;
+    }
+
+    nav a,
+    nav button {
+      padding: 8px 13px;
+      border: 1px solid #c4a3ff;
+      border-radius: 8px;
+      color: #d0b5ff;
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .card {
+      margin-bottom: 16px;
+      padding: 18px;
+      border: 1px solid #c4a3ff33;
+      border-radius: 13px;
+      background: #ffffff0b;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #b6a1d2;
+      font-size: .85rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #c4a3ff55;
+      border-radius: 8px;
+      color: white;
+      background: #0005;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .buttons button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      background: #7138d6;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .buttons button:disabled {
+      opacity: .55;
+    }
+
+    .info {
+      color: #c7b8d8;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .la-so {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(4, minmax(125px, auto));
+      gap: 5px;
+    }
+
+    .cung {
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid #c4a3ff44;
+      border-radius: 7px;
+      background: #2d1b4e;
+      font-size: .76rem;
+      overflow-wrap: anywhere;
+    }
+
+    .cung.menh {
+      border: 2px solid #ffd700;
+    }
+
+    .cung.than {
+      background: #52318a;
+    }
+
+    .ten {
+      margin-bottom: 4px;
+      color: #ffd700;
+      font-weight: 700;
+      font-size: .85rem;
+    }
+
+    .chi {
+      margin-bottom: 6px;
+      color: #c4a3ff;
+    }
+
+    .chinh {
+      margin-top: 3px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .state {
+      color: #7bffa0;
+      font-weight: 400;
+    }
+
+    .phu {
+      margin-top: 5px;
+      color: #b6a1d2;
+    }
+
+    .center-chart {
+      grid-column: 2/4;
+      grid-row: 2/4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      border-radius: 8px;
+      background: #0007;
+      text-align: center;
+    }
+
+    .center-chart strong {
+      color: #ffd700;
+      font-size: 1.15rem;
+    }
+
+    .muted {
+      color: #b6a1d2;
+      font-size: .84rem;
+      line-height: 1.5;
+    }
+
+    .interpretation {
+      border-left: 3px solid #ffd700;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: #ff9999;
+    }
+
+    @media(max-width:700px) {
+      .la-so {
+        grid-template-rows: repeat(4, minmax(105px, auto));
+        gap: 3px;
+      }
+
+      .cung {
+        padding: 5px;
+        font-size: .67rem;
+      }
+
+      .ten {
+        font-size: .72rem;
+      }
+
+      .inputs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media(max-width:420px) {
+      .la-so {
+        grid-template-rows: repeat(4, minmax(87px, auto));
+      }
+
+      .cung {
+        padding: 3px;
+        font-size: .59rem;
+      }
+
+      .ten {
+        font-size: .65rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+
+<body>
+  <main>
+    <h1>🀄 Lá số Tử Vi</h1>
+    <section class="card">
+      <form id="chartForm">
+        <div class="inputs">
+          <div><label for="ngay">Ngày dương lịch</label><input id="ngay" type="number" min="1" max="31" value="15"
+              required></div>
+          <div><label for="thang">Tháng</label><input id="thang" type="number" min="1" max="12" value="6" required>
+          </div>
+          <div><label for="nam">Năm</label><input id="nam" type="number" min="1900" max="2100" value="1995" required>
+          </div>
+          <div><label for="gio">Giờ sinh địa phương (0–23)</label><input id="gio" type="number" min="0" max="23"
+              value="10" required></div>
+        </div>
+        <div class="buttons">
+          <button id="makeChart" type="submit">📜 Lập lá số</button>
+          <button id="interpret" type="button">🔮 AI diễn giải</button>
+          <button id="exportPdf" type="button">📄 Tải PDF</button>
+          <label><input id="pdfInterpretation" type="checkbox"> Thêm diễn giải AI vào PDF</label>
+        </div>
+      </form>
+    </section>
+    <p class="muted">Lịch âm được tính theo UTC+7. Cách an sao trong ứng dụng là giản lược và có thể khác các trường
+      phái Tử Vi; kết quả chỉ để tham khảo/giải trí.</p>
+    <div id="output" aria-live="polite"></div>
+  </main>
+  <script>
+    const API = window.location.hostname === "localhost"
+      || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8000"           // Dev local
+      : window.location.origin; // Production: Cloudflare Worker proxies /api/*
+    const token = localStorage.getItem("token");
+    if (!token) window.location.replace("/");
+      window.location.replace("/");
+    });
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+    function inputData() {
+      const data = {
+        ngay: Number(document.getElementById("ngay").value),
+        thang: Number(document.getElementById("thang").value),
+        nam: Number(document.getElementById("nam").value),
+        gio: Number(document.getElementById("gio").value)
+      };
+      const check = new Date(data.nam, data.thang - 1, data.ngay);
+      if (check.getFullYear() !== data.nam || check.getMonth() !== data.thang - 1 || check.getDate() !== data.ngay) {
+        throw new Error("Ngày sinh không hợp lệ.");
+      }
+      if (!Number.isInteger(data.gio) || data.gio < 0 || data.gio > 23) throw new Error("Giờ sinh phải từ 0 đến 23.");
+      return data;
+    }
+    async function api(path, body) {
+      const response = await fetch(`${API}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body)
+      });
+      if (response.status === 401) {
+        localStorage.clear();
+        window.location.replace("/");
+        throw new Error("Phiên đăng nhập đã hết hạn.");
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = Array.isArray(data.detail) ? data.detail.map(item => item.msg).join("; ") : data.detail;
+        throw new Error(detail || `Yêu cầu thất bại (${response.status}).`);
+      }
+      return data;
+    }
+    const gridPosition = {
+      "Tý": [4, 2], "Sửu": [4, 3], "Dần": [4, 4], "Mão": [3, 4],
+      "Thìn": [2, 4], "Tỵ": [1, 4], "Ngọ": [1, 3], "Mùi": [1, 2],
+      "Thân": [1, 1], "Dậu": [2, 1], "Tuất": [3, 1], "Hợi": [4, 1]
+    };
+    function renderChart(chart) {
+      const palaceHtml = chart.cung.map(palace => {
+        const [row, column] = gridPosition[palace.dia_chi];
+        const classes = `cung${palace.la_menh ? " menh" : ""}${palace.la_than ? " than" : ""}`;
+        const stars = palace.chinh_tinh.map(star =>
+          `<div class="chinh">${escapeHtml(star.sao)} <span class="state">[${escapeHtml(star.trang_thai)}]</span></div>`
+        ).join("");
+        return `<article class="${classes}" style="grid-row:${row};grid-column:${column}">
+          <div class="ten">${escapeHtml(palace.cung)}${palace.la_menh ? " ★" : ""}${palace.la_than ? " ●" : ""}</div>
+          <div class="chi">${escapeHtml(palace.dia_chi)}</div>${stars}
+          ${palace.phu_tinh.length ? `<div class="phu">${palace.phu_tinh.map(escapeHtml).join(" · ")}</div>` : ""}
+        </article>`;
+      }).join("");
+      return `<section class="card">
+        <div class="info">Dương lịch: <strong>${escapeHtml(chart.duong_lich)}</strong> · Âm lịch: <strong>${escapeHtml(chart.am_lich)}</strong><br>
+          ${escapeHtml(chart.can_chi_nam)} · ${escapeHtml(chart.gio_sinh)} · <strong>${escapeHtml(chart.cuc)}</strong><br>
+          Mệnh: ${escapeHtml(chart.menh_chi)} · Thân: ${escapeHtml(chart.than_chi)} · Tử Vi tại: ${escapeHtml(chart.tu_vi_tai)}</div>
+        <div class="la-so">${palaceHtml}<div class="center-chart">
+          <strong>${escapeHtml(chart.can_chi_nam)}</strong><div>${escapeHtml(chart.cuc)}</div>
+          <div class="muted">Mệnh: ${escapeHtml(chart.menh_chi)}<br>Thân: ${escapeHtml(chart.than_chi)}<br>${escapeHtml(chart.am_lich)}</div>
+        </div></div>
+        <p class="muted">${escapeHtml(chart.ghi_chu)}</p>
+      </section>`;
+    }
+    function renderInterpretation(interpretation) {
+      const highlights = Array.isArray(interpretation.cac_cung_noi_bat) ? interpretation.cac_cung_noi_bat : [];
+      const list = items => (Array.isArray(items) ? items : []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+      return `<section class="card interpretation">
+        <h2>📜 Diễn giải AI (tham khảo)</h2><p>${escapeHtml(interpretation.tong_quan || "")}</p>
+        <h3>Điểm mạnh</h3><ul>${list(interpretation.diem_manh)}</ul>
+        <h3>Điều cần lưu ý</h3><ul>${list(interpretation.diem_can_luu_y)}</ul>
+        <h3>Các cung nổi bật</h3>${highlights.map(item => `<div class="card">
+          <strong>${escapeHtml(item.cung)}</strong><p>${escapeHtml(item.luan_giai)}</p>
+          <p>${escapeHtml(item.hanh_dong)}</p></div>`).join("")}
+        <h3>Lời khuyên</h3><p>${escapeHtml(interpretation.loi_khuyen_tong_the || "")}</p>
+      </section>`;
+    }
+    const output = document.getElementById("output");
+    document.getElementById("chartForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!event.currentTarget.reportValidity()) return;
+      const button = document.getElementById("makeChart");
+      button.disabled = true;
+      output.textContent = "Đang lập lá số…";
+      try {
+        const chart = await api("/api/tu-vi/lap-so", inputData());
+        output.innerHTML = renderChart(chart);
+      } catch (error) {
+        output.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+    document.getElementById("interpret").addEventListener("click", async () => {
+      const button = document.getElementById("interpret");
+      button.disabled = true;
+      output.textContent = "Đang chờ Thầy AI diễn giải…";
+      try {
+        const result = await api("/api/tu-vi/luan-giai", inputData());
+        output.innerHTML = renderChart(result.la_so) + renderInterpretation(result.luan_giai);
+      } catch (error) {
+        output.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+    document.getElementById("exportPdf").addEventListener("click", async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        const data = inputData();
+        data.luan_giai = document.getElementById("pdfInterpretation").checked;
+        const response = await fetch(`${API}/api/tu-vi/export-pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(data)
+        });
+        if (response.status === 401) { localStorage.clear(); window.location.replace("/"); return; }
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.detail || `Yêu cầu thất bại (${response.status}).`);
+        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `la-so-${data.ngay}-${data.thang}-${data.nam}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        output.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
+      } finally { button.disabled = false; }
+    });
+  </script>
+  <script src="/nav.js"></script>
+</body>
+
+</html>

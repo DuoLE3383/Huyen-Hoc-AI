@@ -11,17 +11,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from ket_noi import buc_tranh_tong_the
-from moi_truong import WeatherProviderError, lay_du_lieu_moi_truong
-from phong_thuy import hop_huong_nha, phan_tich_toan_dien, tinh_cung_phi_gioi_tinh
-from ban_do_phong_thuy import phan_tich_dia_hinh, phuong_vi_tu_hai_diem
-from gia_dao import phan_tich_nhom_gia_dinh
-from kinh_te_vi_mo import lay_ty_gia_usd_vnd, lay_vn_index
-from tam_linh import tao_thoi_khoa_tam_linh
-from trach_cat import tim_ngay_dep
-from tu_vi_tay_phuong import lap_natal_chart
-from su_kien import quet_su_kien_tuan
-from vi_mo import timeline_vi_mo
+from divination.ket_noi import buc_tranh_tong_the
+from services.moi_truong import WeatherProviderError, lay_du_lieu_moi_truong
+from divination.phong_thuy import hop_huong_nha, phan_tich_toan_dien, tinh_cung_phi_gioi_tinh
+from divination.ban_do_phong_thuy import phan_tich_dia_hinh, phuong_vi_tu_hai_diem
+from divination.gia_dao import phan_tich_nhom_gia_dinh
+from services.kinh_te_vi_mo import lay_ty_gia_usd_vnd, lay_vn_index
+from divination.tam_linh import tao_thoi_khoa_tam_linh
+from divination.trach_cat import tim_ngay_dep
+from divination.tu_vi_tay_phuong import lap_natal_chart
+from divination.su_kien import quet_su_kien_tuan
+from services.vi_mo import timeline_vi_mo
 
 
 class ExpansionModuleTests(unittest.TestCase):
@@ -132,8 +132,8 @@ class ExpansionAPITests(unittest.TestCase):
             connect_args={"check_same_thread": False},
             poolclass=StaticPool,
         )
-        from database import Base, User, get_db
-        from auth import get_current_user
+        from core.database import Base, User, get_db
+        from core.auth import get_current_user
 
         Base.metadata.create_all(self.engine)
         self.factory = sessionmaker(bind=self.engine)
@@ -169,7 +169,7 @@ class ExpansionAPITests(unittest.TestCase):
         self.assertEqual(created.status_code, 201, created.text)
         event_id = created.json()["id"]
 
-        from auth import get_current_user
+        from core.auth import get_current_user
         self.app.dependency_overrides[get_current_user] = lambda: self.other_user
         self.assertEqual(self.client.get("/api/su-kien").json()["items"], [])
         self.assertEqual(self.client.delete(f"/api/su-kien/{event_id}").status_code, 404)
@@ -197,7 +197,7 @@ class ExpansionAPITests(unittest.TestCase):
         self.assertEqual(no_key.status_code, 503)
 
     def test_geocode_is_persisted_per_user_and_reused_without_provider_call(self) -> None:
-        from auth import get_current_user
+        from core.auth import get_current_user
 
         provider_response = httpx.Response(
             200,
@@ -291,7 +291,7 @@ class ExpansionAPITests(unittest.TestCase):
         self.assertEqual(saved[0]["weather"]["nguon"], "OpenWeather")
         self.assertIsNotNone(saved[0]["weatherFetchedAt"])
 
-        from database import LocationHistory, utcnow_naive
+        from core.database import LocationHistory, utcnow_naive
 
         with self.factory() as db:
             location = db.query(LocationHistory).one()
@@ -309,8 +309,8 @@ class ExpansionAPITests(unittest.TestCase):
         refresh_provider.assert_awaited_once()
 
     def test_level_four_routes_validate_input_and_do_not_store_submitted_locations(self) -> None:
-        from auth import get_current_user
-        from database import Profile
+        from core.auth import get_current_user
+        from core.database import Profile
 
         for page in (
             "/ban-do", "/gia-dao", "/kinh-te", "/trach-cat",
@@ -378,7 +378,7 @@ class ExpansionAPITests(unittest.TestCase):
 
     def test_birth_name_and_hour_are_saved_in_owned_profile(self) -> None:
         from main import BirthInput, _prepare_analysis
-        from database import Profile
+        from core.database import Profile
 
         with self.factory() as db:
             first = _prepare_analysis(
