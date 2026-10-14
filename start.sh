@@ -192,6 +192,59 @@ else
 fi
 fi  # end SKIP_OLLAMA
 
+# ─── Kill process cũ (nếu có) ───
+kill_existing_backend() {
+    local port=8000
+    local killed=0
+
+    # 1. Thử fuser (nhanh nhất)
+    if command -v fuser >/dev/null 2>&1; then
+        if fuser ${port}/tcp >/dev/null 2>&1; then
+            log_info "Port $port đang bị chiếm — kill process cũ..."
+            fuser -k ${port}/tcp 2>/dev/null || sudo fuser -k ${port}/tcp 2>/dev/null || true
+            killed=1
+        fi
+    fi
+
+    # 2. Kill uvicorn + main:app
+    if pgrep -f "uvicorn.*main:app" >/dev/null 2>&1; then
+        log_info "Kill uvicorn cũ..."
+        pkill -9 -f "uvicorn.*main:app" 2>/dev/null || true
+        killed=1
+    fi
+    if pgrep -f "python.*main:app" >/dev/null 2>&1; then
+        pkill -9 -f "python.*main:app" 2>/dev/null || true
+        killed=1
+    fi
+
+    # 3. Chờ port free (tối đa 5s)
+    if [ "$killed" = "1" ]; then
+        for i in $(seq 1 10); do
+            if ! ss -tln 2>/dev/null | grep -q ":${port} "; then
+                log_ok "Port $port đã free."
+                return 0
+            fi
+            sleep 0.5
+        done
+        log_warn "Port $port vẫn bị chiếm sau 5s — thử kill bằng sudo..."
+        sudo fuser -k ${port}/tcp 2>/dev/null || true
+        sleep 1
+    fi
+
+    # 4. Kiểm tra lần cuối
+    if ss -tln 2>/dev/null | grep -q ":${port} "; then
+        log_error "Không thể kill process trên port $port."
+        log_info "Chạy thủ công:"
+        echo "  sudo lsof -i :${port}"
+        echo "  sudo kill -9 <PID>"
+        exit 1
+    fi
+
+    log_ok "Port $port sẵn sàng."
+}
+
+kill_existing_backend
+
 # ─── Khởi động backend ───
 log_ok "Starting Huyền Học AI tại http://localhost:8000/"
 echo "   Giữ terminal này mở. Nhấn Ctrl+C để dừng."

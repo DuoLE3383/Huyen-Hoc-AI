@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/app.css?v=1791982389">
-  <link rel="stylesheet" href="/static/css/kinh-dich.css?v=1791982389">
+  <link rel="stylesheet" href="/static/css/kinh-dich.css?v=1791986115">
 </head>
 <body>
   <div class="kd-root" id="kd-app">
@@ -17,13 +17,42 @@
 
       <header class="kd-header">
         <h1>☯ Gieo Quẻ Kinh Dịch</h1>
-        <p class="kd-sub">Sáu hào được gieo bằng ba đồng xu cổ. Diễn giải mang tính tham khảo văn hóa.</p>
+        <p class="kd-sub">Sáu hào gieo bằng ba đồng xu cổ.</p>
       </header>
 
       <div id="kd-bagua-slot"></div>
       <p class="kd-quote" id="kd-quote"></p>
 
       <form class="kd-form" id="kd-form" novalidate>
+        <!-- ─── Bát Tự (BẮT BUỘC) ─── -->
+        <fieldset class="kd-battu">
+          <legend>📅 Bát Tự · Thông tin mệnh chủ <span class="kd-required">*</span></legend>
+          <p class="kd-battu-hint">Cần thiết để luận giải cá nhân hoá theo mệnh chủ.</p>
+          <div class="kd-battu-grid">
+            <label class="kd-field">
+              <span>Ngày sinh (dương lịch)</span>
+              <input type="date" id="kd-ngay-sinh" required min="1900-01-01" max="2020-12-31">
+            </label>
+            <label class="kd-field">
+              <span>Giờ sinh</span>
+              <input type="time" id="kd-gio-sinh" required>
+            </label>
+            <label class="kd-field">
+              <span>Giới tính</span>
+              <select id="kd-gioi-tinh" required>
+                <option value="">— Chọn —</option>
+                <option value="nam">Nam</option>
+                <option value="nu">Nữ</option>
+              </select>
+            </label>
+            <label class="kd-field">
+              <span>Nơi sinh (tuỳ chọn)</span>
+              <input type="text" id="kd-noi-sinh" placeholder="VD: Hà Nội">
+            </label>
+          </div>
+          <div id="kd-battu-preview" class="kd-battu-preview" hidden></div>
+        </fieldset>
+
         <label class="kd-label" for="kd-question">Câu hỏi để suy ngẫm</label>
         <div class="kd-chips" id="kd-chips"></div>
         <div class="kd-input-wrap">
@@ -45,7 +74,7 @@
     </main>
   </div>
 
-  <script src="/static/js/kinh-dich/bundle.js?v=2" defer></script>
+  <script src="/static/js/kinh-dich/bundle.js?v=1791986115" defer></script>
   <script src="/nav.js"></script>
 </body>
 </html>

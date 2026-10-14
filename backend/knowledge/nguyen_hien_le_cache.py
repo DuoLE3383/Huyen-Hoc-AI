@@ -22,7 +22,7 @@ def load_que(so: int) -> dict[str, Any] | None:
         return None
 
 
-def format_que_context(so: int, max_que_chars: int = 1200, max_hao_chars: int = 600) -> str:
+def format_que_context(so: int, max_que_chars: int = 700, max_hao_chars: int = 300) -> str:
     """
     Format quẻ thành context ngắn gọn để đưa vào prompt.
     Chỉ lấy phần tinh túy: tên quẻ, giải nghĩa, giảng (quẻ từ) + 6 hào từ đầu.
@@ -85,7 +85,7 @@ def format_que_context(so: int, max_que_chars: int = 1200, max_hao_chars: int = 
 
     if hao_buf:
         lines.append("**Hào từ (6 hào):**")
-        lines.append("\n".join(hao_buf)[:max_hao_chars * 6])
+        lines.append("\n".join(hao_buf)[:max_hao_chars * 4])
 
     return "\n".join(lines)
 

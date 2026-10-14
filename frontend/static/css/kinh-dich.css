@@ -564,3 +564,71 @@ body { margin: 0; }
   0%, 80%, 100% { transform: scale(.6); opacity: .4; }
   40%           { transform: scale(1);  opacity: 1; }
 }
+
+/* ═══ Bát Tự Form ═══ */
+.kd-battu {
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--r-md);
+  background: var(--ink-2);
+  padding: 16px 18px 18px;
+  margin-bottom: 24px;
+}
+.kd-battu legend {
+  color: var(--gold-2);
+  font-family: var(--font-han);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 0 8px;
+}
+.kd-required { color: var(--cinnabar-2); }
+.kd-battu-hint {
+  color: var(--text-muted);
+  font-size: .85rem;
+  margin: 0 0 14px;
+}
+.kd-battu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+@media (max-width: 520px) {
+  .kd-battu-grid { grid-template-columns: 1fr; }
+}
+.kd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kd-field > span {
+  font-size: .82rem;
+  color: var(--text-2);
+  letter-spacing: .02em;
+}
+.kd-field input,
+.kd-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--ink-4);
+  border-radius: var(--r-sm);
+  background: var(--ink-3);
+  color: var(--text);
+  font: inherit;
+  font-size: .95rem;
+}
+.kd-field input:focus,
+.kd-field select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.kd-battu-preview {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--gold);
+  background: rgba(201,162,39,.06);
+  border-radius: var(--r-sm);
+  font-size: .88rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.kd-battu-preview b { color: var(--gold-2); }

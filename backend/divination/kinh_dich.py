@@ -262,26 +262,35 @@ Trả về DUY NHẤT JSON object:
 async def _prompt_3_action(question: str, que_info: str) -> str:
     prompt = f"""{LANG_GUARD}
 
-Dựa trên quẻ sau, đề xuất HÀNH ĐỘNG CỤ THỂ cho user.
+Bạn là chuyên gia Kinh Dịch. Luận giải HÀNH ĐỘNG CỤ THỂ, có thể làm ngay.
 
 ## Câu hỏi: {question}
 ## Quẻ: {que_info}
 
+## BẮT BUỘC phân tích 4 khía cạnh:
+
+1. **THỜI GIAN**: Bao nhiêu ngày/tuần/tháng thì nên làm? Mốc nào nên tránh?
+2. **MÙA / TIẾT KHÍ**: Quẻ hợp mùa nào (Xuân/Hạ/Thu/Đông)? Tháng âm lịch nào tốt?
+3. **HƯỚNG / VỊ TRÍ**: Hướng nào tốt (Đông/Tây/Nam/Bắc/Đông Nam/Tây Bắc...)? Nên làm ở đâu (nhà/công ty/quán)?
+4. **ĐỐI TƯỢNG**: Ai là người đồng hành? Nên tránh ai?
+
 Trả về DUY NHẤT JSON object:
 {{
   "goi_y_hanh_dong": [
-    "Hành động 1 (cụ thể, có thể làm ngay)",
-    "Hành động 2",
-    "Hành động 3",
+    "Hành động 1 — kèm thời điểm cụ thể (VD: 'Trong 7 ngày tới, liên hệ X')",
+    "Hành động 2 — kèm hướng/vị trí (VD: 'Gặp đối tác tại hướng Đông Nam')",
+    "Hành động 3 — kèm người (VD: 'Nhờ người thân tư vấn')",
     "Hành động 4"
   ],
+  "thoi_gian_cu_the": "2-3 câu: bao lâu thì nên hành động, mốc cần tránh.",
+  "mua_tiet_khi": "1-2 câu: mùa/tháng âm lịch nào tốt cho việc này.",
+  "vi_tri_huong": "1-2 câu: hướng và không gian nên làm.",
   "diem_can_can_nhac": [
-    "Điều 1 cần cân nhắc (rủi ro/lưu ý)",
-    "Điều 2",
-    "Điều 3"
+    "Rủi ro 1 (kèm dấu hiệu nhận biết)",
+    "Rủi ro 2",
+    "Rủi ro 3"
   ],
-  "loi_khuyen_thoi_diem": "2-3 câu về thời điểm hành động (ngay/tuần tới/quý tới).",
-  "gioi_han": "1 câu: Đây là tham khảo văn hóa, không phải dự đoán chắc chắn."
+  "loi_khuyen_thoi_diem": "2-3 câu tổng kết: khi nào nên bắt đầu, khi nào nên dừng."
 }}"""
     return prompt
 
@@ -323,8 +332,16 @@ def _clean_obj(obj: Any, _depth: int = 0) -> Any:
     return obj
 
 
-async def luan_giai_que(question: str, cast: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Luận giải Kinh Dịch bằng 3 prompts song song (nhanh + chất lượng cao)."""
+async def luan_giai_que(
+    question: str,
+    cast: dict[str, Any] | None = None,
+    bat_tu: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Luận giải Kinh Dịch bằng 3 prompts song song (nhanh + chất lượng cao).
+
+    Args:
+        bat_tu: Dict bát tự từ `bat_tu.lap_tu_tru.lap_tu_tru` (BẮT BUỘC khi gọi từ API).
+    """
     question = validate_question(question)
     result = cast or gieo_que()
     que_chinh_so = result["que_chinh"]["so"]
@@ -337,6 +354,14 @@ async def luan_giai_que(question: str, cast: dict[str, Any] | None = None) -> di
 
     context = get_context(que_chinh_so, que_bien_so)
     que_info = _build_que_info(result)
+
+    # Bổ sung bát tự vào que_info nếu có
+    if bat_tu:
+        try:
+            from bat_tu.lap_tu_tru import format_bat_tu_context
+            que_info = format_bat_tu_context(bat_tu) + "\n" + que_info
+        except Exception:
+            pass
 
     p1 = await _prompt_1_core(question, que_info, context)
     p2 = await _prompt_2_tam_hop(question, que_info)

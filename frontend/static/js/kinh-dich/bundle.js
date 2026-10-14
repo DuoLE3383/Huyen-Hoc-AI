@@ -32,12 +32,65 @@
     if (!data) return null;
     try { return { event: ev, data: JSON.parse(data) }; } catch (e) { return { event: ev, data: {} }; }
   }
-  function stream(question, h) {
+  function getBatTu() {
+    var ngay = document.getElementById("kd-ngay-sinh");
+    var gio  = document.getElementById("kd-gio-sinh");
+    var gt   = document.getElementById("kd-gioi-tinh");
+    var ns   = document.getElementById("kd-noi-sinh");
+    if (!ngay || !gio || !gt) return null;
+    if (!ngay.value || !gio.value || !gt.value) return null;
+    return {
+      ngay_sinh: ngay.value,
+      gio_sinh: gio.value,
+      gioi_tinh: gt.value,
+      noi_sinh: (ns && ns.value.trim()) || null
+    };
+  }
+
+  function checkBatTuValid() {
+    var bt = getBatTu();
+    var sub = document.getElementById("kd-submit");
+    var preview = document.getElementById("kd-battu-preview");
+    if (sub) {
+      sub.disabled = !bt;
+      sub.title = bt ? "" : "Vui lòng điền đầy đủ Bát Tự";
+    }
+    if (bt && preview) {
+      fetch("/api/bat-tu/lap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bt)
+      })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d) { preview.hidden = true; return; }
+          var tt = d.tu_tru;
+          preview.innerHTML =
+            "<b>Tứ Trụ:</b> " + tt.nam.full + " / " + tt.thang.full + " / " + tt.ngay.full + " / " + tt.gio.full +
+            "<br><b>Nhật chủ:</b> " + d.nhat_chu + " (" + d.nhat_chu_hanh + ")" +
+            "<br><b>Ngũ hành:</b> Kim=" + d.hanh_count.Kim + " Mộc=" + d.hanh_count.Mộc +
+            " Thủy=" + d.hanh_count.Thủy + " Hỏa=" + d.hanh_count.Hỏa + " Thổ=" + d.hanh_count.Thổ;
+          preview.hidden = false;
+        })
+        .catch(function () { preview.hidden = true; });
+    } else if (preview) {
+      preview.hidden = true;
+    }
+  }
+
+  function stream(question, h, batTu) {
     h = h || {};
     var tok = safeGetToken();
     var headers = { "Content-Type": "application/json", "Accept": "text/event-stream" };
     if (tok) headers.Authorization = "Bearer " + tok;
-    return fetch("/api/kinh-dich-stream", { method: "POST", headers: headers, body: JSON.stringify({ cau_hoi: question }) }).then(function (res) {
+    var body = { cau_hoi: question };
+    if (typeof batTu !== "undefined" && batTu) {
+      body.ngay_sinh = batTu.ngay_sinh;
+      body.gio_sinh  = batTu.gio_sinh;
+      body.gioi_tinh = batTu.gioi_tinh;
+      if (batTu.noi_sinh) body.noi_sinh = batTu.noi_sinh;
+    }
+    return fetch("/api/kinh-dich-stream", { method: "POST", headers: headers, body: JSON.stringify(body) }).then(function (res) {
       if (res.status === 401 && tok) { localStorage.clear(); location.replace("/"); return; }
       if (!res.ok) return res.text().catch(function () { return ""; }).then(function (t) { throw new Error(t || "Lỗi " + res.status); });
       var reader = res.body.getReader(), dec = new TextDecoder("utf-8"), buf = "";
@@ -252,13 +305,16 @@
   }
   function panelTamHop(panel, d) {
     panel.replaceChildren();
-    if (!d || (!d.thien_thoi && !d.dia_loi && !d.nhan_hoa)) {
+    // Backend wrap trong thien_dia_nhan
+    var tdn = (d && d.thien_dia_nhan) ? d.thien_dia_nhan : d;
+    if (!tdn || (!tdn.thien_thoi && !tdn.dia_loi && !tdn.nhan_hoa)) {
       var ph = document.createElement("p");
       ph.className = "kd-placeholder";
-      ph.textContent = "Đang tải luận giải Tam Hợp…";
+      ph.textContent = "Đang tải luận giải Thời Vận…";
       panel.appendChild(ph);
       return;
     }
+    d = tdn;
     var s = section("🌏 Thiên Thời · Địa Lợi · Nhân Hòa");
     var w = document.createElement("div"); w.className = "kd-tdn";
     [["thien","☀️ Thiên Thời",d.thien_thoi],["dia","🌍 Địa Lợi",d.dia_loi],["nhan","🤝 Nhân Hòa",d.nhan_hoa]].forEach(function (kv) {
@@ -274,9 +330,36 @@
   }
   function panelAction(panel, d) {
     panel.replaceChildren();
-    if (d.goi_y_hanh_dong && d.goi_y_hanh_dong.length) { var s1 = section("📌 Hành động cụ thể"); s1.appendChild(list(d.goi_y_hanh_dong)); panel.appendChild(s1); }
-    if (d.diem_can_can_nhac && d.diem_can_can_nhac.length) { var s2 = section("⚠️ Cần cân nhắc"); s2.appendChild(list(d.diem_can_can_nhac)); panel.appendChild(s2); }
-    if (d.loi_khuyen_thoi_diem) { var s3 = section("⏰ Lời khuyên thời điểm"); paras(s3, d.loi_khuyen_thoi_diem); panel.appendChild(s3); }
+    if (d.goi_y_hanh_dong && d.goi_y_hanh_dong.length) {
+      var s1 = section("📌 Hành động cụ thể");
+      s1.appendChild(list(d.goi_y_hanh_dong));
+      panel.appendChild(s1);
+    }
+    if (d.thoi_gian_cu_the) {
+      var stg = section("⏰ Thời gian cụ thể");
+      paras(stg, d.thoi_gian_cu_the);
+      panel.appendChild(stg);
+    }
+    if (d.mua_tiet_khi) {
+      var smua = section("🌸 Mùa / Tiết khí");
+      paras(smua, d.mua_tiet_khi);
+      panel.appendChild(smua);
+    }
+    if (d.vi_tri_huong) {
+      var svt = section("🧭 Hướng / Vị trí");
+      paras(svt, d.vi_tri_huong);
+      panel.appendChild(svt);
+    }
+    if (d.diem_can_can_nhac && d.diem_can_can_nhac.length) {
+      var s2 = section("⚠️ Cần cân nhắc");
+      s2.appendChild(list(d.diem_can_can_nhac));
+      panel.appendChild(s2);
+    }
+    if (d.loi_khuyen_thoi_diem) {
+      var s3 = section("💡 Lời khuyên tổng kết");
+      paras(s3, d.loi_khuyen_thoi_diem);
+      panel.appendChild(s3);
+    }
   }
   function init() {
     var bSlot = document.getElementById("kd-bagua-slot");
@@ -303,9 +386,26 @@
     var sub = document.getElementById("kd-submit");
     var rEl = document.getElementById("kd-result");
     if (!form || !ta || !sub || !rEl) return;
+    // Wire Bát Tự validation
+    ["kd-ngay-sinh", "kd-gio-sinh", "kd-gioi-tinh", "kd-noi-sinh"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", checkBatTuValid);
+        el.addEventListener("input", checkBatTuValid);
+      }
+    });
+    checkBatTuValid();
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var q = ta.value.trim();
+      var bt = getBatTu();
+      if (!bt) {
+        rEl.replaceChildren();
+        var err = document.createElement("div"); err.className = "kd-error";
+        err.textContent = "Vui lòng điền đầy đủ Bát Tự (ngày/giờ sinh + giới tính) trước khi gieo quẻ.";
+        rEl.appendChild(err); return;
+      }
       if (q.length < 5) {
         rEl.replaceChildren();
         var err = document.createElement("div"); err.className = "kd-error";
@@ -313,10 +413,10 @@
         rEl.appendChild(err); return;
       }
       sub.disabled = true; rEl.replaceChildren();
-      runDiv(q, rEl).then(function () { sub.disabled = false; });
+      runDiv(q, rEl, bt).then(function () { sub.disabled = false; });
     });
   }
-  function runDiv(question, rEl) {
+  function runDiv(question, rEl, batTu) {
     var load = document.createElement("div"); load.className = "kd-loading";
     var bg = document.createElement("div"); bg.className = "kd-bagua"; bg.appendChild(bagua());
     var msg = document.createElement("div"); msg.className = "kd-loading-msg"; msg.textContent = LOADING[0];
@@ -337,7 +437,7 @@
       }
       grid.append(c1, c2); rEl.appendChild(grid);
       var tabs = document.createElement("div"); tabs.className = "kd-tabs";
-      var defs = [{id:"core",label:"📖 Quẻ từ"},{id:"tamhop",label:"🌏 Tam Hợp"},{id:"action",label:"📌 Hành động"}];
+      var defs = [{id:"core",label:"📖 Lời Quẻ"},{id:"tamhop",label:"🌏 Thời Vận"},{id:"action",label:"🎯 Hành Động"}];
       var p = {};
       defs.forEach(function (t, i) {
         var tab = document.createElement("button");
@@ -353,9 +453,9 @@
       Object.keys(p).forEach(function (k) { rEl.appendChild(p[k]); });
 
       // Hiện loading cho từng tab
-      showTabLoading(p.core, "Đang luận giải Quẻ từ");
-      showTabLoading(p.tamhop, "Đang luận giải Tam Hợp");
-      showTabLoading(p.action, "Đang tổng hợp Hành động");
+      showTabLoading(p.core, "Đang luận giải Lời Quẻ");
+      showTabLoading(p.tamhop, "Đang luận giải Thời Vận");
+      showTabLoading(p.action, "Đang tổng hợp Hành Động");
       tabs.addEventListener("click", function (e) {
         var t = e.target.closest(".kd-tab"); if (!t) return;
         tabs.querySelectorAll(".kd-tab").forEach(function (x) { x.classList.toggle("active", x === t); });
@@ -390,11 +490,9 @@
       onDone: function () {
         cleanup();
         if (!panels && cast) ensure();
-        var n = document.createElement("p"); n.className = "kd-note";
-        n.textContent = "Diễn giải mang tính tham khảo văn hóa — không phải lời khuyên chuyên môn.";
-        rEl.appendChild(n);
+        // (đã xoá disclaimer tham khảo)
       }
-    }).catch(function (e) {
+    }, batTu).catch(function (e) {
       cleanup();
       var b = document.createElement("div"); b.className = "kd-error";
       b.textContent = e.message || "Không thể hoàn tất yêu cầu.";

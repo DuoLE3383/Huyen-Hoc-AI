@@ -355,8 +355,20 @@ class TarotInput(BaseModel):
         return self
 
 
+class BatTuInput(BaseModel):
+    ngay_sinh: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$", description="YYYY-MM-DD")
+    gio_sinh: str = Field(pattern=r"^\d{2}:\d{2}$", description="HH:MM")
+    gioi_tinh: str = Field(pattern=r"^(nam|nu)$")
+    noi_sinh: str | None = None
+
+
 class KinhDichInput(BaseModel):
     cau_hoi: str = Field(min_length=5, max_length=500)
+    # Bát tự BẮT BUỘC
+    ngay_sinh: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    gio_sinh: str = Field(pattern=r"^\d{2}:\d{2}$")
+    gioi_tinh: str = Field(pattern=r"^(nam|nu)$")
+    noi_sinh: str | None = None
 
     @model_validator(mode="after")
     def trim_question(self) -> "KinhDichInput":
@@ -1978,11 +1990,23 @@ async def api_tarot(
 
 @router.post("/api/kinh-dich")
 async def api_kinh_dich(data: KinhDichInput) -> dict[str, Any]:
-    """Gieo quẻ Kinh Dịch — public, không cần login."""
+    """Gieo quẻ Kinh Dịch — public, KHÔNG cần login, BẮT BUỘC bát tự."""
+    from bat_tu.lap_tu_tru import lap_tu_tru
     try:
-        return await luan_giai_que(data.cau_hoi)
+        bat_tu = lap_tu_tru(data.ngay_sinh, data.gio_sinh, data.gioi_tinh)
+        return await luan_giai_que(data.cau_hoi, bat_tu=bat_tu)
     except (httpx.HTTPError, ValueError) as exc:
         raise _ollama_http_error(exc) from exc
+
+
+@router.post("/api/bat-tu/lap")
+async def api_lap_bat_tu(data: BatTuInput) -> dict[str, Any]:
+    """Lập tứ trụ từ ngày giờ sinh."""
+    from bat_tu.lap_tu_tru import lap_tu_tru
+    try:
+        return lap_tu_tru(data.ngay_sinh, data.gio_sinh, data.gioi_tinh)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Không lập được bát tự: {exc}") from exc
 
 
 @router.post("/api/kinh-dich-stream")
@@ -1990,7 +2014,15 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
     """Stream từng section luận giải Kinh Dịch — public, không cần login."""
 
     async def event_stream():
-        # 1. Gieo quẻ ngay
+        # 0. Lập bát tự trước (BẮT BUỘC)
+        try:
+            from bat_tu.lap_tu_tru import lap_tu_tru, format_bat_tu_context
+            bat_tu = lap_tu_tru(data.ngay_sinh, data.gio_sinh, data.gioi_tinh)
+        except Exception as exc:
+            yield _sse_event("error", {"message": f"Lỗi lập bát tự: {exc}"})
+            return
+
+        # 1. Gieo quẻ
         try:
             cast = gieo_que()
             que_chinh_so = cast["que_chinh"]["so"]
@@ -1999,13 +2031,15 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             yield _sse_event("error", {"message": f"Lỗi gieo quẻ: {exc}"})
             return
 
-        yield _sse_event("cast", cast)
+        yield _sse_event("cast", {**cast, "bat_tu": bat_tu})
 
         # 2. Chuẩn bị 3 prompts
         try:
             from knowledge.kinh_dich_rag import get_context
             context = get_context(que_chinh_so, que_bien_so)
             que_info = _build_que_info(cast)
+            # Bổ sung bát tự vào que_info — AI sẽ dùng để cá nhân hoá
+            que_info = format_bat_tu_context(bat_tu) + "\n" + que_info
             p1 = await _prompt_1_core(data.cau_hoi, que_info, context)
             p2 = await _prompt_2_tam_hop(data.cau_hoi, que_info)
             p3 = await _prompt_3_action(data.cau_hoi, que_info)

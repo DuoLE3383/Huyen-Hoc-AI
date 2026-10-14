@@ -101,13 +101,14 @@ def get_context(que_chinh_so: int, que_bien_so: int) -> str:
                 text += f"- Hào {h['hao_so']}: {h['noi_dung']}\n"
         parts.append(text)
 
-        # ── Bổ sung context Nguyễn Hiến Lê (nếu có cache) ──
-        try:
-            nhl = get_context_for_que(so)
-            if nhl:
-                parts.append(nhl)
-        except Exception:
-            pass
+        # ── Bổ sung context Nguyễn Hiến Lê — chỉ quẻ CHÍNH để tránh vượt ctx ──
+        if label == "QUẺ CHÍNH":
+            try:
+                nhl = get_context_for_que(so)
+                if nhl:
+                    parts.append(nhl)
+            except Exception:
+                pass
 
     return "\n---\n".join(parts)
 
