@@ -157,6 +157,25 @@
     });
     return svg;
   }
+  // Hiển thị loading trong tab
+  function showTabLoading(panel, message) {
+    panel.replaceChildren();
+    var box = document.createElement("div");
+    box.className = "kd-tab-loading";
+    var bg = document.createElement("div");
+    bg.className = "kd-tl-bagua";
+    bg.appendChild(bagua());
+    var txt = document.createElement("div");
+    txt.className = "kd-tl-text";
+    txt.textContent = message || "Đang diễn giải";
+    var dots = document.createElement("span");
+    dots.className = "kd-tl-dots";
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    txt.appendChild(dots);
+    box.append(bg, txt);
+    panel.appendChild(box);
+  }
+
   var TONG = { 6: "Lão Âm", 7: "Thiếu Dương", 8: "Thiếu Âm", 9: "Lão Dương" };
   function threeCoins(coins, landed) {
     var wrap = document.createElement("div"); wrap.className = "kd-coins";
@@ -332,6 +351,11 @@
       });
       rEl.appendChild(tabs);
       Object.keys(p).forEach(function (k) { rEl.appendChild(p[k]); });
+
+      // Hiện loading cho từng tab
+      showTabLoading(p.core, "Đang luận giải Quẻ từ");
+      showTabLoading(p.tamhop, "Đang luận giải Tam Hợp");
+      showTabLoading(p.action, "Đang tổng hợp Hành động");
       tabs.addEventListener("click", function (e) {
         var t = e.target.closest(".kd-tab"); if (!t) return;
         tabs.querySelectorAll(".kd-tab").forEach(function (x) { x.classList.toggle("active", x === t); });
