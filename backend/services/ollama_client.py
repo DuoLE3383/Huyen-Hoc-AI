@@ -203,7 +203,10 @@ class OllamaClient:
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
 
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with httpx.AsyncClient(
+            timeout=timeout,
+            limits=httpx.Limits(max_connections=1, max_keepalive_connections=1),
+        ) as client:
             response = await client.post(
                 f"{LLAMA_SERVER_URL}/v1/chat/completions", json=payload
             )
