@@ -54,3 +54,19 @@ Thumbs.db
 task.txt
 backend/.env.local
 backend/.env
+_attic/
+*.bak
+*.bak[0-9]*
+*.old
+
+# Rác từ shell escape
+)
+on
+tatus
+tatus --short
+
+# Backup files
+*.pre_fix_*
+*.pre_refactor_*
+*.bak.*
+*.broken.*

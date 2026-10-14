@@ -1,9 +1,9 @@
 {
   "appId": "ai.huyenhoc.app",
-  "appName": "Huyền Học AI",
+  "appName": "Kinh Dịch AI",
   "webDir": "frontend",
   "server": {
-    "url": "https://app.huyenbao.com",
+    "url": "https://app.huyenbao.com/kinh-dich",
     "cleartext": false,
     "androidScheme": "https"
   },

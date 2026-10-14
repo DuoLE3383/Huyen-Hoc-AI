@@ -108,49 +108,56 @@ def _hexagram(values: list[int]) -> dict[str, Any]:
 
 
 def gieo_que() -> dict[str, Any]:
-    """Gieo 6 hào bằng 3 đồng xu (2=âm tĩnh, 3=dương động theo tổng)."""
-    hao = []
-    for _ in range(6):
-        coins = [secrets.randbelow(2) for _ in range(3)]  # 0 = ngửa (âm), 1 = sấp (dương)
-        tong = sum(3 if c else 2 for c in coins)
-        # 6 = lão âm (động), 7 = thiếu dương, 8 = thiếu âm, 9 = lão dương (động)
-        if tong == 6:
-            hao.append(0)
-        elif tong == 7:
-            hao.append(1)
-        elif tong == 8:
-            hao.append(0)
-        else:  # 9
-            hao.append(1)
+    """
+    Gieo 6 hào bằng 3 đồng xu — MỘT LẦN DUY NHẤT, nhất quán 100%.
 
-    que_chinh = _hexagram(hao)
-    # Xác định hào động (6 = âm động, 9 = dương động)
-    # Gieo lại để xác định hào động chính xác — không, dùng logic gieo
-    # Theo phương pháp: mỗi hào có 3 đồng, tổng 6/9 là động
-    hao_dong = []
-    hao_moi = []
+    Mỗi hào:
+      - 6 (2+2+2) = Lão Âm      → âm,  động, biến thành dương
+      - 7 (2+2+3) = Thiếu Dương → dương, tĩnh
+      - 8 (2+3+3) = Thiếu Âm    → âm,  tĩnh
+      - 9 (3+3+3) = Lão Dương   → dương, động, biến thành âm
+
+    Trả về:
+      que_chinh, que_bien, hao_dong (list vị trí 1..6),
+      coins_log (để client animate đồng xu khớp data)
+    """
+    hao_chinh: list[int] = []   # 0 = âm, 1 = dương
+    hao_bien:  list[int] = []
+    hao_dong:  list[int] = []
+    coins_log: list[dict[str, Any]] = []
+
     for i in range(6):
-        coins = [secrets.randbelow(2) for _ in range(3)]
+        coins = [secrets.randbelow(2) for _ in range(3)]  # 0 = ngửa, 1 = sấp
         tong = sum(3 if c else 2 for c in coins)
-        if tong == 6:
-            hao_dong.append(i + 1)
-            hao_moi.append(1)  # âm động -> biến thành dương
-        elif tong == 9:
-            hao_dong.append(i + 1)
-            hao_moi.append(0)  # dương động -> biến thành âm
-        else:
-            hao_moi.append(hao[i])
 
-    # Gán động vào hào chính
+        if tong == 6:       # Lão Âm
+            hao_chinh.append(0); hao_bien.append(1); hao_dong.append(i + 1)
+        elif tong == 7:     # Thiếu Dương
+            hao_chinh.append(1); hao_bien.append(1)
+        elif tong == 8:     # Thiếu Âm
+            hao_chinh.append(0); hao_bien.append(0)
+        else:               # tong == 9, Lão Dương
+            hao_chinh.append(1); hao_bien.append(0); hao_dong.append(i + 1)
+
+        coins_log.append({"coins": coins, "tong": tong})
+
+    que_chinh = _hexagram(hao_chinh)
     for h in que_chinh["hao"]:
         h["dong"] = h["vi_tri"] in hao_dong
 
-    que_bien = _hexagram(hao_moi) if hao_dong else None
-    if que_bien:
+    que_bien = None
+    if hao_dong:
+        que_bien = _hexagram(hao_bien)
         for h in que_bien["hao"]:
             h["dong"] = h["vi_tri"] in hao_dong
 
-    return {"que_chinh": que_chinh, "que_bien": que_bien}
+    return {
+        "que_chinh": que_chinh,
+        "que_bien": que_bien,
+        "hao_dong": hao_dong,
+        "coins_log": coins_log,
+    }
+
 
 
 def validate_question(question: str) -> str:
@@ -303,14 +310,16 @@ def _strip_chinese(text: str) -> str:
     return re.sub(r"\s{2,}", " ", text).strip()
 
 
-def _clean_obj(obj: Any) -> Any:
-    """Đệ quy xoá ký tự Trung khỏi mọi string trong obj."""
+def _clean_obj(obj: Any, _depth: int = 0) -> Any:
+    """Đệ quy xoá ký tự Trung khỏi mọi string trong obj. Max depth 20."""
+    if _depth > 20:
+        return obj
     if isinstance(obj, str):
         return _strip_chinese(obj)
     if isinstance(obj, list):
-        return [_clean_obj(x) for x in obj]
+        return [_clean_obj(x, _depth + 1) for x in obj]
     if isinstance(obj, dict):
-        return {k: _clean_obj(v) for k, v in obj.items()}
+        return {k: _clean_obj(v, _depth + 1) for k, v in obj.items()}
     return obj
 
 

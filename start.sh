@@ -114,6 +114,8 @@ load_env_var() {
 load_env_var TELEGRAM_BOT_TOKEN || true
 load_env_var OPENWEATHER_API_KEY || true
 load_env_var GEOAPIFY_API_KEY || true
+load_env_var LLAMA_SERVER_URL || true
+load_env_var OLLAMA_MODEL || true
 
 # ─── Ollama URL ───
 if [ -z "${OLLAMA_URL:-}" ]; then
@@ -138,6 +140,20 @@ else
     export OLLAMA_MODEL="$MODEL"
 fi
 
+# ─── Nếu có LLAMA_SERVER_URL → ưu tiên llama.cpp, bỏ qua Ollama ───
+SKIP_OLLAMA=false
+if [ -n "${LLAMA_SERVER_URL:-}" ]; then
+    log_info "Phát hiện LLAMA_SERVER_URL → dùng llama.cpp: $LLAMA_SERVER_URL"
+    if ! curl -sf "${LLAMA_SERVER_URL%/}/health" >/dev/null 2>&1; then
+        log_error "llama-server không phản hồi tại $LLAMA_SERVER_URL"
+        log_info "Kiểm tra: llama-server đang chạy trên Windows? Đã bind 0.0.0.0:8080?"
+        exit 1
+    fi
+    log_ok "llama-server đã sẵn sàng."
+    SKIP_OLLAMA=true
+fi
+
+if [ "$SKIP_OLLAMA" != "true" ]; then
 # ─── Kiểm tra Ollama ready ───
 log_info "Kiểm tra Ollama tại $OLLAMA_URL..."
 OLLAMA_READY=false
@@ -174,6 +190,7 @@ else
     log_warn "Không có ollama CLI → bỏ qua bước pull model."
     log_warn "Đảm bảo model '$MODEL' đã có trên Windows host."
 fi
+fi  # end SKIP_OLLAMA
 
 # ─── Khởi động backend ───
 log_ok "Starting Huyền Học AI tại http://localhost:8000/"
