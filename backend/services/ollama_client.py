@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
+LLAMA_SERVER_URL = (os.getenv("LLAMA_SERVER_URL") or "").rstrip("/")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
 OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 if not 512 <= OLLAMA_NUM_CTX <= 32768:
@@ -143,6 +144,14 @@ class OllamaClient:
         timeout: float | httpx.Timeout = 120.0,
     ) -> str:
         prompt, system = _with_time_context(prompt, system)
+
+        # ── Ưu tiên llama-server (Vulkan) nếu có ──
+        if LLAMA_SERVER_URL:
+            return await self._generate_llama_server(
+                prompt, system, temperature, json_mode, timeout
+            )
+
+        # ── Fallback Ollama ──
         payload: dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,
@@ -159,6 +168,59 @@ class OllamaClient:
         generated = result.get("response")
         if not isinstance(generated, str) or not generated.strip():
             raise ValueError("Ollama trả về phản hồi rỗng hoặc sai định dạng.")
+        return generated
+
+    async def _generate_llama_server(
+        self,
+        prompt: str,
+        system: str,
+        temperature: float,
+        json_mode: bool,
+        timeout: float | httpx.Timeout,
+    ) -> str:
+        """Gọi llama-server (OpenAI-compatible) — nhanh hơn Ollama với GPU."""
+        # Force Vietnamese-only + safety
+        lang_guard = (
+            "LUÔN trả lời 100% bằng tiếng Việt. "
+            "KHÔNG dùng tiếng Trung, tiếng Anh, hoặc trộn ngôn ngữ. "
+            "Nếu không có từ tiếng Việt, dùng từ Hán-Việt hoặc mô tả thay thế."
+        )
+        full_system = f"{lang_guard}\n\n{system}" if system else lang_guard
+
+        messages = [{"role": "system", "content": full_system}]
+        messages.append({"role": "user", "content": prompt})
+
+        payload: dict[str, Any] = {
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": 4096,
+            "stream": False,
+            "repeat_penalty": 1.1,      # Tránh lặp từ
+            "top_p": 0.9,
+            "top_k": 40,
+            "stop": ["<|im_end|>", "<|endoftext|>"],
+        }
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.post(
+                f"{LLAMA_SERVER_URL}/v1/chat/completions", json=payload
+            )
+            response.raise_for_status()
+            result = response.json()
+        try:
+            generated = result["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise ValueError(f"llama-server trả format lạ: {result}") from exc
+        if not isinstance(generated, str) or not generated.strip():
+            raise ValueError("llama-server trả phản hồi rỗng.")
+
+        # Post-filter: xoá ký tự Trung Quốc nếu lẫn vào
+        import re
+        generated = re.sub(r'[\u4e00-\u9fff]+', '', generated)
+        generated = re.sub(r'\s{2,}', ' ', generated).strip()
+
         return generated
 
     async def generate_stream(
