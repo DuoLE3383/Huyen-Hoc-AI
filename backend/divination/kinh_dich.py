@@ -8,6 +8,8 @@ from typing import Any
 
 from services.ollama_client import ollama
 from knowledge.kinh_dich_rag import get_context
+from services.ollama_client import build_time_context
+from knowledge import kinh_dich_cache as _cache
 
 
 TRIGRAMS = {
@@ -190,9 +192,17 @@ def _build_que_info(result: dict[str, Any]) -> str:
 
 
 async def _prompt_1_core(question: str, que_info: str, context: str) -> str:
+    time_ctx = build_time_context()
     prompt = f"""{LANG_GUARD}
 
+{time_ctx}
+
 Bạn luận giải Kinh Dịch cho người dùng Việt Nam. Trả lời CỤ THỂ, có ngày tháng, không chung chung.
+
+QUY TẮC NGHIÊM NGẶT:
+- TUYỆT ĐỐI KHÔNG dùng từ tiếng Anh (no "simplicity", "balance", "investment"…). Dùng tiếng Việt hoặc Hán-Việt.
+- KHÔNG viết tên Hán trong ngoặc như "Tụy (Tài)". Chỉ dùng tên Việt.
+- Dùng NGÀY CỤ THỂ từ thông tin thời gian bên trên.
 
 ## Câu hỏi người dùng:
 {question}
@@ -311,6 +321,11 @@ async def luan_giai_que(question: str, cast: dict[str, Any] | None = None) -> di
     que_chinh_so = result["que_chinh"]["so"]
     que_bien_so = (result.get("que_bien") or {}).get("so") or que_chinh_so
 
+    # ── Cache check ──
+    cached = _cache.get(que_chinh_so, que_bien_so, question)
+    if cached is not None:
+        return {**result, "cau_hoi": question, "luan_giai": cached}
+
     context = get_context(que_chinh_so, que_bien_so)
     que_info = _build_que_info(result)
 
@@ -333,4 +348,5 @@ async def luan_giai_que(question: str, cast: dict[str, Any] | None = None) -> di
     luan_giai.update(d2)
     luan_giai.update(d3)
 
+    _cache.save(que_chinh_so, que_bien_so, question, luan_giai)
     return {**result, "cau_hoi": question, "luan_giai": luan_giai}

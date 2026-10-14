@@ -64,7 +64,7 @@ from services.ollama_client import build_analysis_prompt, ollama
 from services.pdf_export import export_ban_menh_pdf, export_la_so_pdf
 from services.social import compatibility, create_share_link, get_share_link, revoke_share_link
 from divination.tarot import luan_giai_tarot
-from divination.kinh_dich import luan_giai_que
+from divination.kinh_dich import luan_giai_que, gieo_que, _build_que_info, _prompt_1_core, _prompt_2_tam_hop, _prompt_3_action, _clean_obj, _safe_parse
 from divination.tu_vi import lap_la_so
 from divination.phong_thuy import (
     HUONG,
@@ -1977,15 +1977,76 @@ async def api_tarot(
 
 
 @router.post("/api/kinh-dich")
-async def api_kinh_dich(
-    data: KinhDichInput,
-    user: Annotated[User, Depends(get_current_user)],
-) -> dict[str, Any]:
-    del user
+async def api_kinh_dich(data: KinhDichInput) -> dict[str, Any]:
+    """Gieo quẻ Kinh Dịch — public, không cần login."""
     try:
         return await luan_giai_que(data.cau_hoi)
     except (httpx.HTTPError, ValueError) as exc:
         raise _ollama_http_error(exc) from exc
+
+
+@router.post("/api/kinh-dich-stream")
+async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
+    """Stream từng section luận giải Kinh Dịch — public, không cần login."""
+
+    async def event_stream():
+        # 1. Gieo quẻ ngay
+        try:
+            cast = gieo_que()
+            que_chinh_so = cast["que_chinh"]["so"]
+            que_bien_so = (cast.get("que_bien") or {}).get("so") or que_chinh_so
+        except Exception as exc:
+            yield _sse_event("error", {"message": f"Lỗi gieo quẻ: {exc}"})
+            return
+
+        yield _sse_event("cast", cast)
+
+        # 2. Chuẩn bị 3 prompts
+        try:
+            from knowledge.kinh_dich_rag import get_context
+            context = get_context(que_chinh_so, que_bien_so)
+            que_info = _build_que_info(cast)
+            p1 = await _prompt_1_core(data.cau_hoi, que_info, context)
+            p2 = await _prompt_2_tam_hop(data.cau_hoi, que_info)
+            p3 = await _prompt_3_action(data.cau_hoi, que_info)
+        except Exception as exc:
+            yield _sse_event("error", {"message": f"Lỗi chuẩn bị prompt: {exc}"})
+            return
+
+        SYSTEM = "Bạn là chuyên gia Kinh Dịch. Chỉ trả về JSON object hợp lệ."
+
+        async def run_one(label: str, prompt: str, temp: float):
+            try:
+                raw = await ollama.generate(
+                    prompt, system=SYSTEM, temperature=temp,
+                    json_mode=True, timeout=180.0,
+                )
+                parsed = _clean_obj(_safe_parse(raw))
+                return (label, parsed, None)
+            except Exception as exc:
+                return (label, None, str(exc))
+
+        # 3. Chạy 3 prompts song song — yield từng kết quả khi xong
+        tasks = [
+            asyncio.create_task(run_one("core", p1, 0.7)),
+            asyncio.create_task(run_one("tam_hop", p2, 0.6)),
+            asyncio.create_task(run_one("action", p3, 0.7)),
+        ]
+
+        for fut in asyncio.as_completed(tasks):
+            label, parsed, err = await fut
+            if err:
+                yield _sse_event("error", {"message": err, "section": label})
+            else:
+                yield _sse_event(label, parsed or {})
+
+        yield _sse_event("done", {})
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post("/api/share")

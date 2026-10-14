@@ -143,13 +143,15 @@ class OllamaClient:
         json_mode: bool = False,
         timeout: float | httpx.Timeout = 120.0,
     ) -> str:
-        prompt, system = _with_time_context(prompt, system)
-
         # ── Ưu tiên llama-server (Vulkan) nếu có ──
+        # Không thêm time context vì llama-server đã có trong system prompt riêng
         if LLAMA_SERVER_URL:
             return await self._generate_llama_server(
                 prompt, system, temperature, json_mode, timeout
             )
+
+        # ── Ollama fallback (có time context) ──
+        prompt, system = _with_time_context(prompt, system)
 
         # ── Fallback Ollama ──
         payload: dict[str, Any] = {
@@ -219,9 +221,13 @@ class OllamaClient:
         if not isinstance(generated, str) or not generated.strip():
             raise ValueError("llama-server trả phản hồi rỗng.")
 
-        # Post-filter: xoá ký tự Trung Quốc nếu lẫn vào
+        # Post-filter: xoá ký tự Trung + Hàn + Nhật + dấu câu Á
         import re
-        generated = re.sub(r'[\u4e00-\u9fff]+', '', generated)
+        generated = re.sub(r'[\u4e00-\u9fff]+', '', generated)          # CJK
+        generated = re.sub(r'[\u3000-\u303f\uff00-\uffef]+', '', generated)  # CJK punct
+        generated = re.sub(r'[\uac00-\ud7af]+', '', generated)          # Hangul
+        generated = re.sub(r'[\u3040-\u30ff]+', '', generated)          # Hiragana/Katakana
+        generated = re.sub(r'[，。、《》「」『』【】；：！？、]', '', generated)
         generated = re.sub(r'\s{2,}', ' ', generated).strip()
 
         return generated

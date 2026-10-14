@@ -114,6 +114,66 @@
     .quai-info .sym { font-size:1.2rem; margin-left:6px; }
     @keyframes hao-appear { to { opacity:1; transform: translateX(0); } }
 
+  
+    /* Phân biệt Lão (động) vs Thiếu (tĩnh) */
+    .hao-bar .solid.lao { background:linear-gradient(90deg, #f5d76e, #e6b800); box-shadow:0 0 10px #f5d76eaa; }
+    .hao-bar .broken.lao > span { background:linear-gradient(90deg, #f5d76e, #e6b800); box-shadow:0 0 10px #f5d76eaa; }
+    .hao-bar .lao-mark { position:absolute; font-size:14px; color:#f5d76e; font-weight:700; }
+    .hao-line { position:relative; }
+    .hao-bar { position:relative; }
+    .hao-bar .mark-o { position:absolute; right:-22px; top:50%; transform:translateY(-50%); color:#f5d76e; font-size:13px; font-weight:700; }
+    .hao-bar .mark-x { position:absolute; right:-22px; top:50%; transform:translateY(-50%); color:#f5d76e; font-size:14px; font-weight:700; }
+
+  
+    /* Layout mới cho loading */
+    .loading-box { display:flex !important; flex-direction:column !important; align-items:center !important; gap:20px !important; padding:40px 24px !important; margin:24px auto !important; max-width:640px !important; border:1px solid #c4a3ff33 !important; border-radius:20px !important; background:radial-gradient(circle at 50% 0%, #c4a3ff15, #ffffff06) !important; }
+    .loading-box .bagua { font-size:96px !important; }
+    .loading-box .coin-stage { padding:24px !important; gap:20px !important; margin:0 !important; border:none !important; background:transparent !important; }
+    .loading-box .coin-row { gap:24px !important; }
+    .loading-box .coin { width:72px !important; height:72px !important; font-size:28px !important; }
+    .loading-box .coin-face span { font-size:13px !important; }
+    .loading-box .coin-face::after { width:22px !important; height:22px !important; }
+    .loading-box .haos-list { width:min(420px,95%) !important; }
+    .loading-box .hao-bar { height:16px !important; }
+    .loading-box .hao-num { font-size:.9rem !important; min-width:70px !important; }
+    .loading-box .hao-label { font-size:.85rem !important; min-width:90px !important; }
+    .loading-box .coin-result-label { font-size:1rem !important; }
+
+    /* Layout 2 cột khi có kết quả */
+    .result-grid { display:grid !important; grid-template-columns:1.2fr 1fr !important; gap:24px !important; margin-bottom:32px !important; }
+    @media (max-width: 768px) { .result-grid { grid-template-columns:1fr !important; } }
+
+    /* Section headers đẹp hơn */
+    .section-title { color:#c4a3ff !important; margin-top:24px !important; margin-bottom:10px !important; font-size:1.15rem !important; font-weight:600 !important; border-bottom:1px solid #c4a3ff22 !important; padding-bottom:6px !important; }
+
+  
+
+  
+
+
+  
+
+  
+    /* ── Modal chính (1 khung) chứa 3 cột ── */
+    .main-modal { padding:24px !important; border:1px solid #c4a3ff44 !important; border-radius:20px !important; background:radial-gradient(circle at 50% 0%, #c4a3ff10, #0f0524) !important; box-shadow:0 16px 40px #00000055 !important; margin-bottom:28px !important; }
+    .main-modal .modal-grid { display:grid !important; grid-template-columns:1fr 1fr 1fr !important; gap:20px !important; align-items:start !important; }
+    @media (max-width: 900px) { .main-modal .modal-grid { grid-template-columns:1fr !important; } }
+    .main-modal .modal-grid > div { min-width:0 !important; }
+    .main-modal .coin-stage { margin:0 !important; padding:16px !important; background:transparent !important; border:none !important; }
+    .main-modal .coin { width:54px !important; height:54px !important; }
+    .main-modal .haos-list { width:100% !important; }
+    .main-modal .hao-num { font-size:.75rem !important; min-width:50px !important; }
+    .main-modal .hao-label { font-size:.72rem !important; min-width:60px !important; }
+    .main-modal .coin-result-label { font-size:.75rem !important; }
+    .main-modal h2 { font-size:1.05rem !important; margin-bottom:8px !important; }
+    .main-modal p { font-size:.85rem !important; margin:3px 0 !important; }
+
+    /* ── Textbox + nút gieo ── */
+    .input-wrap { position:relative !important; margin-bottom:16px !important; }
+    .input-wrap textarea { padding-bottom:64px !important; min-height:120px !important; }
+    .input-wrap #submit { position:absolute !important; bottom:12px !important; right:12px !important; padding:10px 24px !important; font-size:.95rem !important; margin:0 !important; }
+    @media (max-width: 500px) { .input-wrap #submit { position:static !important; width:100% !important; margin-top:8px !important; } .input-wrap textarea { padding-bottom:12px !important; } }
+
   </style>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
@@ -133,8 +193,10 @@
       <button type="button" class="suggest-tag" data-text="Tôi có nên thực hiện chuyến đi này không?">✈️ Xuất hành</button>
       <button type="button" class="suggest-tag" data-text="Tôi nên chọn ai làm cộng sự tin cậy?">🤝 Bạn bè</button>
     </div>
-    <textarea id="question" required minlength="5" maxlength="500" rows="4" placeholder="Ví dụ: Tôi có nên chuyển việc trong 3 tháng tới không?"></textarea>
-    <div class="actions"><button id="submit" type="submit">Gieo quẻ</button></div>
+    <div class="input-wrap">
+      <textarea id="question" required minlength="5" maxlength="500" rows="4" placeholder="Ví dụ: Tôi có nên chuyển việc trong 3 tháng tới không?"></textarea>
+      <button id="submit" type="submit">Gieo quẻ</button>
+    </div>
   </form>
   <section id="result" aria-live="polite"></section>
 </main>
@@ -151,7 +213,14 @@
     text(section, "h2", `${title}: Quẻ ${hexagram.so} · ${hexagram.ten}`);
     text(section, "p", hexagram.chu_de);
     text(section, "p", `Thượng quái ${hexagram.thuong_quai.ten} ${hexagram.thuong_quai.tuong} · Hạ quái ${hexagram.ha_quai.ten} ${hexagram.ha_quai.tuong}`);
-    for (const hao of hexagram.hao || []) text(section, "div", `Hào ${hao.vi_tri}: ${hao.duong ? "Dương —" : "Âm  -"} ${hao.dong ? "(động)" : ""}`);
+    for (const hao of hexagram.hao || []) {
+      const line = document.createElement("div");
+      const duong = hao.duong;
+      const sym = duong ? "Dương —" : "Âm  -";
+      const color = duong ? "#f5d76e" : "#8fd9a8";
+      line.innerHTML = `Hào ${hao.vi_tri}: <span style="color:${color};font-weight:600">${sym}</span> ${hao.dong ? '<span style="color:#ff9999">(động)</span>' : ""}`;
+      section.append(line);
+    }
     parent.append(section);
   }
   const LOADING_MESSAGES = [
@@ -319,9 +388,13 @@
         const bar = document.createElement("div");
         bar.className = "hao-bar";
         if (currentToss.hao === "duong") {
-          bar.innerHTML = '<div class="solid"></div>';
+          bar.innerHTML = currentToss.dong
+            ? '<div class="solid lao"></div><span class="mark-o">○</span>'
+            : '<div class="solid"></div>';
         } else {
-          bar.innerHTML = '<div class="broken"><span></span><span></span></div>';
+          bar.innerHTML = currentToss.dong
+            ? '<div class="broken lao"><span></span><span></span></div><span class="mark-x">×</span>'
+            : '<div class="broken"><span></span><span></span></div>';
         }
         const lbl = document.createElement("div");
         lbl.className = "hao-label";
@@ -355,6 +428,11 @@
     loadingTimer = null;
   }
 
+  function removeAnimationOnly() {
+    // Xoá CHỈ loading-box (bát quái), giữ coin-stage
+    document.querySelector(".loading-box")?.remove();
+  }
+
   document.getElementById("suggestTags")?.addEventListener("click", e => {
     const tag = e.target.closest(".suggest-tag");
     if (!tag) return;
@@ -380,12 +458,35 @@
       const data = await response.json().catch(() => ({}));
       if (response.status === 401 && token) { localStorage.clear(); window.location.replace("/"); return; }
       if (!response.ok) throw new Error(data.detail || `Yêu cầu thất bại (${response.status}).`);
-      hideLoading();
-      result.replaceChildren();
-      renderHexagram(result, data.que_chinh, "Quẻ chính");
-      renderHexagram(result, data.que_bien, "Quẻ biến");
+      // ── Layout: 3 cột cho quẻ + animation ──
+      // ── 1 modal chính chứa 3 cột ──
+      const mainModal = document.createElement("div");
+      mainModal.className = "main-modal";
+
+      const grid = document.createElement("div");
+      grid.className = "modal-grid";
+
+      const colChinh = document.createElement("div");
+      renderHexagram(colChinh, data.que_chinh, "Quẻ chính");
+
+      const colAnim = document.createElement("div");
+      const animation = result.querySelector(".coin-stage");
+      if (animation) {
+        colAnim.append(animation);
+        animation.style.opacity = "1";
+      }
+
+      const colBien = document.createElement("div");
+      if (data.que_bien) renderHexagram(colBien, data.que_bien, "Quẻ biến");
+
+      grid.append(colChinh, colAnim, colBien);
+      mainModal.append(grid);
+
+      const bottom = document.createElement("div");
+      result.replaceChildren(mainModal, bottom);
+
       const lg = data.luan_giai || {};
-      text(result, "h2", "📜 Diễn giải chi tiết");
+      text(bottom, "h2", "📜 Diễn giải chi tiết");
 
       // Helper render section
       const section = (icon, title, content) => {

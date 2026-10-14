@@ -1,0 +1,57 @@
+"""RAG cho Kinh Dịch: load 64 quẻ + 384 hào từ SQLite."""
+import json
+import sqlite3
+from pathlib import Path
+from functools import lru_cache
+
+DB_PATH = Path(__file__).parent.parent / "core" / "huyen_hoc.db"
+
+
+def _conn():
+    return sqlite3.connect(DB_PATH)
+
+
+@lru_cache(maxsize=1)
+def _load_que() -> dict[int, dict]:
+    """Load tất cả quẻ (loai='que')."""
+    data = {}
+    try:
+        with _conn() as c:
+            rows = c.execute("""
+                SELECT que_so, tieu_de, noi_dung, metadata_json
+                FROM kinh_dich_knowledge
+                WHERE loai='que'
+            """).fetchall()
+        for que_so, ten, noi_dung, meta in rows:
+            theme = ""
+            try:
+                theme = json.loads(meta or "{}").get("theme", "")
+            except Exception:
+                pass
+            data[que_so] = {
+                "que_so": que_so,
+                "ten_que": ten or "",
+                "theme": theme,
+                "dien_giai": noi_dung or "",
+            }
+    except Exception as e:
+        print(f"⚠️  kinh_dich_rag load error: {e}")
+    return data
+
+
+def get_que(que_so: int) -> dict | None:
+    return _load_que().get(que_so)
+
+
+def get_context(que_chinh_so: int, que_bien_so: int) -> str:
+    """Format context cho prompt LLM."""
+    parts = []
+    for label, so in [("QUẺ CHÍNH", que_chinh_so), ("QUẺ BIẾN", que_bien_so)]:
+        q = get_que(so)
+        if not q:
+            continue
+        parts.append(
+            f"### {label}: Quẻ {q['que_so']} — {q['ten_que']}\n"
+            f"**Chủ đề:** {q['theme']}\n\n{q['dien_giai']}\n"
+        )
+    return "\n---\n".join(parts)
