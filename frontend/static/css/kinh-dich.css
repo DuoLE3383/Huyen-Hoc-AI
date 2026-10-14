@@ -282,10 +282,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-han);
-  font-size: 11px;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 15px;
   font-weight: 700;
+  letter-spacing: 0.02em;
   overflow: hidden;
+}
+.kd-coin .face::after {
+  /* lỗ vuông nhỏ hơn để chữ Hán hiện rõ */
+  width: 12px !important;
+  height: 12px !important;
 }
 .kd-coin .face::before {
   content: "";
@@ -477,3 +483,40 @@
 }
 .kd-coin .face.front { color: #5A3A00 !important; }
 .kd-coin .face.back  { color: #F0D27A !important; }
+
+/* ── Trang kinh-dich: chừa chỗ cho sidebar nav.js chèn vào ── */
+body {
+  margin: 0 !important;
+  background: var(--ink);
+}
+
+/* Sidebar tự do (fixed position) — không đẩy content */
+.kd-root {
+  margin-left: 0;
+  transition: margin-left .2s;
+}
+
+@media (min-width: 768px) {
+  body.has-sb .kd-root {
+    margin-left: 240px; /* khớp với --sb-width của nav.js */
+  }
+}
+
+/* Nếu mobile — sidebar overlay, không đẩy */
+@media (max-width: 767px) {
+  body.has-sb .kd-root {
+    margin-left: 0;
+  }
+}
+
+/* ── Tương thích nav.js sidebar ── */
+body { margin: 0; }
+.kd-root { margin-left: 0; transition: margin-left .2s; }
+
+@media (min-width: 768px) {
+  body.has-sb .kd-root { margin-left: 240px; }
+}
+@media (max-width: 767px) {
+  body.has-sb .kd-root { margin-left: 0; }
+  body.has-sb .kd-root { padding-left: 0; }
+}

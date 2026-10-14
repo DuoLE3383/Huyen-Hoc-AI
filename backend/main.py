@@ -4,7 +4,8 @@ import asyncio
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.database import init_db
@@ -55,6 +56,29 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+# ── Chặn bot scan path nhạy cảm ──
+_SCANNER_BLOCKLIST = (
+    ".env", ".git", ".htaccess", ".htpasswd", ".ssh",
+    "wp-admin", "wp-login", "wp-config", "wp-content",
+    "phpmyadmin", "pma", "mysql", "admin.php", "setup.php",
+    ".sql", ".bak", ".old", ".orig", ".swp",
+    "/vendor/", "/node_modules/", "/.idea/", "/.vscode/",
+    "config.php", "xmlrpc.php", "cgi-bin",
+    "shell", "eval", "backup", "dump",
+)
+
+
+@app.middleware("http")
+async def block_scanner_paths(request: Request, call_next):
+    path = request.url.path.lower()
+    # Bỏ qua static + api + docs thật
+    if path.startswith(("/static/", "/api/", "/docs", "/openapi")):
+        return await call_next(request)
+    if any(b in path for b in _SCANNER_BLOCKLIST):
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
+    return await call_next(request)
+
 
 app.include_router(api.router)
 app.include_router(geocode.router)

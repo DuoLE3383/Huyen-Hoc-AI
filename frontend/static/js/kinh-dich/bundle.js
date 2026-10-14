@@ -233,7 +233,13 @@
   }
   function panelTamHop(panel, d) {
     panel.replaceChildren();
-    if (!d || (!d.thien_thoi && !d.dia_loi && !d.nhan_hoa)) return;
+    if (!d || (!d.thien_thoi && !d.dia_loi && !d.nhan_hoa)) {
+      var ph = document.createElement("p");
+      ph.className = "kd-placeholder";
+      ph.textContent = "Đang tải luận giải Tam Hợp…";
+      panel.appendChild(ph);
+      return;
+    }
     var s = section("🌏 Thiên Thời · Địa Lợi · Nhân Hòa");
     var w = document.createElement("div"); w.className = "kd-tdn";
     [["thien","☀️ Thiên Thời",d.thien_thoi],["dia","🌍 Địa Lợi",d.dia_loi],["nhan","🤝 Nhân Hòa",d.nhan_hoa]].forEach(function (kv) {
