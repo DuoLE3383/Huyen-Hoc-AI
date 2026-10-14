@@ -1,5 +1,6 @@
 """RAG Kinh Dịch: ưu tiên v2 (dịch Hán văn), fallback v1 (LLM sinh)."""
 import json, sqlite3
+from knowledge.nguyen_hien_le_cache import get_context_for_que
 from pathlib import Path
 from functools import lru_cache
 
@@ -99,6 +100,15 @@ def get_context(que_chinh_so: int, que_bien_so: int) -> str:
             for h in hao_list:
                 text += f"- Hào {h['hao_so']}: {h['noi_dung']}\n"
         parts.append(text)
+
+        # ── Bổ sung context Nguyễn Hiến Lê (nếu có cache) ──
+        try:
+            nhl = get_context_for_que(so)
+            if nhl:
+                parts.append(nhl)
+        except Exception:
+            pass
+
     return "\n---\n".join(parts)
 
 
