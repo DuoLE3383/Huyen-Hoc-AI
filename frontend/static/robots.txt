@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /kinh-dich
+Allow: /static/
+Allow: /api/kinh-dich
+Allow: /api/bat-tu
+Disallow: /api/auth
+Disallow: /api/admin
+Disallow: /.env
+Disallow: /.git
+Disallow: /backend/
+Disallow: /core/
+Disallow: /deploy/
+
+# Sitemap
+Sitemap: https://app.huyenbao.com/sitemap.xml
+
+# AI crawlers được phép (cho SEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /

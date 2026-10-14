@@ -1,0 +1,63 @@
+{
+  "que_so": 35,
+  "title": "QUẺ 35: HỎA ĐỊA TẤN",
+  "ten_han": "晉",
+  "ten_viet": "jìn",
+  "thoan_tu": {
+    "han": "晉: 康侯用錫馬蕃庶, 晝日三接．",
+    "han_viet": "Tấn: Khang hầu dụng tích mã phồn thứ, trú nhật tam tiếp.",
+    "dich": "tiến lên, bậc hầu có tài trị nước được thưởng ngựa nhiều lần, ban ngày được tiếp tới ba lần.",
+    "giang": "Quẻ này có tượng mặt trời (ly) lên khỏi mặt đất (Khôn), càng lên cao càng sáng, tiến mạnh."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "晉如, 摧如, 貞吉, 罔孚, 裕. 无咎．",
+      "han_viet": "Sơ Lục: tấn như, tồi như, trinh cát, võng phu, dụ, vô cữu.",
+      "dich": "Hào 1 âm: muốn tiến lên mà bị chắn lại, giữ đạo chính thì tốt; nếu người chẳng tin mình thì nên khoan thai, bình tĩnh, như vậy sẽ không có lỗi.",
+      "giang": "Âm nhu ở dưới cùng, ứng với hào 4, mà 4 lại bất trung, bất chính, nên chẳng giúp mình được gì, mình muốn tiến lên mà như thể bị chặn lại. Trong hoàn cảnh đó, nếu có người không tin mình thì mình chỉ nên khoan thai, bình tĩnh tu thân là sẽ không có lỗi."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "晉如, 愁如, 貞吉; 受茲介福于其王母．",
+      "han_viet": "Lục nhị: Tấn như, sầu như, trinh cát;",
+      "dich": "Hào 2, âm: Tiến lên mà rầu rĩ, giữ đạo chính thì tốt; sẽ được nhờ phúc lớn của bà nội.",
+      "giang": "Hào này có đức trung chính, đáng lẽ tiến lên được nhưng trên không có người ứng viện (vì hào 5 cũng âm nhu như 2), phải tiến một mình, nên rầu rĩ. Nhưng cứ giữ đạo chính thì chẳng bao lâu sẽ gặp cơ hội tốt: hào 5 ở trên, cũng là hào âm như mình, tuy không giúp được mình trong công việc, nhưng cũng đắc trung như mình, sẽ ban phúc lớn cho mình, và mình sẽ được nhờ hào 5 như được nhờ phúc của bà nội (vương mẫu tức như tổ mẫu) mình vậy."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "眾允, 悔亡．",
+      "han_viet": "Lục tam: chúng doãn, hối vong.",
+      "dich": "hào 3, âm: mọi người tin cẩn, thì mọi sự hối tiếc sẽ mất đi.",
+      "giang": "hào âm này ở trên cùng nội quái Khôn, bất trung chính, đáng lẽ có điều hối hận, nhưng có hai hào âm ở dưới đều muốn tiến lên với mình, đều tin mình, mình được lòng họ, thì còn gì phải hối tiếc nữa đâu?"
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "晉如, 鼫鼠, 貞厲．",
+      "han_viet": "Cửu tứ: Tấn như, thạch thử, trinh lệ.",
+      "dich": "hào 4, dương : tiến lên, tham lam như con chuột đồng, cứ giữ thói đó thì nguy.",
+      "giang": "Hào này bất chính, bất trung, ở địa vị cao, tham lam muốn giữ ngôi mà lại sợ một bầy âm ở dưới dương hăng hái dắt nhau tiến lên, nên ví với con chuột đồng, vừa tham vừa sợ người ."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "悔亡, 失得勿恤, 往吉, 无不利．",
+      "han_viet": "Lục ngũ: hối vong, thất đắc vật tuất, vãng cát, vô bất lợi.",
+      "dich": "Hào 5, âm: không có gì ân hận cả; nếu đừng lo được hay mất, mà cứ tiến thì tốt, không gì là không lợi.",
+      "giang": "Hào này làm chủ quẻ Tấn, có đức sáng suốt (vì ở giữa ngoại quái Ly), lại được ba hào âm ở dưới thuận giúp mình, nên không có gì phải ân hận."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "晉其角, 維用伐邑, 厲吉, 无咎, 貞吝．",
+      "han_viet": "Thượng cửu: Tấn kì giác, duy dụng phạt ấp, lệ cát, vô cữu, trinh lận.",
+      "dich": "Hào trên cùng, dương: chỉ tiến cặp sừng thôi, lo trị cái ấp riêng của mình thôi thì dù có nguy, kết quả cũng tốt, không tội lỗi, nhưng dù được điều chỉnh thì cũng đáng thẹn.",
+      "giang": "Dương cương mà ở trên cùng quẻ Tấn, có nghĩa là cứng đến cùng cực, mà ham tiến cũng cùng cực, không khác con thú hung hăng chỉ húc bằng cặp sừng. Như vậy không làm được việc lớn, chỉ giữ được cái vị của mình, như trị được cái ấp riêng của mình thôi, dù có nguy thì cũng vẫn thành công đấy. Có điều là ở thời đại Tiến lên mà chỉ làm được vậy, chứ không thành sự nghiệp lớn thì cũng đáng thẹn đáng tiếc."
+    }
+  ],
+  "dai_y": ""
+}

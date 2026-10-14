@@ -1,0 +1,63 @@
+{
+  "que_so": 32,
+  "title": "QUẺ 32: LÔI PHONG HẰNG",
+  "ten_han": "恆",
+  "ten_viet": "héng",
+  "thoan_tu": {
+    "han": "恆: 亨, 无咎; 利貞, 利有攸往．",
+    "han_viet": "Hằng: Hanh, vô cữu; lợi trinh, lợi hữu du vãng.",
+    "dich": "Lâu dài thì hanh thông, không có lỗi; giữ được chính đạo thì có lợi, tiến hành việc gì cũng thành công.",
+    "giang": ""
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "浚恆, 貞凶, 无攸利．",
+      "han_viet": "Sơ lục: tuấn hằng, trinh hung, vô du lợi.",
+      "dich": "Hào 1, âm: Quá mong được thân mật lâu dài; cứ quyết (trinh) như vậy, không chịu bỏ thì xấu, không làm gì được thuận lợi cả.",
+      "giang": "Hào 1 ứng với hào 4, nhưng địa vị mình quá thấp, địa vị 4 quá cao, mà 4 là dương cương, chỉ trông lên không ngó xuống mình; lại thêm có 2 hào 2 và 3 ngăn cách vậy mà không biết phận cứ tiến sâu (tuấn là sâu), mong được thân mật lâu dài, keo sơn với 4, thành ra ngu. Cứ kiên cố giữ cách ấy thì xấu."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "悔亡．",
+      "han_viet": "Cửu nhị: hối vong.",
+      "dich": "Hào 2, dương: hối hận tiêu hết.",
+      "giang": "Hào này dương cương ở vị âm, đáng lẽ có hối hận, nhưng vì đắc trung lại ứng với hào 5 cũng đắc trung, thế là giữ được đạo trung, nên không có gì hối hận."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "不恆其德, 或承之羞, 貞吝．",
+      "han_viet": "Cửu tam: Bất hằng kì đức, hoặc thừa chi tu, trinh lận.",
+      "dich": "Hào 3, dương : không thường giữ được cái đức của mình, có khi bị xấu hổ, dù chính đáng cũng đáng tiếc.",
+      "giang": "Hào dương ở vị dương là đắc chính, nếu thường giữ được đức “chính” đó thì tốt; nhưng vì quá cương mà bất đắc trung, lại theo đòi với hào trên cùng âm nhu, thế là bỏ cái đức chính của mình, muốn kết bạn với hào trên cùng, chưa biết chừng bị xấu hổ đấy. Vậy 3 tuy “ chính “ đấy, chỉ vì không thường giữ được đức đó, thì tuy chính mà vẫn đáng tiếc."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "田无禽．",
+      "han_viet": "Cửu tứ: Điền vô cầm.",
+      "dich": "Hào 4, dương : như đi săn mà không được cầm thú.",
+      "giang": "Hào dương mà ở vị âm, là không phải chỗ của mình mà cứ ở lâu chỗ đó, vì trong quẻ Hằng thì chẳng nên việc gì, chỉ mất công thôi, như đi săn mà không bắt được cầm thú."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "恆其德, 貞. 婦人吉, 夫子凶．",
+      "han_viet": "Lục ngũ: Hằng kỳ đức, trinh. Phụ nhân cát, phu tử hung.",
+      "dich": "Hào 5, âm: giữ được thường (lâu) đức của mình, bền mà chính. Đàn bà thì tốt, đàn ông thì xấu.",
+      "giang": "Hào 5, âm nhu, đắc trung, ứng với hào 2 dương cương cũng đắc trung, nếu cứ thuận tòng từ trước tới sau thì là bền mà chính đáng. Nhưng đó chỉ là đạo của đàn bà như hào 5, âm này thôi; không hợp với đàn ông, vì theo quan niệm thời xưa, phu xướng phụ tùy."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "振恆, 凶．",
+      "han_viet": "Thượng lục: chấn hằng, hung.",
+      "dich": "Hào trên cùng, âm: cử động hoài, không chịu yên thì xấu.",
+      "giang": "Ở trên cùng quẻ Hằng và ngoại quái Chấn, cho nên nói là ham động quá, lại âm nhu, không bền chí, ở yên không được sẽ thất bại."
+    }
+  ],
+  "dai_y": ""
+}

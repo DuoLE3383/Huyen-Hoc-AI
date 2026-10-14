@@ -1,0 +1,63 @@
+{
+  "que_so": 43,
+  "title": "QUẺ 43: TRẠCH THIÊN QUẢI",
+  "ten_han": "萃",
+  "ten_viet": "cuì",
+  "thoan_tu": {
+    "han": "夬: 揚于王庭, 孚號. 有厲, 告自邑．不利即戎, 利有攸往．",
+    "han_viet": "Quải: Dương vu vương đình, phu hiệu. Hữu lệ, cáo tự ấp, bất lợi tức nhung, lợi hữu du vãng.",
+    "dich": "Quyết liệt: phải tuyên cáo tội ác của nó ở sân vua, lấy lòng chí thành mà phát hiệu lệnh. Có điều như sợ đấy, phải tự răn phe mình đã, đừng chuyên dùng võ lực, được như vậy thì sự nghiệp của mình càng tiến tới, có lợi.",
+    "giang": "Chằm (Đoài) ở trên, trời (Càn) ở dưới, là nước chằm dân lên ngập trời, tất nhiên các đê ngăn nước phải nứt vỡ khắp nơi."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "壯于前趾, 往, 不勝為咎．",
+      "han_viet": "Sơ cửu: Tráng vu tiên chỉ, vãng, bất thắng vi cữu.",
+      "dich": "Hào 1, dương: mạnh (thăng ở ngón chân bước lên trước (tức hăng tiến lên trước), tiến lên mà không chắc thắng được là có lỗi.",
+      "giang": "Hào này dương cương, hăng lắm, ở địa vị thấp nhất, tài còn non mà muốn tiến lên trước để diệt hào âm ở trên cùng, chưa chắc đã thắng mà cứ tiến lên là có lỗi (vì không lượng sức mình, không chuẩn bị kỷ)."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "惕, 號, 莫夜有戎, 勿恤．",
+      "han_viet": "Cửu nhi: Dịch, hao, mạc dạ hữu nhung, vật tuất.",
+      "dich": "Hào 2, dương: lo lắng mà hô hào các bạn (đề phòng) như vậy dù đêm khuya giặc có tới cũng chẳng sợ.",
+      "giang": "Hào này dương cương, quyết tâm diệt tiểu nhân, mà đắc trung là biết lo lắng, đề phòng, cảnh cáo các bạn luôn luôn, khi vô sự mà như vậy thì khi giặc tới thình lình nữa đêm, cũng chuẩn bị sẳn sàng rồi, nên không sợ."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "壯于頄．有凶．君子夬夬．獨行遇雨, 若濡有慍, 无咎．",
+      "han_viet": "Cửu tam: Tráng vu quì (cừu), hữu hung, quân tử quải quải,",
+      "dich": "Hào 3, dương: Cường bạo ở gò má (hiện trên mặt), có điều xấu. Người quân tử cương quyết (bỏ tiểu nhân): trước kia đã lỡ đi riêng một đường gặp mưa ướt và lấm, bị bạn bè giận, bây giờ cải quá, sẽ không có lỗi.",
+      "giang": "Hào này là dương cương nhưng bất trung, lại ứng với hào âm (tiểu nhân), thì kẻ tiểu nhân đó không ưa mà ngay các bạn quân tử của 3 cũng không ưa, (vì cho là giả dối?), có điều xấu đấy – Câu đầu: “Tráng vu quì, hữu hung” tối nghĩa, mỗi sách giảng một cách mà đều lúng túng."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "臀无膚, 其行次且, 牽羊悔亡, 聞言不信．",
+      "han_viet": "Cửu tứ: Đồn vô phu, kì hành tư thư, khiên dương hối vong, văn ngôn bất tín.",
+      "dich": "Hào 4, dương: Như bàn toạ mà không có da (có người cho là không hợp có lớp thịt sau da), đi chập chững (khó khăn); chỉ nên đi sau người ta như người lùa bầy cừu, thì hết ân hận; (nhưng e rằng) nghe (ta) nói mà chẳng tin đâu.",
+      "giang": "Hào dương này bất trung bất chính, ở vào vị âm, thấy mấy hào dương kia tiến nó không lẽ ngồi im, nhưng thiếu tài, tiến chập chững (như người bàn toạ không có da), chỉ có cách tốt nhất là nhường cho các hào dương kia tiến trước, nó đi sau cùng như người lùa bầy cừu, như vậy không ân hận."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "莧陸, 夬夬, 中行, 无咎．",
+      "han_viet": "Cửu ngũ: Nghiễn lục, quải quải, trung hành, vô cữu.",
+      "dich": "Hào 5, dương (Hào trên cùng) như rau sam (được nhiều âm khí), nếu hào 5 cương quyết, đào tận gốc nó, cứ theo đạo trung mà đi thì không lỗi.",
+      "giang": "Hào này ở gần hào trên cùng, gần tiểu nhân (âm, ví như rau sam), như vậy không tốt; nhưng may nó là dương cương , đắc trung đắc chính, nên không bịn rịn với hào trên cùng mà quyết tâm trừ đi. Hào từ khuyên phải giữ đạo trung thì mới không có lỗi (vì 5 vốn có tư tình với hào trên)"
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "无號, 終 有凶.",
+      "han_viet": "Thượng lục: vô hào, chung hữu hung.",
+      "dich": "Hào trên cùng, âm: Đừng kêu gào, không ai giúp đâu, cuối cùng sẽ bị hoạ.",
+      "giang": "Hào âm ở trên cùng quẻ Quải, bị 5 hào dương tấn công, nguy cơ tới rồi, không có hào nào giúp nó cả, cho nên khuyên nó đừng kêu gào vô ích, cuối cùng sẽ chết thôi."
+    }
+  ],
+  "dai_y": ""
+}

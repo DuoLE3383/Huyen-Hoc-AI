@@ -1,0 +1,63 @@
+{
+  "que_so": 19,
+  "title": "QUẺ 19: ĐỊA TRẠCH LÂM",
+  "ten_han": "臨",
+  "ten_viet": "lín",
+  "thoan_tu": {
+    "han": "臨: 元亨, 利貞．至于八月有凶．",
+    "han_viet": "Lâm: Nguyên hanh, lợi trinh. Chí vu bát nguyệt hữu hung.",
+    "dich": "(dương) lớn lên và tới, rất hanh thông, chính đính thì lợi. Đến tháng 8 (hoặc tám tháng nữa) sẽ xấu.",
+    "giang": "Mới đầu là quẻ Khôn, 5 hào âm. Một hào dương tới thay hào 1 âm ở dưới, rồi một hào dương nữa tới thay hào 2 âm, thành ra quẻ Lâm . Thế là dương cung lớn dần, tới ngày thịnh lớn, nên gọi là Lâm."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "咸臨, 貞吉.",
+      "han_viet": "Sơ cửu: Hàm lâm, trinh cát.",
+      "dich": "Hào 1, dương : Cùng tới, giữ chính đạo thì tốt.",
+      "giang": "Trong quẻ này chỉ có hai hào dương tới lấn bốn hào âm, cho nên hai hào dương phải hợp lực nhau cùng tới, mới chiến thắng được. Hào 1 đắc chính (vì là dương mà ở vị dương lẻ) cho nên khuyên nên giữ chính đạo của mình."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "咸臨, 吉, 无不利．",
+      "han_viet": "Cửu nhị: Hàm lâm, cát, vô bất lợi.",
+      "dich": "Hào 2, dương : cùng tới, tốt, không gì là không lợi.",
+      "giang": "Nghĩa cũng như hào 1. Hào 2, dương cương đắc trung, gặp lúc dương đương lên, cho nên hiện tại tốt lành mà tương lai cũng thuận lợi."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "甘臨, 无攸利; 既憂之, 无咎．",
+      "han_viet": "Lục tam: Cam lâm, vô du lợi; Kí ưu chi, cô cửu.",
+      "dich": "Hào 3 âm: Ngọt ngào (a dua) mà tới (để dụ dỗ hào 2) thì không có lợi đâu; nhưng đã biết lo sửa tính thì không có lỗi nữa.",
+      "giang": "Hào này âm nhu, bất trung, bất chính nên ví với bọn tiểu nhân, dùng lời ngọt ngào mà dụ dỗ hào 2."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "至臨, 无咎．",
+      "han_viet": "Lục tứ: Chi lâm, vô cữu.",
+      "dich": "Hào 4, âm: Hết lòng thành thực tới với hào 1, không có lỗi.",
+      "giang": "Hào này cũng là âm nhu, nhưng đắc chính (âm ở vị âm), có lòng thành thực, lại ứng với hào 1 là người có tài, chính đáng (hào 1 cũng đắc chính), nên không có lỗi gì cả."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "知臨, 大君之宜, 吉．",
+      "han_viet": "Lục ngũ: Trí lâm, đại quân chi nghi, cát.",
+      "dich": "Hào 5, âm: Dùng đức sáng suốt mà tới, đúng là tư cách một vị nguyên thủ, tốt.",
+      "giang": "hào âm này ở vị chí tôn, có đức trung, ứng hợp với hào 2, dương , có thể ví với một vị nguyên thủ tuy ít tài (âm) nhưng sáng suốt, biết người nào có tài (hào 2), tín nhiệm, ủy thác việc nước cho người đó, như vậy kết quả chắc tốt."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "敦臨, 吉, 无咎．",
+      "han_viet": "Thượng lục: Đôn lâm, cát, vô cữu.",
+      "dich": "Hào trên cùng, âm: Lấy lòng đôn hậu mà tới (với đời), tốt, không có lỗi.",
+      "giang": "Hào này là âm, ở cuối cùng ngoại quái Khôn, là có đức rất nhu thuận, ở thời Lâm, tức thời của dương, của quân tử đương tiến, nó hướng về hai hào dương ở dưới cùng (mặc dầu không hào nào trong 2 hào đó ứng với nó) mà dắt mấy hào âm kia theo hai hào dương đó, cho nên khen nó là đôn hậu, tốt, không có lỗi."
+    }
+  ],
+  "dai_y": ""
+}

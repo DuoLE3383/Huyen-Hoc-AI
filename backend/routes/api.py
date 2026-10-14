@@ -2031,17 +2031,57 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             yield _sse_event("error", {"message": f"Lỗi gieo quẻ: {exc}"})
             return
 
-        yield _sse_event("cast", {**cast, "bat_tu": bat_tu})
+        # Lấy nguyên văn Hán + Hán-Việt + Dịch + Giảng từ hocvienlyso
+        hanvan_goc = None
+        try:
+            from knowledge.hocvienlyso_cache import format_for_frontend
+            hanvan_goc = format_for_frontend(que_chinh_so)
+        except Exception:
+            pass
+
+        yield _sse_event("cast", {
+            **cast,
+            "bat_tu": bat_tu,
+            "hanvan": hanvan_goc,  # nguyên văn gốc cho frontend
+        })
 
         # 2. Chuẩn bị 3 prompts
         try:
-            from knowledge.kinh_dich_rag import get_context
-            context = get_context(que_chinh_so, que_bien_so)
+            # ═══ Dùng hocvienlyso (Hán-Việt + Dịch + Giảng NHL) làm tư liệu chính ═══
+            context = ""
+            try:
+                from knowledge.hocvienlyso_cache import format_for_prompt as nhl_prompt
+                context = nhl_prompt(que_chinh_so)
+                if que_bien_so != que_chinh_so:
+                    context += "\n\n---\n" + nhl_prompt(que_bien_so)
+            except Exception:
+                pass
+
+            # Fallback RAG cũ nếu hocvienlyso thiếu
+            if not context:
+                from knowledge.kinh_dich_rag import get_context
+                context = get_context(que_chinh_so, que_bien_so)
+
             que_info = _build_que_info(cast)
-            # Bổ sung bát tự vào que_info — AI sẽ dùng để cá nhân hoá
             que_info = format_bat_tu_context(bat_tu) + "\n" + que_info
+
+            # ═══ Bổ sung ngũ hành quẻ (BẮT BUỘC — luật cứng) ═══
+            try:
+                from bat_tu.nap_giap import format_quai_ngu_hanh
+                nhat_chu_hanh = bat_tu.get("nhat_chu_hanh", "")
+                if nhat_chu_hanh:
+                    quai_ctx = format_quai_ngu_hanh(cast["que_chinh"], nhat_chu_hanh)
+                    que_info = quai_ctx + "\n\n" + que_info
+                    # Quẻ biến nếu có
+                    if cast.get("que_bien"):
+                        quai_bien_ctx = format_quai_ngu_hanh(cast["que_bien"], nhat_chu_hanh)
+                        que_info += "\n\n### QUẺ BIẾN:\n" + quai_bien_ctx
+            except Exception as exc:
+                print(f"[quai_ngu_hanh] Lỗi: {exc}", flush=True)
+
+            print(f"[DEBUG] que_info gửi cho LLM:\n{que_info}\n", flush=True)
             p1 = await _prompt_1_core(data.cau_hoi, que_info, context)
-            p2 = await _prompt_2_tam_hop(data.cau_hoi, que_info)
+            p2 = await _prompt_2_tam_hop(data.cau_hoi, que_info, cast=cast, bat_tu=bat_tu)
             p3 = await _prompt_3_action(data.cau_hoi, que_info)
         except Exception as exc:
             yield _sse_event("error", {"message": f"Lỗi chuẩn bị prompt: {exc}"})
@@ -2061,18 +2101,63 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
                 return (label, None, str(exc))
 
         # 3. Chạy 3 prompts song song — yield từng kết quả khi xong
+        #    Tách riêng phần "dieu_nghia_ca_nhan" của p3 → paywall
         tasks = [
             asyncio.create_task(run_one("core", p1, 0.7)),
-            asyncio.create_task(run_one("tam_hop", p2, 0.6)),
-            asyncio.create_task(run_one("action", p3, 0.7)),
+            asyncio.create_task(run_one("hao_chuyen", p2, 0.6)),
+            asyncio.create_task(run_one("que_bien", p3, 0.7)),
         ]
+
+        # Cache để unlock sau này (per session)
+        _pending_personal: dict[str, Any] = {}
 
         for fut in asyncio.as_completed(tasks):
             label, parsed, err = await fut
             if err:
                 yield _sse_event("error", {"message": err, "section": label})
             else:
+                # Tách "dieu_nghia_ca_nhan" khỏi p3 (que_bien)
+                if label == "que_bien" and parsed:
+                    personal = parsed.pop("dieu_nghia_ca_nhan", None)
+                    # Fallback: dùng xu_huong + loi_khuyen làm dieu nghia nếu LLM bỏ field
+                    if not personal:
+                        xu = parsed.get("xu_huong", "")
+                        lk = parsed.get("loi_khuyen", "")
+                        if xu or lk:
+                            personal = (xu + "\n\n" + lk).strip()
+                            print(f"[unlock] LLM bỏ dieu_nghia_ca_nhan, dùng fallback ({len(personal)} ký tự)", flush=True)
+                    if personal:
+                        _pending_personal["value"] = personal
+                    else:
+                        print("[unlock] CẢNH BÁO: không có dieu_nghia_ca_nhan và không có fallback", flush=True)
                 yield _sse_event(label, parsed or {})
+
+        # Gửi token/session để unlock sau
+        if _pending_personal.get("value"):
+            # Session id đơn giản — dùng hash của câu hỏi + thời gian
+            import hashlib, time
+            sid = hashlib.md5(
+                f"{data.cau_hoi}{time.time()}".encode()
+            ).hexdigest()[:16]
+            # Lưu vào cache — convert về string an toàn
+            try:
+                from core.database import cache_personal_insight
+                val = _pending_personal["value"]
+                # Nếu là dict (LLM trả nested) → convert thành text
+                if isinstance(val, dict):
+                    parts = []
+                    for k, v in val.items():
+                        parts.append(f"**{k}**\n{v}")
+                    val = "\n\n".join(parts)
+                elif not isinstance(val, str):
+                    val = str(val)
+                cache_personal_insight(sid, val)
+                print(f"[unlock] ✅ Đã lưu session {sid} vào DB ({len(val)} ký tự)", flush=True)
+            except Exception as exc:
+                print(f"[unlock] ❌ LỖI cache session {sid}: {type(exc).__name__}: {exc}", flush=True)
+                import traceback
+                traceback.print_exc()
+            yield _sse_event("unlock_token", {"session_id": sid})
 
         yield _sse_event("done", {})
 
@@ -2081,6 +2166,23 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+class UnlockInput(BaseModel):
+    session_id: str = Field(min_length=8, max_length=64)
+
+
+@router.post("/api/kinh-dich/unlock")
+async def api_kinh_dich_unlock(data: UnlockInput) -> dict[str, Any]:
+    """Mở khoá diệu nghĩa cá nhân (sau khi user xem ads)."""
+    from core.database import unlock_personal_insight
+    content = unlock_personal_insight(data.session_id)
+    if not content:
+        raise HTTPException(
+            status_code=404,
+            detail="Session không tồn tại hoặc đã hết hạn (24h). Vui lòng gieo lại quẻ.",
+        )
+    return {"ok": True, "dieu_nghia_ca_nhan": content}
 
 
 @router.post("/api/share")

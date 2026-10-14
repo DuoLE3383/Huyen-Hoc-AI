@@ -1,0 +1,63 @@
+{
+  "que_so": 39,
+  "title": "QUẺ 39: THỦY SƠN KIỂN",
+  "ten_han": "",
+  "ten_viet": "",
+  "thoan_tu": {
+    "han": "蹇: 利西南, 不利東北, 利見大人, 貞吉．",
+    "han_viet": "Kiển: Lợi Tây Nam, bất lợi đông Bắc, lợi kiến đại nhân, trinh cát.",
+    "dich": "Gian nan: đi về Tây nam thì lợi, về đông Bắc thì bật lợi. Gặp đại nhân giúp cho thì lợi; bền giữa đạo chính thì mới tốt.",
+    "giang": "Trước mặt là sông (Khảm), sau lưng là núi(Cấn), tiến lui đều gian nan hiểm trở nên gọi là quẻ Kiển. Phải bỏ đường hiểm trở mà kiếm đường bằng phẳng dễ đi, ở hướng Tây Nam, hướng quẻ Khôn, đừng đi hướng đông Bắc, hướng quẻ Cấn. Dĩ nhiên chúng ta không nên hiểu đúng từng chữ Tây Nam và Đông Bắc, chỉ nên hiểu ý thôi."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "往蹇, 來譽．",
+      "han_viet": "Sơ lục: vãng kiển, lai dự.",
+      "dich": "Hào 1, âm: tiến lên thì gặp nạn, lui lại (hoặc ngừng) thì được khen.",
+      "giang": "Vào đầu thời gian nan, hào 1 này âm nhu, không có tài, tiến lên hay hành động thì xấu, chỉ nên chờ thời."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "王臣蹇蹇, 匪躬之故．",
+      "han_viet": "Lục nhị: Vương thần kiển kiển, phỉ cung chi cố.",
+      "dich": "Hào 2 âm: bậc bề tôi chịu gán hết gian nan này tới gian nan khác là vì vua, vì nước, chứ không phải vì mình.",
+      "giang": "hào này cũng âm nhu, kém tài, nhưng đắc trung đắc chính, có đức, được vua (hào 5, dương mà cũng trung chính) phó thác việc nước, nên phải chống chỏi với mọi gian nan, không dám từ, mặc dầu tự biết không chắc gì cứu nước, cứu dân được trong thời khó khăn này. Hoàn toàn không vì mình, đáng khen."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "往蹇, 來反．",
+      "han_viet": "Cửu tam: Vãng kiển, lai phản.",
+      "dich": "Hào 3, dương: Tiến tới thì mắc nạn, nên trở lại.",
+      "giang": "hào này dương cương đắc chính, nhưng vẫn còn ở nội quái, tức chưa hết nửa thời gian nan, lại thêm hào trên cũng âm nhu, ứng với nó mà không giúp được gì, nên Hào từ khuyên đừng tiến, cứ quay lại với hào âm thì vui vẻ hơn; bề gì cũng là bạn cũ rồi."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "往蹇, 來連．",
+      "han_viet": "Lục tứ: Vãng kiển, lai liên.",
+      "dich": "Hào 4, âm: tiến tới thì mắc nạn, nên trở lại mà liên hiệp với các hào dưới.",
+      "giang": "Hào này âm nhu, kém tài, đã tiến lên ngoại quái, quá nữa thời gian nan, nhưng lại gặp hiểm trở (ngoại quái là Khảm) cũng không nên tiến lên, mà nên lùi lại với hào 3, liên hợp với ba hào ở dưới, để thêm thế lực."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "大蹇, 朋來．",
+      "han_viet": "Cửu ngũ: Đại kiển, bằng lai.",
+      "dich": "Hào 5, dương: cực kỳ gian nan, nhưng có bạn tới giúp.",
+      "giang": "Ở giữa ngoại quái khảm (hiểm) cho nên cực kỳ gian nan. Hào này như ông vua có tài, nhưng cũng khó thoát được hiểm. May có hào 2 đắc trung, đắc chính ứng với mình, sẳn lòng dắt các bạn tức các hào 1, 3, 5 tới giúp mình. Nhưng các hào ấy đều ít tài, trừ hào 3; như vậy là tay chân của 5 tầm thường cả, không làm nên việc lớn, nên Hào từ không khen là tốt. Cũng không dùng chữ lai, không bảo nên lùi vì địa vị nguyên thủ của 5 không cho phép 5 lùi được, lùi thì trút trách nhiệm cho ai?"
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "往蹇, 來碩, 吉．利見大人．",
+      "han_viet": "Thượng lục: Vãng kiển, lai thạc, cát, lợi kiến đại nhân.",
+      "dich": "Hào trên cùng ,âm; tiến tới thì gian nan, lùi lại thì làm được việc lớn, tốt; nên tìm gặp đại nhân thì có lợi.",
+      "giang": "ở cuối thời gian nan, có cảnh tượng đáng mừng; hào này âm nhu, không một mình mạo hiểm được nên quay lại giúp hào 5, bậc đại nhân (có tài đức), thì lập được công lớn (thạc), tốt."
+    }
+  ],
+  "dai_y": ""
+}

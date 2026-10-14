@@ -80,6 +80,37 @@ async def block_scanner_paths(request: Request, call_next):
     return await call_next(request)
 
 
+# ═══ SEO files (robots.txt, ads.txt, sitemap.xml) — serve ở root ═══
+from pathlib import Path as _Path
+from fastapi.responses import FileResponse as _FileResponse
+
+_FRONTEND_STATIC = _Path(__file__).resolve().parent.parent / "frontend" / "static"
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def _robots_txt():
+    f = _FRONTEND_STATIC / "robots.txt"
+    if f.exists():
+        return _FileResponse(f, media_type="text/plain")
+    return _FileResponse(status_code=404)  # fallback 404 nếu thiếu
+
+
+@app.get("/ads.txt", include_in_schema=False)
+def _ads_txt():
+    f = _FRONTEND_STATIC / "ads.txt"
+    if f.exists():
+        return _FileResponse(f, media_type="text/plain")
+    return _FileResponse(status_code=404)
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def _sitemap_xml():
+    f = _FRONTEND_STATIC / "sitemap.xml"
+    if f.exists():
+        return _FileResponse(f, media_type="application/xml")
+    return _FileResponse(status_code=404)
+
+
 app.include_router(api.router)
 app.include_router(geocode.router)
 app.include_router(action_advice.router)

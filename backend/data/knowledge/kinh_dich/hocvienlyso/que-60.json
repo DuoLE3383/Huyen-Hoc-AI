@@ -1,0 +1,55 @@
+{
+  "que_so": 60,
+  "title": "QUẺ 60: THỦY TRẠCH TIẾT",
+  "ten_han": "節",
+  "ten_viet": "jié",
+  "thoan_tu": {
+    "han": "節: 亨．苦節不可貞．",
+    "han_viet": "Tiết: Hanh. Khổ tiết bất khả trinh.",
+    "dich": "Tiết chế thì hanh thông. Nhưng tiết tiết chế đến mức cực khổ thì không ai chịu được lâu.",
+    "giang": "Theo tượng quẻ, trên chằm có nước; bờ chằm hạn chế số nước chứa trong chằm, cho nên đặt tên là quẻ Tiết."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "不出戶庭, 无咎．",
+      "han_viet": "sơ cửu: Bất xuất hội đình, vô cữu.",
+      "dich": "Hào 1, dương: không ra khỏi sân ngõ, không có lỗi.",
+      "giang": "Hào này dùng chữ tiết với nghĩa tự mình tiết chế mình, tức dè dặt. Ở với tời Tiết chế, làm việc gì cũng phải đúng mức (trung tiết) mới tốt. Hào, 1 dương cương , đắc chính, ở đầu thời Tiết chế, biết thận trọng, không ra khỏi sân ngõ, vì biết là thời chưa thông, hãy còn tắc, như vậy là đúng với đạo tiết chế, không có lỗi. Hai chữ “hộ đình chúng tôi dịch theo nghĩa “ngoại chi đình” của Chu Hi. J legge dịch là không ra khỏi cái sân ở ngoài cái cửa (door): R. Wilhelm dịch là không ra khỏi cái sân và cái cửa (door)."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "不出門庭, 凶．",
+      "han_viet": "Cửu nhị: Bất xuất môn đình, hung.",
+      "dich": "Hào 2, dương: không ra khỏi cái sân ở trong cửa, xấu.",
+      "giang": "Hào này đáng lẽ ra giúp việc được, vì thời đã khác thời của hào 1 đã thông rồi không tắc nữa mà lại được hào 5 ở trên cũng dương như mình giúp sức cho; vậy mà đóng cửa không ra cũng như 1, hành vi đó xấu (hung)."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "不節若, 則嗟若,无咎．",
+      "han_viet": "Lục tam: Bất tiết nhược, tất ta nhược, vô cữu.",
+      "dich": "Hào 3, âm: không dè dặt (tự tiết chế mình) mà phải than vãn, không đổ lỗi cho ai được.",
+      "giang": "Âm nhu, bất trung bất chính, lại cưỡi lên hai hào dương, mà muốn tiến tới cõi nguy hiểm (quẻ Khảm ở trên), như vậy là không biết dè dặt, tự chế, rước vạ vào thân, còn đổ lỗi cho ai được nữa."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "甘節, 吉．往有尚．",
+      "han_viet": "Cửu ngũ: Cam tiết, cát. Vãng hữu thượng.",
+      "dich": "Hào 5, dương: Tiết chế mà vui vẻ (cho là ngon ngọt) thì tốt. Cứ thế mà tiến hành thì được người ta trọng, khen.",
+      "giang": "Hào này ở vị chí tôn, làm chủ quẻ Tiết, có đủ các đức dương cương trung chính tự tiết chế một cách vui vẻ, thiên hạ noi gương mà vui vẻ tiết chế, cho nên tốt; và cứ thế mà tiến hành thì có công lớn, đáng khen."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "苦節, 貞凶, 悔亡．",
+      "han_viet": "Thượng lục: Khổ tiết, trinh hung. Hối vong.",
+      "dich": "Hào trên cùng, âm: Tiết chế mà tới mức cực khổ, nếu cứ giữ mãi (trinh) thôi đó thì xấu. Nếu biết hối hận, bớt thái quá đi thì hết xấu.",
+      "giang": "Hào này trái với hào trên, vì ở trên cùng quẻ Tiết, có nghĩa là tiết chế thái quá, tới cực khổ, không ai chịu được hoài như vậy."
+    }
+  ],
+  "dai_y": ""
+}

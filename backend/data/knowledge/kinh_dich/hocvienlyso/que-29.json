@@ -1,0 +1,63 @@
+{
+  "que_so": 29,
+  "title": "QUẺ 29: THUẦN KHẢM",
+  "ten_han": "坎",
+  "ten_viet": "kan3",
+  "thoan_tu": {
+    "han": "習坎: 有孚, 維心亨, 行有尚．",
+    "han_viet": "",
+    "dich": "Hai lớp khảm (hai lớp hiểm), có đức tin, chỉ trong lòng là hanh thông, tiến đi (hành động) thì được trọng mà có công.",
+    "giang": "Tập Khảm có nghĩa là trùng khảm, hai lần Khảm. Nhìn hình quẻ Khảm ta thấy một hào dương bị hãm vào giữa hai hào âm, cho nên Khảm có nghĩa là hãm, là hiểm."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "習坎, 入于坎窞, 凶．",
+      "han_viet": "Sơ lục: Tập khảm, nhập vu khảm năm ( có người đọc là đạm, hạm, lăm), hung.",
+      "dich": "Hào 1, âm: Hai lần hiểm, sụp vào hố sâu, xấu.",
+      "giang": "hào 1 đã âm nhu, lại ở dưới cùng quẻ Thuần Khảm hai lần hiểm, nên rất xấu."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "坎有險, 求小得．",
+      "han_viet": "Cửu nhị: khảm hữu hiểm, cầu tiểu đắc.",
+      "dich": "Hào 2, dương: ở chỗ nước (hiểm) lại có hiểm, mong làm được việc nhỏ thôi.",
+      "giang": "Hào này dương cương, đắc trung, có tài trí, nhưng ở giữa thời trùng hiểm, trên dưới bị hai hào âm nhu bao vây, chưa thóat được; cho nên chỉ mong làm đựơc việc nhỏ thôi."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "來之坎坎, 險且枕, 入于坎窞, 勿用.",
+      "han_viet": "Lục tam: Lai chi khảm khảm, hiểm thả chẩm, nhập vu khảm năm, vật dụng.",
+      "dich": "Hào 3, âm : tới lui (chử chi ở đây nghĩa là đi) đều bị hãm, trước mặt là hiểm mà sau lưng lại kê (dựa) vào hiểm, chỉ càng sụp vào chỗ sâu hơn thôi, chớ dùng (người ở hoàn cảnh hào 3 này, không được việc gì đâu).",
+      "giang": "Hào này âm nhu, bất trung, bất chính, ở trên cùng quẻ nội khảm, mà tiến lên thì gặp ngoại khảm, trước mặt là khảm, sau lưng là khảm, toàn là hiểm cả, cho nên chỉ sụp vào chỗ sâu hơn thôi."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "樽酒簋, 貳 用缶, 納約自牖, 終无咎．",
+      "han_viet": "Lục tứ: Tôn tửu quĩ, nhị dụng phẫu, nạp ước tự dũ, chung vô cữu.",
+      "dich": "Hào 4, âm: Như thể chỉ dâng một chén rượu, một quĩ thức ăn, thêm một cái vò dựng vài thức khác nữa (không cần nhiều, hễ chí thành là được); (có thể tùy cơ ứng biến) dứt khế ước qua cửa sổ (chứ không đưa qua cửa chính), như vậy không có lỗi.",
+      "giang": "Lời hào này gọn quá, khó hiểu. Phan Bội Châu giảng như sau: tôn là chén rượu, quĩ là đồ đựng thức ăn; nhị là thứ nhì, phó (trái với chánh) là thêm sao, phẫu là cái vò. Tôn tữu quí, nhị dụng phẫu nghĩa là rượu chỉ một chén, thức ăn chỉ một quĩ, các thức khác thêm vào chỉ dùng một cái vò cũng đủ. Ý nói không cần nhiều, miễn lòng chí thành là được. “Nạp ước tự dũ” Nghĩa là khế ước (để làm tin) đáng lẽ phải nộp qua cửa lớn, nhưng lại dứt qua cửa sổ (dũ), như vậy là không chính đại quang minh, nhưng gặp thờ ihiểm, khó khăn, có thể “bất đắc dĩ nhi dụng quyền” (quyền này không phải là quyền hành, mà là quyền biến: tùy cơ ứng biến), miễn là giữ được lòng chí thành."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "坎不盈, 祗既平, 无咎.",
+      "han_viet": "Cửu ngũ: Khảm bất doanh, chỉ kì bình, vô cữu.",
+      "dich": "Hào 5, âm: Nước (hiểm) chưa đầy, nhưng đến lúc nước đầy rồi, lặng rồi, thì sẽ khỏi hiểm, không có lỗi.",
+      "giang": "Hào này dương cương, có tài, đắc trung, đắc chính, ở ngôi chí tôn, mới trải qua già nữa thời Khảm, hiểm chưa hết, nước còn dâng lên nữa, đến khi nào nước đầy rồi mới bình lại, mà dắt dân ra khỏi hiểm được. Chữ Kì ở đây nghĩa là bệnh, tức hiểm nạn, trỏ chữ khảm."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "係用黴纆, 寘于叢棘, 三歲不得, 凶．",
+      "han_viet": "Thượng lục: Hệ dụng huy mặc, trí vu từng cức, tam tuế bất đắc, hung.",
+      "dich": "Hào trên cùng, âm: đã trói bằng dây thừng to, lại đặt vào bụi gai, ba năm không được ra , xấu.",
+      "giang": "Hào này âm nhu, ở trên cùng quẻ Khảm, chỗ cực kì hiểm, đã không có tài ra khỏi cảnh hiểm, lại không biết hối mà sửa mình, nên bị họa rất nặng."
+    }
+  ],
+  "dai_y": ""
+}

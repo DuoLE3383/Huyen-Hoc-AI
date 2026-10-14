@@ -1,0 +1,63 @@
+{
+  "que_so": 44,
+  "title": "QUẺ 44: THIÊN PHONG CẤU",
+  "ten_han": "姤",
+  "ten_viet": "gòu",
+  "thoan_tu": {
+    "han": "姤: 女壯, 勿用取女．",
+    "han_viet": "Cấu: Nữ tráng, vật dụng thú nữ.",
+    "dich": "Gặp gỡ: Con gái cường tráng, đừng cưới nó (cũng có nghĩa là tiểu nhân đương lúc rất mạnh, đừng thân với nó).",
+    "giang": "Trời (Càn) ở trên, gió (Tốn) ở dưới, gió đi dưới trời, tất đụng chạm vạn vật, cho nên gọi là Cấu (gặp gỡ)."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "繫于金柅, 貞吉．有攸往見凶．羸豕孚蹢躅．",
+      "han_viet": "Sơ lục: Hệ vu Kim nê, trinh cát; hữu du vãng kiến hung. Luy thỉ phu trịch trục.",
+      "dich": "Hào 1, âm: chặn nó lại bằng cái hãm xe bằng kim khí, thì đạo chính mới tốt; nếu để cho nó (hào 1) tiến lên thì xấu. Con heo ấy tuy gầy yếu, nhưng quyết chắc có ngày nó sẽ nhảy nhót lung tung.",
+      "giang": "Hào âm (tiểu nhân) này mới xuất hiện, phải chặn ngay nó mới được, đừng cho nó tiến lên thì đạo chính của người quân tử mới tốt; nếu để nó tiến lên thì xấu. Vì bây giờ nó tuy còn non, yếu, nhưng một ngày kia nó sẽ mạnh, nhảy nhót lung tung. Đừng nên coi thường nó."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "包有魚, 无咎．不利賓．",
+      "han_viet": "Cửu nhị: Bao hữu ngư, vô cữu; bất lợi tân.",
+      "dich": "Hào 2, dương: nhốt con cá (hào 1) vào trong bọc, không có lỗi; nhưng đừng cho nó (hào 1) gặp khách.",
+      "giang": "Hào 2 này tuy ở sát hào 1, nhưng có đức dương cương , lại đắc trung , cho nên chế ngự được 1, như nhốt lỏng nó trong cái bao (ví hào 2 với con cá vì cá thuộc âm), như vậy không có tội lỗi."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "臀无膚, 其行次且, 厲, 无大咎．",
+      "han_viet": "Cửu tam: Đồn vô phu, kì hành tư thư, lệ, vô đại cữu.",
+      "dich": "Hào 3, dương: như bàn toạ không có da (ngồi không yên mà đứng dậy) đi thì chập chững, có thể nguy đấy, nhưng không có lỗi lớn.",
+      "giang": "Hào 3 này quá cương (dương ở vị dương) , bất trung, muốn có bạn là 1, nhưng hào 2 đã là bạn của 1 rồi; ngó lên trên có hào trên cùng ứng với 3, nhưng cũng là dương như 3, thành thử có vẻ ngồi không an, mà đi thì chập chững, có thể nguy đấy. Nhưng nó đắc chính (dương ở vị dương) nên biết giữ đạo, không mắc lỗi lớn."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "包无魚, 起凶．",
+      "han_viet": "Cửu tứ: Bao vô ngư, khởi hung.",
+      "dich": "Hào 4, dương: Trong bọc của mình không có cá, hoạ sẽ phát.",
+      "giang": "Hào này ứng với 1, nhưng bị 2 ngăn không cho gặp (coi lại hào 2), 1 đã như ở trong cái bọc của 2 rồi, cho nên cái bọc của 4 không có gì cả. Sở dĩ vậy cũng do lỗi của 4, bất trung, bất chính, làm mất lòng 1. Người trên mà mất lòng kẻ dưới, thì hoạ sẽ phát."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "以杞包瓜, 含章, 有隕自天．",
+      "han_viet": "Cửu ngũ: Dĩ kỉ bao qua, hàm chương, hữu vẫn tự thiên.",
+      "dich": "Hào 5, dương: dùng cây kỉ mà bao che cây dưa, ngậm chứa đức tốt, (sự tốt lành) từ trên trời rớt xuống.",
+      "giang": "Hào này ở địa vị tối cao, dương cương , trung chính, có đức tốt mà không khoe khoang (ngậm chứa đức tốt), bao bọc cho kẻ tiểu nhân ở dưới (hào 1) như cây kỉ, cao, cành lá xum xuê che cây dưa (thuộc loài âm). Như vậy là hợp đạo trời, sẽ được trời ban phúc cho."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "姤其角, 吝, 无咎．",
+      "han_viet": "Thượng cửu: Cấu kì giác, lận, vô cữu.",
+      "dich": "Hào trên cùng, dương: gặp bằng cái sừng, đáng hối tiếc, không đổ lỗi cho ai được.",
+      "giang": "Hào này ở trên cùng, thời Cấu (gặp gỡ) cho nên ví với cặp sừng. Gặp nhau mà bằng cặp sừng (đụng nhau bằng sừng) ý nói quá cương – đáng hối tiếc. Mọi sách đều dịch “vô cữu” là không có lỗi mà không giảng tại sau quá cương mà không có lỗi. Riêng Phan Bội Châu hiểu là: không đổ lỗi cho ai được."
+    }
+  ],
+  "dai_y": ""
+}

@@ -1,0 +1,63 @@
+{
+  "que_so": 52,
+  "title": "QUẺ 52: THUẦN CẤN",
+  "ten_han": "艮",
+  "ten_viet": "gèn",
+  "thoan_tu": {
+    "han": "",
+    "han_viet": "",
+    "dich": "Ngừng ở cái lưng (tĩnh như cái lưng) không thấy được thân mình, đi ở trước sân, không thấy có người, không có lỗi.",
+    "giang": "Quẻ này vốn là quẻ Khôn, lấy nét thứ ba, dương của quẻ Càn thay vào nét thứ ba, âm của Khôn mà thành một nét dương ở trên, hai nét âm ở dưới; nét dương ngưng lại ở trên, hai nét âm cũng bị chặn ở dưới, cho nên đặt tên là quẻ Cấn (ngừng)"
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "艮其趾, 无咎, 利永貞．",
+      "han_viet": "sơ lục: Cấn kỳ chỉ, vô cữu, lợi vĩnh trinh.",
+      "dich": "Hào 1, âm: Biết ngừng ở ngón chân thì không có lỗi, giữ bền được chính đạo thì có lợi.",
+      "giang": "hào âm này ở dưới cùng quẻ Cấn ví như ngón chân; lúc mới bắt đầu động mà biết cẩn thận, ngưng lại thì không có lỗi. Sở dĩ khuyên như vậy vì hào 1 bất chính (âm ở vị dương. Mà phải kiên nhẫn giữ chính đạo thì mới có lợi."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "艮其腓, 不拯其隨, 其心不快.",
+      "han_viet": "Lục nhị: Cấn kỳ phì, bất chứng kỳ tùy, kỳ tâm bất khoái.",
+      "dich": "Hào 2, âm: Ngăn ở bắp chân, không cứu được bắp vế mà mình phải theo nó, lòng không vui.",
+      "giang": "hào này ở trên hào 1, như bắp chân; nó đắc trung đắc chính, biết lúc nào nên ngưng, nhưng nó tùy thuộc hào 3 ở trên nó, như bắp vế ở trên bắp chân (vế cử động thì bắp chân cử động theo), mà 3 thì lầm lỗi không sửa được, phải theo một kẻ lầm lỗi thì lòng không vui."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "艮其限, 列其夤, 厲薰心．",
+      "han_viet": "Cửu tam: Cấn kỳ hạn, liệt kỳ di (cũng đọc là dần), lệ huân tâm.",
+      "dich": "Hào 3, dương: Ngăn ở lưng quần (ngang thận), như bị đứt ở giữa xương sống, nguy khốn, lo như cháy cả ruột.",
+      "giang": "Hào này ở trên cùng nội quái, như ở chỗ lưng quần, nơi phân cách trên và dưới. Nó là dương cương, bất trung, tiến lên thì người trên không nghe, lui xuống cũng không được, như bị đứt ở giữa xương sống, rất nguy khốn."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "艮其身, 无咎．",
+      "han_viet": "Lục tứ: Cấn kỳ thân, vô cữu.",
+      "dich": "Hào 3, âm: Ngăn phần thân mình, không có lỗi.",
+      "giang": "Hào này lên đến giữa thân mình, nó đắc chính (âm ở vị âm) biết lúc nên ngừng thì ngừng, tuy không làm được việc gì, nhưng không có lỗi."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "艮其輔, 言有序, 悔亡．",
+      "han_viet": "Lục ngũ: Cấn kỳ phụ, ngôn hữu tự, hối vong.",
+      "dich": "Hào 5, âm: Ngăn cái mép lại (có sách dịch là xương hàm), ăn nói có thứ tự, hối hận mất đi.",
+      "giang": "Hào này lên tới mép, đắc trung, biết thận trọng lời nói, lúc nào không đáng nói thì không nói, nên không có gì hối hận."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "敦艮, 吉．",
+      "han_viet": "Thượng cửu: Đôn cấn, cát.",
+      "dich": "Hào trên cùng, dương: Đôn hậu về đạo biết ngưng phải lúc, tốt.",
+      "giang": "Hào này ở trên cùng, làm chủ quẻ dương cương, có tính đôn hậu, biết lúc nào nên ngừng thì ngừng tốt."
+    }
+  ],
+  "dai_y": ""
+}

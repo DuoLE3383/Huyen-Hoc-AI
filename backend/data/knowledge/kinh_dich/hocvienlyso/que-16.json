@@ -1,0 +1,63 @@
+{
+  "que_so": 16,
+  "title": "QUẺ 16: LÔI ĐỊA DỰ",
+  "ten_han": "豫",
+  "ten_viet": "yù",
+  "thoan_tu": {
+    "han": "豫: 利建侯, 行師．",
+    "han_viet": "Dự: Lợi kiến hầu, hành sư.",
+    "dich": "vui vẻ: Dựng tước hầu (để trị dân), ra quân thì tốt.",
+    "giang": "Có ba cách giảng ý nghĩa quẻ này."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "鳴豫, 凶．",
+      "han_viet": "Sơ lục: Minh dự, hung.",
+      "dich": "Hào 1, âm: Khoe mình vui sướng một cách ồn ào, xấu.",
+      "giang": "Chữ Dự, tên quẻ có nghĩa là trên dưới thuận nhu hành động mà cùng vui vẻ; còn chữ dự trong các hào thì có nghĩa là cá nhân vui vẻ."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "介于石, 不終日, 貞吉．",
+      "han_viet": "Lục nhị: giới vu thạch, bất chung nhật, trinh cát.",
+      "dich": "Hào 2, âm: Chí vững như đá, chẳng đợi hết ngày (mà ứng phó ngay), chính đính, bền, tốt.",
+      "giang": ""
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "盱豫, 悔遲, 有悔．",
+      "han_viet": "Lục tam: Hu dự, hối trì, hữu hối.",
+      "dich": "Hào 3, âm: Ngửa mặt lên trên (mong được phú quí) mà vui mừng, như vậy thế nào cũng ăn năn, mà sửa đổi chậm, lại càng ăn năn hơn.",
+      "giang": "Hào này cũng bất trung, bất chính, như kẻ tiểu nhân ngó lên trên là hào 4 dương cương, mong được phú quí mà vui mừng; không sớm rút chân ra khỏi cái bẩy quyền thế thì sẽ ân hận lớn."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "由豫, 大有得; 勿疑, 朋盍簪．",
+      "han_viet": "Cửu tứ: Do dự, đại hữu đắc; vật nghi, bằng hạp trâm.",
+      "dich": "Hào 4, dương: người khác nhờ mình mà vui, mình có thể thành công lớn được; cứ hết lòng chí thành, đừng nghi ngờ thì các bạn thanh khí sẽ lại giúp mình đông mà chóng.",
+      "giang": "Hào này làm chủ trong quẻ, có tài, có địa vị cao, lại được hào 5 (vua) hết lòng tin, nên tạo hạnh phúc được cho người , thành công lớn được."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "貞疾, 恆, 不死.",
+      "han_viet": "Lục ngũ: Trinh tật, hằng, bất tử.",
+      "dich": "hào 5, âm: Bệnh hoài, dai dẳng nhưng không chết.",
+      "giang": "Hào 5, ở địa vị chí tôn, nhưng âm nhu, và có hào 4 được lòng dân, gánh hết việc thiên hạ, chuyên quyền; 5 chẳng phải làm gì cả, chỉ chìm đắm trong cảnh hoan lạc (vì ở thời Dự), nên ví với một người bị bệnh hoài. Nhưng may là có 5 đắc trung mà 4 cũng không áp bức, nên vẫn giữ được hư vị, cũng như bị bệnh dai dẳng mà không chết."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "冥豫,成有渝, 无咎．",
+      "han_viet": "Thượng lục: Minh dự, thành hữu du, vô cữu.",
+      "dich": "Hào trên cùng, âm: mê tối vì hoan lạc, nhưng nếu biết sửa đổi nết xấu thì không lỗi.",
+      "giang": "hào này âm nhu, bất trung bất chính, lại ở thời cuối quẻ Dự, cho nên ví với người mê tối vì hoan lạc. Nhưng cũng may, hào này ở trong ngoại quái Chấn, Chấn có nghĩa là động, có hy vọng nhúc nhích tự cường được, như vậy sẽ không xấu."
+    }
+  ],
+  "dai_y": ""
+}

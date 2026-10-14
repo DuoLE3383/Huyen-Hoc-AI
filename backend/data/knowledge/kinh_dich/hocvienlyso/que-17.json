@@ -1,0 +1,63 @@
+{
+  "que_so": 17,
+  "title": "QUẺ 17: TRẠCH LÔI TÙY",
+  "ten_han": "隨",
+  "ten_viet": "suí",
+  "thoan_tu": {
+    "han": "隨: 元, 亨, 利, 貞, 无咎．",
+    "han_viet": "Tùy: Nguyên, hanh, lợi, trinh, vô cữu.",
+    "dich": "Theo nhau: rất hanh thông, nhưng phải theo điều chính đáng, vì điều chính đáng (trinh) mới có lợi, không có lỗi.",
+    "giang": "Đoài ở trên là vui vẻ, Chấn ở dưới là động; đó là cái tượng hành động mà được người vui theo."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "官有渝, 貞吉, 出門交有功．",
+      "han_viet": "Sơ cửu: Quan hữu du, trinh cát, xuất môn giao hữu công.",
+      "dich": "Hào 1, dương: chủ trương thay đổi, hễ chính thì tốt, ra ngoài giao thiệp thì có công.",
+      "giang": "chữ “quan” ở đây có nghĩa là chủ, chữ “du” có nghĩa là thay đổi . Chu Hi hiểu là chủ trương thay đổi. Phan Bội Châu hiểu là cái thể của mình thay đổi, vì hào 1 là dương đáng lẽ làm chủ hai hào âm ở trên, nhưng ngược lại phải tùy hai hào đó (vì hào dương ở dưới cùng)."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "係小子, 失丈夫．",
+      "han_viet": "Lục nhị: Hệ tiểu tử, thất trượng phu.",
+      "dich": "Hào 2, âm: Ràng buộc với kẻ thấp kém (nguyên văn là : con nít) mà mất kẻ trượng phu.",
+      "giang": "Hào này âm nhu,không biết giữ mình, gần đâu tùy đấy, nên ràng buộc với hào 1 dương (tiểu tử), mà bỏ mất hào 5 cũng dương , ở trên, ứng hợp với nó."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "係丈夫, 失小子; 隨有求得, 利居貞．",
+      "han_viet": "Lục tam: Hệ trượng phu, thất tiểu tử;",
+      "dich": "Hào 3, âm: Ràng buộc với trượng phu, bỏ kẻ thấp kém; theo như vậy cầu xin cái gì thì đựơc đấy, nhưng phải chính đáng mới có lợi.",
+      "giang": "Hào này cũng âm nhu như hào 2, gần đầu thân cận đấy, cho nên thân với hào 4 dương cương, có địa vị ở trên (tức với trượng phu) mà bỏ hào 1 (tiểu tử). Nó xin 4 cái gì cũng được vì 4 hơi có thế lực; nhưng Hào từ khuyên đừng xu thế trục lợi, phải giữ tư cách chính đáng thì mới tốt."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "隨有獲, 貞凶．有孚, 在道, 以明何咎．",
+      "han_viet": "Cửu tứ: Tùy hữu hoạch, trinh, hung.",
+      "dich": "Hào 4, dương : Theo thì thu hoạch được lớn đấy, nhưng dù lẽ vẫn ngay mà cũng có thể gặp hung được. Cứ giữ lòng chí thành, theo đạo lý, lấy đức sáng suốt mà ứng phó thì không có lỗi.",
+      "giang": "Hào này như một vị cận thần, được vua tin cậy (5 và 4 cùng là dương cả), ở vào thời Tùy là thiên hạ theo mình, như vậy thu hoạch được lớn (có thể hiểu là được lòng dân, hoặc lập được sự nghiệp); nhưng chính vì vậy mà có thể gặp hung (chẳng hạn bị ngờ là chuyên quyền, bị vua ganh ghét như Nguyễn Trãi). Cho nên Hào từ khuyên giữ lòng chí thành theo đạo lý sáng suốt ứng phó (nghĩa là có đủ ba đức: tín, nhân, trí) thì mới khỏi lỗi."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "孚于嘉, 吉．",
+      "han_viet": "Cửu ngũ: phu vu gia, cát.",
+      "dich": "Hào 5, dương. Tín thành với điều thiện thì tốt.",
+      "giang": "Hào 5, dương cương, ở vị tôn, trung và chính, lại ứng hợp với hào 2, cũng trung chính, cho nên rất tốt. “Gia” , điều thiện, ở đây là đức trung chính."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "拘係之, 乃從維之．王用亨于西山．",
+      "han_viet": "Thượng lục: câu hệ chi, mãi tòng duy chi.",
+      "dich": "Hào trên cùng, âm. Ràng buộc lấy, theo mà thắt chặt lấy; Thái Vương nhà Chu, được nhân tâm như vậy mới lập được nghiệp vương hanh thịnh ở Tây sơn (tức Kỳ sơn).",
+      "giang": "Hào này ở cuối quẻ Tùy, là được nhân tâm theo đến cùng cực, như thắt chặt với mình, như vua Thái Vương nhà Chu, lánh nạn rợ Địch, bỏ ấp Mân mà chạy sang đất Kỳ Sơn (năm -1327), người ấp Mân già trẻ trai gái dắt díu nhau theo, đông như đi chợ."
+    }
+  ],
+  "dai_y": ""
+}

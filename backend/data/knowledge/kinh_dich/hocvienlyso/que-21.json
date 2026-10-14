@@ -1,0 +1,63 @@
+{
+  "que_so": 21,
+  "title": "QUẺ 21: HỎA LÔI PHỆ HẠP",
+  "ten_han": "",
+  "ten_viet": "",
+  "thoan_tu": {
+    "han": "噬嗑: 亨, 利用獄．",
+    "han_viet": "",
+    "dich": "Căn để hợp lại, như vậy là hanh thông; dùng vào việc hình ngục thì có lợi.",
+    "giang": "Quẻ Phệ hạp này nói về việc hình ngục."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "屨校滅趾, 无咎．",
+      "han_viet": "Sơ cửu: Lí giảo diệt chỉ, vô cữu.",
+      "dich": "Hào 1, dương : ví như chân đạp vào cái cùm mà đứt ngón chân cái, không có lỗi lớn.",
+      "giang": "Trong quẻ này hào 1 và hào trên cùng là người không có chức vị, bị chịu hình; còn 4 hào kia là người có chức vị áp dụng hình pháp."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "噬膚, 滅鼻, 无咎．",
+      "han_viet": "Lục nhị: Phệ phu, diệt tị, vô cữu.",
+      "dich": "Hào 2, âm: Cắn miếng thịt mềm, sứt cái mũi, không có lỗi.",
+      "giang": "hào này cũng như ba hào sau, dùng chữ phệ (cắn) để trỏ người dùng hình pháp."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "噬腊肉, 遇毒, 小吝, 无咎．",
+      "han_viet": "Lục tam: Phệ tích nhục, ngộ độc, tiểu lận, vô cữu.",
+      "dich": "Hào 3, âm: Cắn phải miếng thịt có xương lại ngộ độc, đáng ân hận một chút, nhưng không có lỗi.",
+      "giang": "Hảo 3, âm: Không trung chính, dùng hình ngục và không được người phục, có phần bị oán nữa, như cắn phải miếng thịt có xương lại ngộ độc; những ở vào quẻ Phệ hạp, dùng hình pháp để giữ trật tự cho xã hội, cho nên việc làm của mình tuy đáng ân hận, mà không có lỗi lớn."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "噬 乾胏, 得金矢, 利艱貞, 吉．",
+      "han_viet": "Cửu tứ: phệ can trỉ (có người đọc là tỉ)",
+      "dich": "Hào 4, dương : Cắn phải thứ thịt liền xương mà phơi khô, được mũi tên đồng, chịu khó nhọc mà vững lòng giữ đường chính thì tốt.",
+      "giang": "Hào này dương cương ở gần ngôi chí tôn (hào 5) là người cương trực, có trách nhiệm; lại ở ngoại quái Ly, nên có tài minh đóan, cho nên dù gặp kẻ ngoan cố cũng trị được dễ dàng, như cắn được miếng thịt liền xương (cứng) phơi khô, mà vẫn giữ được đạo cương trực, tượng bằng mũi tên bằng đồng."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "噬乾肉, 得黃金, 貞厲, 无咎．",
+      "han_viet": "Lục ngũ: phệ can nhục, đắc hoàng kim, trinh, lệ, vô cữu.",
+      "dich": "Hào 5, âm: Cắn miếng thịt khô, được vàng (danh dự quí báu); phải giữ vững đạo, thường lo sợ, thì không có lỗi.",
+      "giang": ""
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "何校滅耳, 凶．",
+      "han_viet": "Thượng cửu: Hạ giảo diệt nhĩ, hung.",
+      "dich": "Hào trên cùng, dương : cổ tra vào gông, bị tội cắt tai, xấu.",
+      "giang": "Hào này lại nói về kẻ thụ hình như hào 1. Xấu hơn hào 1, vì dương cương lại ở cuối quẻ, trỏ hạng cực ác, nên bị tội nặng: đeo gông, cắt tai."
+    }
+  ],
+  "dai_y": ""
+}

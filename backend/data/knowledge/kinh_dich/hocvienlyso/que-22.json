@@ -1,0 +1,63 @@
+{
+  "que_so": 22,
+  "title": "QUẺ 22: SƠN HỎA BÍ",
+  "ten_han": "賁",
+  "ten_viet": "bì",
+  "thoan_tu": {
+    "han": "賁: 亨, 小利, 有攸往．",
+    "han_viet": "Bí: hanh, tiểu lợi, hữu du vãng.",
+    "dich": "Trang sức văn vẻ thì hanh thông; làm việc gì mà chỉ nhờ ở trang sức thì lợi bé nhỏ mà thôi.",
+    "giang": "Trên là núi, dưới là lửa; lửa chiếu sáng mọi vật ở trên núi, như vậy làm cho núi đẹp lên, trang sức cho núi."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "賁其趾, 舍車而徒．",
+      "han_viet": "Sơ cửu: Bí kì chỉ, xả xa nhi đồ.",
+      "dich": "Hào 1, dương, Trang sức, trau giồi ngón chân (địa vị thấp) của mình; bỏ cách sung sướng là ngồi xe mà nên đi bộ (chịu khó nhọc).",
+      "giang": "Hào này dương cương, ở cuối cùng nội quái Ly, tức như người có đức sáng suốt mà ở địa vị thấp nhất. Chỉ nên trau giồi phẩm hạnh của mình trong địa vị đó (ví như ngón chân, bộ phận thấp nhất trong thân thể), mà an bần, chịu đi bộ chứ đừng ngồi xe."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "賁其須．",
+      "han_viet": "Lục nhị: Bí kì tu.",
+      "dich": "Hào 2, âm: trang sức bộ râu.",
+      "giang": "Chữ tu ở đây nghĩa là râu, cũng như chữ tu : 鬚"
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "賁如濡如, 永貞吉",
+      "han_viet": "Cửu tam: Bí như, nhu như,vĩnh trinh cát.",
+      "dich": "Hào 3, dương: Trang sức mà đằm thắm, hễ giữ vững chính đạo thì tốt.",
+      "giang": "Hào này dương cương, đắc chính, lại ở trên cùng nội quái ly, có cái nghĩa rất văn minh; tượng trưng người có tài trang sức cho hai hào âm ở trên và dưới nó, tính rất đằm thắm với hai hào âm (có người dịch “nhu như” là trang sức một cách nhuần nhã, thấm nhuần). Vì vậy mà nên coi chừng, đừng say mê vì tư tình, mà phải bền giữ chính đạo thì mới tốt, không bị người xâm lấn (mạc chi lăng dã: Tiểu tượng truyện)."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "賁如皤如, 白馬翰如, 匪寇, 婚媾．",
+      "han_viet": "Lục tứ: Bí như, bà (có người đọc là ba) như, bạch mã hàn như, phỉ khấu, hôn cấu.",
+      "dich": "hào 4 âm: Muốn trang sức cho nhau (nhưng không được) nên chỉ thấy trắng toát. Hào 4 như cưỡi ngựa trắng mà chạy như bay (đuổi kịp hào 1), rốt cuộc cưới nhau được vì kẻ gián cách hai bên (hào 3) không phải kẻ cướp (người xấu).",
+      "giang": "hào 4 âm nhu, ứng với hào 1 dương cương, cả hai đều đắc chính ,tình ý hợp nhau, muốn trang sức cho nhau, nhưng bị hào 3 ở giữa ngăn cách, nên không trang sức cho nhau được, chỉ thấy trắng toát (trắng nghĩa là không có màu, không trang sức). Mặc dầu bị 3 cản trở, 4 vẫn cố đuổi theo 1, rốt cuộc 3 vốn cương chính, không phải là xấu, không muốn làm hại 4 và 1, cặp này kết hôn với nhau được."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "賁于丘園, 束帛戔戔, 吝, 終吉．",
+      "han_viet": "Lục ngũ: bí vu khâu viên, thúc bạch tiên tiên, lận, chung cát.",
+      "dich": "Hào 5, âm: Trang sức ở gò vườn, mà dùng tấm lụa nhỏ, mỏng, tuy là bủn xỉn, đáng chê cười đấy, nhưng rốt cuộc được tốt lành.",
+      "giang": "Hào 5, âm nhu, đắc trung, làm chủ quẻ Bí; vì là âm nhu nên có tính quá tằn tiện, lo trang sức cái gì hữu dụng như vườn tược thôi, mà lại chỉ dùng tấm lụa nhỏ, mỏng cho đỡ tốn, cho nên bị cười chê, nhưng như vậy còn hơn là xa hoa, mà biết trọng cái gốc là sự chất phác, cho nên cuối cùng vẫn được tốt lành, có hạnh phúc cho dân (hữu hỉ dã: lời Tiểu tượng truyện.)"
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "白賁, 无咎．",
+      "han_viet": "Thượng cửu: Bạch bí, vô cữu.",
+      "dich": "Hào trên cùng, dương: lấy sự tố phác, như màu trắng (không màu mè gì cả) làm trang sức, không có lỗi.",
+      "giang": "Hào này là thời cuối cùng của quẻ Bí, trang sức, màu mè đã cùng cực rồi; mà vật cực tắc phản, người ta lại trở lại sự chất phác, nên không có lỗi gì cả. Trong văn học sử, chúng ta thấy sau những thời duy mĩ quá mức, người ta lại “phục cổ”, trở lại lối văn bình dị, tự nhiên thời xưa."
+    }
+  ],
+  "dai_y": "Đại ý quẻ Bí này là có văn vẻ, có trang sức mới là văn minh, nhưng vẫn nên trọng chất hơn văn, lấy chất làm thể, lấy văn làm dụng, và không nên xa hoa, màu mè quá."
+}

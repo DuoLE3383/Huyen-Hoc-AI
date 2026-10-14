@@ -632,3 +632,495 @@ body { margin: 0; }
   line-height: 1.6;
 }
 .kd-battu-preview b { color: var(--gold-2); }
+
+/* ═══ FIX MOBILE: chữ nhỏ + version chìm ═══ */
+@media (max-width: 768px) {
+  /* Loading message nhỏ hơn */
+  .kd-loading-msg {
+    font-size: .88rem !important;
+    line-height: 1.4;
+    padding: 0 12px;
+  }
+  .kd-loading .kd-bagua {
+    width: 90px !important;
+    height: 90px !important;
+  }
+  .kd-loading {
+    padding: 24px 12px !important;
+  }
+
+  /* Bát quái header nhỏ hơn */
+  .kd-bagua {
+    width: 140px !important;
+    height: 140px !important;
+    margin: 12px auto !important;
+  }
+
+  /* Quote nhỏ */
+  .kd-quote {
+    font-size: .85rem !important;
+    margin: 8px 0 20px !important;
+  }
+
+  /* Header h1 */
+  .kd-header h1 {
+    font-size: 1.4rem !important;
+  }
+  .kd-header .kd-sub {
+    font-size: .82rem !important;
+  }
+
+  /* Coin stage gọn */
+  .kd-coin-stage {
+    padding: 12px !important;
+  }
+  .kd-coin-status {
+    font-size: .8rem !important;
+  }
+  .kd-coin {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .kd-coin .face {
+    font-size: 12px !important;
+  }
+
+  /* Version chìm cuối */
+  .kd-version {
+    font-size: .65rem !important;
+    margin: 24px 0 4px !important;
+    opacity: .35 !important;
+  }
+}
+
+/* Không fix cứng nữa — chỉ nhỏ trên mobile */
+.kd-version {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .72rem;
+  font-family: var(--font-mono);
+  letter-spacing: .04em;
+  margin: 32px auto 12px;
+  opacity: .45;
+  padding: 0 16px;
+}
+
+/* ═══ Paywall + Ads Modal ═══ */
+.kd-paywall-section { position: relative; }
+.kd-paywall-box {
+  padding: 24px 20px;
+  background: linear-gradient(180deg, rgba(201,162,39,.08), rgba(201,162,39,.02));
+  border: 1px dashed var(--gold-dim);
+  border-radius: var(--r-md);
+  text-align: center;
+}
+.kd-paywall-icon { font-size: 36px; margin-bottom: 10px; }
+.kd-paywall-text {
+  color: var(--text-2);
+  font-size: .9rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.kd-paywall-text b { color: var(--gold-2); }
+.kd-unlock-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold));
+  color: var(--ink);
+  border: none;
+  border-radius: var(--r-pill);
+  font: inherit;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--gold-glow);
+  transition: transform .15s ease;
+}
+.kd-unlock-btn:hover { transform: translateY(-2px); }
+.kd-unlock-btn:active { transform: scale(.97); }
+.kd-paywall-note {
+  margin-top: 10px;
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+
+/* Modal quảng cáo */
+.kd-ad-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: kd-fade-in .3s ease;
+}
+.kd-ad-content {
+  width: min(360px, 100%);
+  padding: 24px;
+  background: var(--ink-2);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--r-lg);
+  text-align: center;
+}
+.kd-ad-title {
+  color: var(--gold-2);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.kd-ad-box {
+  position: relative;
+  height: 180px;
+  background: linear-gradient(135deg, #1a1a26, #0f0f18);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.kd-ad-placeholder {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+.kd-ad-count {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.kd-ad-note {
+  color: var(--text-muted);
+  font-size: .82rem;
+}
+
+/* Hào item trong tab Hào Chuyển */
+.kd-hao-item {
+  margin: 12px 0;
+  padding: 12px 14px;
+  background: var(--ink-3);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--r-sm);
+}
+.kd-hao-title {
+  color: var(--gold-2);
+  font-family: var(--font-han);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.kd-han {
+  font-family: var(--font-han);
+  font-size: 1.05rem;
+  color: var(--gold-2);
+  letter-spacing: .05em;
+  margin: 6px 0;
+}
+.kd-phien-am {
+  color: var(--text-2);
+  font-style: italic;
+  font-size: .9rem;
+  margin: 4px 0;
+}
+.kd-ung-bat-tu {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(201,162,39,.08);
+  border-radius: var(--r-sm);
+  font-size: .92rem;
+}
+.kd-personal-inner {
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(201,162,39,.1), rgba(201,162,39,.02));
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--r-md);
+  animation: kd-fade-in .4s ease;
+}
+
+/* ═══ FAQ Bát Tự ═══ */
+.kd-battu-faq {
+  margin: 8px 0;
+  padding: 10px 14px;
+  background: var(--ink-3);
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--gold-dim);
+  font-size: .88rem;
+}
+.kd-battu-faq summary {
+  cursor: pointer;
+  color: var(--gold-2);
+  font-weight: 600;
+  font-family: var(--font-han);
+  letter-spacing: .02em;
+  list-style: none;
+  padding: 2px 0;
+}
+.kd-battu-faq summary::-webkit-details-marker { display: none; }
+.kd-battu-faq summary::before {
+  content: "▸ ";
+  transition: transform .2s;
+  display: inline-block;
+}
+.kd-battu-faq[open] summary::before { transform: rotate(90deg); }
+.kd-battu-faq p {
+  margin: 8px 0 0;
+  color: var(--text-2);
+  line-height: 1.6;
+  font-size: .85rem;
+}
+.kd-battu-faq p b { color: var(--gold-2); }
+
+/* ═══ FIX FONT — nhỏ + font phổ biến ═══ */
+.kd-field input,
+.kd-field select,
+.kd-textarea,
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 16px !important; /* iOS không auto-zoom */
+}
+
+/* Mobile: chữ nhỏ hơn */
+@media (max-width: 768px) {
+  .kd-header h1 { font-size: 1.3rem !important; }
+  .kd-header .kd-sub { font-size: .82rem !important; }
+  .kd-battu legend { font-size: .9rem !important; }
+  .kd-field > span { font-size: .78rem !important; }
+  .kd-section h3 { font-size: .95rem !important; }
+  .kd-section p,
+  .kd-section li { font-size: .88rem !important; line-height: 1.5 !important; }
+  .kd-han { font-size: .95rem !important; }
+  .kd-phien-am { font-size: .82rem !important; }
+  .kd-hao-title { font-size: .92rem !important; }
+  .kd-coin .face { font-size: 11px !important; }
+  .kd-ket-luan-big { font-size: 1.4rem !important; }
+}
+
+/* Mobile nhỏ hơn nữa */
+@media (max-width: 420px) {
+  .kd-section p,
+  .kd-section li { font-size: .85rem !important; }
+}
+
+/* ═══ Loading progress bar ═══ */
+.kd-tl-progress {
+  width: min(280px, 80%);
+  height: 4px;
+  margin: 12px auto 6px;
+  background: var(--ink-4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.kd-tl-progress-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-2));
+  border-radius: 2px;
+  transition: width .5s ease;
+}
+.kd-tl-count {
+  text-align: center;
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: .03em;
+  margin-top: 4px;
+}
+
+/* Font AI loader dùng font hệ thống để không lỗi */
+.kd-tl-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* ═══ GIẢM SIZE 20% — override toàn bộ ═══ */
+.kd-root {
+  padding: 18px 12px 48px !important;
+  font-size: 13.5px !important;
+}
+
+.kd-header h1 { font-size: 1.15rem !important; }
+.kd-header .kd-sub { font-size: .75rem !important; }
+
+.kd-bagua { width: 130px !important; height: 130px !important; }
+.kd-quote { font-size: .78rem !important; margin: 6px 0 22px !important; }
+
+.kd-label { font-size: .72rem !important; }
+.kd-battu { padding: 12px 14px 14px !important; }
+.kd-battu legend { font-size: .82rem !important; }
+.kd-battu-hint { font-size: .72rem !important; }
+.kd-field > span { font-size: .7rem !important; }
+.kd-field input,
+.kd-field select { padding: 8px 10px !important; font-size: 14px !important; }
+
+.kd-chips { gap: 6px !important; }
+.kd-chip { padding: 6px 10px !important; font-size: .75rem !important; }
+
+.kd-textarea {
+  min-height: 100px !important;
+  padding: 12px 12px 52px !important;
+  font-size: 14px !important;
+}
+.kd-submit {
+  padding: 10px 22px !important;
+  font-size: .85rem !important;
+}
+
+.kd-section { margin-bottom: 18px !important; }
+.kd-section h3 {
+  font-size: .88rem !important;
+  margin-bottom: 8px !important;
+  padding-bottom: 5px !important;
+}
+.kd-section p,
+.kd-section li { font-size: .82rem !important; line-height: 1.55 !important; }
+
+.kd-han { font-size: .88rem !important; }
+.kd-phien-am { font-size: .78rem !important; }
+
+.kd-hao-item { padding: 10px 12px !important; margin: 10px 0 !important; }
+.kd-hao-title { font-size: .85rem !important; }
+.kd-ung-bat-tu { padding: 8px 10px !important; font-size: .8rem !important; }
+
+.kd-hexagram { padding: 12px !important; }
+.kd-hex-title { font-size: 1.05rem !important; }
+.kd-hex-sub { font-size: .78rem !important; }
+.kd-hao { grid-template-columns: 22px 1fr 50px !important; height: 15px !important; }
+.kd-hao-num { font-size: .62rem !important; }
+.kd-hao-label { font-size: .65rem !important; }
+.kd-quai-info { font-size: .78rem !important; }
+
+.kd-tabs { padding: 3px !important; }
+.kd-tab { padding: 8px 12px !important; font-size: .78rem !important; }
+
+.kd-ket-luan-big { font-size: 1.4rem !important; }
+.kd-thoi-diem-tot,
+.kd-thoi-diem-tranh { font-size: .9rem !important; }
+
+/* Loading nhỏ hơn */
+.kd-loading-msg { font-size: .85rem !important; }
+.kd-loading .kd-bagua { width: 90px !important; height: 90px !important; }
+.kd-tl-text { font-size: .82rem !important; }
+.kd-tl-progress { width: min(220px, 70%) !important; height: 3px !important; }
+.kd-tl-count { font-size: .72rem !important; }
+
+/* Coin nhỏ hơn */
+.kd-coin { width: 38px !important; height: 38px !important; }
+.kd-coin .face { font-size: 10px !important; }
+.kd-coin .face::after { width: 10px !important; height: 10px !important; }
+.kd-coin-status { font-size: .75rem !important; }
+
+/* FAQ nhỏ */
+.kd-battu-faq { padding: 8px 11px !important; font-size: .75rem !important; }
+.kd-battu-faq summary { font-size: .78rem !important; }
+.kd-battu-faq p { font-size: .74rem !important; }
+
+/* Footer version */
+.kd-version { font-size: .62rem !important; }
+
+/* Mobile — giảm thêm 10% */
+@media (max-width: 768px) {
+  .kd-root { font-size: 13px !important; }
+  .kd-header h1 { font-size: 1.05rem !important; }
+  .kd-section p,
+  .kd-section li { font-size: .8rem !important; }
+}
+
+.kd-splash {
+  position: fixed; inset: 0; background: var(--ink, #0B0B0F);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 99999; opacity: 1; transition: opacity .5s ease;
+}
+.kd-splash.hide { opacity: 0; pointer-events: none; }
+.kd-splash-bagua {
+  width: 180px; height: 180px;
+  filter: drop-shadow(0 0 30px rgba(201,162,39,.4));
+}
+.kd-splash-title {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.4rem; font-weight: 700; color: #E8C766;
+  letter-spacing: .1em; margin-top: 24px;
+  text-shadow: 0 0 20px rgba(201,162,39,.5);
+}
+.kd-splash-sub { color: #9B937E; font-size: .85rem; margin-top: 8px; }
+
+/* ═══ Kết Luận CÁT/HUNG/TĨNH ═══ */
+.kd-ket-luan {
+  padding: 20px 16px;
+  border-radius: var(--r-md);
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+}
+.kd-ket-luan-han {
+  font-family: "Noto Serif SC", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+  opacity: .7;
+}
+.kd-ket-luan-big {
+  font-family: var(--font-han);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  margin-bottom: 6px;
+}
+.kd-ket-luan-desc {
+  font-size: .85rem;
+  opacity: .85;
+  letter-spacing: .02em;
+}
+
+/* CÁT — Xanh lá */
+.kd-ket-luan-cat {
+  background: linear-gradient(135deg, rgba(123,180,123,.18), rgba(123,180,123,.04));
+  border: 2px solid #7BB47B;
+}
+.kd-ket-luan-cat .kd-ket-luan-han,
+.kd-ket-luan-cat .kd-ket-luan-big { color: #7BB47B; }
+.kd-ket-luan-cat .kd-ket-luan-desc { color: #9CD09C; }
+
+/* HUNG — Đỏ son */
+.kd-ket-luan-hung {
+  background: linear-gradient(135deg, rgba(199,56,56,.18), rgba(199,56,56,.04));
+  border: 2px solid var(--cinnabar-2);
+}
+.kd-ket-luan-hung .kd-ket-luan-han,
+.kd-ket-luan-hung .kd-ket-luan-big { color: var(--cinnabar-2); }
+.kd-ket-luan-hung .kd-ket-luan-desc { color: #E88B8B; }
+
+/* TĨNH — Vàng đồng */
+.kd-ket-luan-tinh {
+  background: linear-gradient(135deg, rgba(201,162,39,.18), rgba(201,162,39,.04));
+  border: 2px solid var(--gold);
+}
+.kd-ket-luan-tinh .kd-ket-luan-han,
+.kd-ket-luan-tinh .kd-ket-luan-big { color: var(--gold-2); }
+.kd-ket-luan-tinh .kd-ket-luan-desc { color: #D4BC7A; }
+
+.kd-ket-luan-yn {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.04);
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--gold);
+  font-size: .88rem;
+  line-height: 1.6;
+}
+.kd-ly-do {
+  margin-top: 10px;
+  font-size: .85rem;
+  line-height: 1.6;
+  color: var(--text-2);
+}

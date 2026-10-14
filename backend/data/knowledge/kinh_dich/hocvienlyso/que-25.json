@@ -1,0 +1,63 @@
+{
+  "que_so": 25,
+  "title": "QUẺ 25: THIÊN LÔI VÔ VỌNG",
+  "ten_han": "",
+  "ten_viet": "",
+  "thoan_tu": {
+    "han": "无妄: 元亨, 利貞. 其匪正有眚, 不利有攸往．",
+    "han_viet": "",
+    "dich": "không càn bậy thì rất hanh thông, hợp với chính đạo thì có lợi. Cái gì không hợp với chính đạo thì có hại, có lỗi, hành động thì không có lợi.",
+    "giang": "Tượng quẻ này: nội quái là Chấn (nghĩa là động, hành động); ngoại quái là Càn (trời), hành động mà hợp với lẽ trời thì không càn bậy, không càn bậy thì hanh thông, có lợi."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "无妄, 往吉．",
+      "han_viet": "Sơ cửu: vô vọng, vãng cát.",
+      "dich": "Hào 1, dương: không còn bậy, mà tiến đi thì tốt.",
+      "giang": "Hào này dương cương, làm chủ nội quái, là người có đức, cho nên khen như vậy."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "不耕穫, 不菑畬, 則利有攸往．",
+      "han_viet": "Lục nhị: Bất canh hoạch, bất tri dư, tắc lợi hữu du vãng.",
+      "dich": "Khi cày thì không nghĩ tới lúc gặt, khi mới khai phá (tri) thì không nghĩ đến ruộng đã thuộc (dự), như vậy mà tiến tới thì có lợi.",
+      "giang": "Lời hào này quá vắn tắt, hơn điện tín ngày nay nữa, nên tối nghĩa, có nhiều sách cứ dịch từng chữ; không thông."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "无妄之災, 或繫之牛, 行人之得, 邑人之災．",
+      "han_viet": "Lục tam: vô vọng chi tai, hoặc hệ chi ngưu,",
+      "dich": "Hào 3, âm: không còn bậy mà bị tai vạ tự nhiên đến như có kẻ cột con bò ở bên đường (rồi bỏ đi chỗ khác), một người đi qua (thấy bò không có ai coi), dắt trộm đi, được bò, mà người trong ấp bị nghi oan là lấy trộm bò, mà mắc họa.",
+      "giang": "cả 6 hào trong quẻ này đều là không càn bậy, nhưng hào này khác một chút là bất trung, bất chính, nên bị tai vạ; tai vạ đó chỉ là vô cớ mà mắc."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "可貞,无咎．",
+      "han_viet": "Cửu tứ: khả trinh, vô cữu.",
+      "dich": "Hào 4, dương: nên giữ vững tư cách thì không có lỗi (hoặc: có thể giữ vững được tư cách, cho nên không có lỗi).",
+      "giang": "chữ “Trinh” có hai nghĩa: chính đáng và bền. Ở đây nên hiểu là bền. Hào 4 này dương, không ứng hợp với hào nào cả. (vì hào 1 cũng là dương cương như nó), không nên họat động, nhưng nó cương kiện, có thể giữ vững được tư cách."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "无妄之疾, 勿藥, 有喜．",
+      "han_viet": "Cửu ngũ: vô vọng chi tật, vật dược, hữu hỉ.",
+      "dich": "Hào 5, dương: Không càn bậy mà vô cớ bị bệnh (gặp tai họa) thì đừng uống thuốc, sẽ hết bệnh.",
+      "giang": "Hào này ở địa vị cao, trung chính lại ứng với hào 2 cũng trung chính, vậy là rất tốt, chẳng may có bị bệnh (gặp tai họa) thì đừng uống thuốc (nghĩa bóng là đừng chạy chọt gì cả, cứ thản nhiên như Khổng tử khi bị giam ở đất Khuông) rồi sẽ tai qua nạn khỏi (như Khổng tử sau được thả ra, vì người Khuông nhận là rằng họ lầm ông với Dương Hổ, một người mà họ ghét.)"
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "无妄, 行有眚, 无攸利．",
+      "han_viet": "Thượng cửu: Vô vọng, hành hữu sảnh, vô du lợi.",
+      "dich": "Hào trên cùng, dương. Không càn bậy, nhưng đi (hành động) thì bị họa, không lợi gì.",
+      "giang": "Hào từ khuyên không nên hành động, mặc dầu vẫn là “vô vọng”, chỉ vì hào này tới cuối cùng của quẻ rồi, chỉ nên yên lặng chờ thời."
+    }
+  ],
+  "dai_y": ""
+}

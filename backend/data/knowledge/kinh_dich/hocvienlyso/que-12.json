@@ -1,0 +1,63 @@
+{
+  "que_so": 12,
+  "title": "QUẺ 12: THIÊN ĐỊA BĨ",
+  "ten_han": "否",
+  "ten_viet": "pi3",
+  "thoan_tu": {
+    "han": "",
+    "han_viet": "",
+    "dich": "Bĩ không phải đạo người (phi nhân nghĩa như phi nhân đạo), vì nó không lợi cho đạo chính của quân tử (Tượng của nó là) cái lớn (dương ) đi mà cái nhỏ (âm) lại.",
+    "giang": "Bĩ trái với Thái. Thái thì dương ở dưới thăng lên, giao với âm ở trên giáng xuống; bĩ thì dương ở trên đi lên, âm ở dưới đi xuống không giao nhau. Âm dương không giao nhau thì bế tắc, ở đạo người như vậy mà ở vạn vật cũng như vậy. Thời đó không lợi với đạo chính của quân tử, vì dương đi nghĩa là đạo của người quân tử tiêu lần, mà âm lại nghĩa là đạo của tiểu nhân lớn lên."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "拔茅茹, 以其彙, 貞吉亨．",
+      "han_viet": "Sơ lục: Bạt mao nhự, dĩ kỳ vị, trinh cát hanh.",
+      "dich": "Hào 1 âm: Nhổ rễ cỏ mao mà được cả đám, hễ chính thì tốt mà hanh thông.",
+      "giang": "Hào này rất giống hào 1 quẻ Thái: cũng “bạt mao dĩ kỳ vị” vì quẻ Thái hào 1 cặp với hai hào trên, quẻ này cũng vậy, cũng có đồng chí, làm việc dễ có kết quả; chỉ khác quẻ thái hào 1 là dương, quân tử, quẻ này hào 1 là âm, tiểu nhân; cho nên quẻ Thái khuyên cứ tiến lên (chính) sẽ tốt; còn quẻ này thì khuyên phải “trinh” chính đáng (trinh – khác nhau ở hai chữ chính [正] và trinh [貞] thì sẽ tốt và hanh thông."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "包承, 小人吉;大人否, 亨．",
+      "han_viet": "Lục nhị: Bào thừa, tiểu nhân cát; đại nhân bĩ, hanh.",
+      "dich": "Hào 2, âm: Tiểu nhân chịu đựng và vâng thuận người quân tử thì tốt: đại nhân (có đức lớn) nên giữ tư cách trong cảnh bế tắc (khốn cùng) thì hanh thông.",
+      "giang": "Hào này tuy là tiểu nhân, nhưng đắc trung đắc chính, chung quanh là tiểu nhân cả, mà ứng hợp với hào 5 quân tử ở trên, cho nên hào từ khuyên nó nên vâng thuận quân tử thì tốt. Còn kẻ đại nhân được bọn tiểu nhân vâng thuận – vì chúng muốn mua danh – thì cũng đừng theo chúng, cứ giữ khí tiết của mình trong thời khốn cùng, như vậy sẽ hanh thông."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "包羞．",
+      "han_viet": "Lục tam: Bao tu .",
+      "dich": "Hào 3, âm: Chứa chất sự gian tà, xấu hổ.",
+      "giang": "Hào này, không trung, không chính, là kẻ đứng đầu bọn tiểu nhân (vì ở trên cùng nội quái khôn), cho nên rất xấu, đáng ghét."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "有命, 无咎．疇離祉．",
+      "han_viet": "Cửu tứ: Hữu mệnh, vô cữu. Trù li chỉ.",
+      "dich": "Hào 4 dương : có mệnh trời (tức như thời vận đã tới) thì không lỗi mà bạn của mình cũng nhờ cậy mình mà được hưởng phúc.",
+      "giang": "Hào này ở quá nửa quẻ Bĩ, có mòi sắp hết bĩ rồi, cho nên nói là thời vận đã tới; nó là dương ở trong ngọai quái Càn, chính là người quân tử thực hiện được chí của mình. Bạn của nó, tức hai hào 5, 6 cùng là dương cả – cũng sẽ được hưởng phúc."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "休否, 大 人吉．其亡, 其亡, 繫于苞桑．",
+      "han_viet": "Cửu ngũ: Hưu bĩ, đại nhân cát.",
+      "dich": "Hào 5, dương : làm cho hết bĩ, đó là đạo tốt của bậc đại nhân (tuy nhiên, phải biết lo). Có thể mất đấy, (đừng quên điều đó thì mới vững như buộc vào một cụm dâu (dây dâu nhiều rễ, ăn sâu dưới đất, rất khó nhổ).",
+      "giang": "Hào này có đức dương cương trung chính, lại ở vào ngôi chí tôn, trong thời Bĩ sắp hết, cho nên lời đoán là tôt. Những vẫn phải thận trọng, đừng sai sót."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "傾否, 先否, 後喜．",
+      "han_viet": "Thượng cửu: Khuynh bĩ, tiên bĩ, hậu hĩ.",
+      "dich": "Hào trên cùng, dương: đánh đổ được cái bĩ, trước còn bĩ, sau thì mừng.",
+      "giang": "Đây là thời cuối cùng của Bĩ mà bĩ cực thì thái lai; người quân tử có tài sẽ dắt cả bạn bè (trỏ hào 4 và 5) mà đánh đổ dược bĩ. Nhưng mới đầu còn phải lo lắng (tiên bĩ) sau mới mừng là bước lên được cảnh Thái rồi."
+    }
+  ],
+  "dai_y": ""
+}

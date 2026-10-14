@@ -8,16 +8,39 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/app.css?v=1791982389">
-  <link rel="stylesheet" href="/static/css/kinh-dich.css?v=1791986115">
+  <link rel="stylesheet" href="/static/css/app.css?v=2.1510.2026.0359">
+  <link rel="stylesheet" href="/static/css/kinh-dich.css?v=2.1510.2026.0359">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1158631457717035"
+     crossorigin="anonymous"></script>
 </head>
 <body>
+  <div id="kd-splash" class="kd-splash">
+    <svg viewBox="0 0 200 200" class="kd-splash-bagua">
+      <style>
+        @keyframes kdSpin { to { transform: rotate(360deg); } }
+        .kd-spin-g { animation: kdSpin 3s linear infinite; transform-origin: 100px 100px; }
+      </style>
+      <g class="kd-spin-g">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#C9A227" stroke-width="1" opacity="0.4"/>
+        <g transform="translate(100,100)">
+          <path d="M 0 -45 A 45 45 0 0 1 0 45 A 22.5 22.5 0 0 1 0 0 A 22.5 22.5 0 0 0 0 -45 Z" fill="#E8C766"/>
+          <path d="M 0 -45 A 45 45 0 0 0 0 45 A 22.5 22.5 0 0 0 0 0 A 22.5 22.5 0 0 1 0 -45 Z" fill="#0B0B0F" stroke="#C9A227" stroke-width="1"/>
+          <circle cx="0" cy="22.5" r="7" fill="#E8C766"/>
+          <circle cx="0" cy="-22.5" r="7" fill="#0B0B0F"/>
+          <circle cx="0" cy="0" r="45" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+        </g>
+      </g>
+    </svg>
+    <div class="kd-splash-title">Kinh Dịch AI</div>
+    <div class="kd-splash-sub">☯ Đang khởi động</div>
+  </div>
+
   <div class="kd-root" id="kd-app">
     <main class="kd-container">
 
       <header class="kd-header">
         <h1>☯ Gieo Quẻ Kinh Dịch</h1>
-        <p class="kd-sub">Sáu hào gieo bằng ba đồng xu cổ.</p>
+        <p class="kd-sub">Sáu hào gieo bằng ba đồng xu cổ. Chỉ Ứng Nghiệm Lần Đầu</p>
       </header>
 
       <div id="kd-bagua-slot"></div>
@@ -27,7 +50,7 @@
         <!-- ─── Bát Tự (BẮT BUỘC) ─── -->
         <fieldset class="kd-battu">
           <legend>📅 Bát Tự · Thông tin mệnh chủ <span class="kd-required">*</span></legend>
-          <p class="kd-battu-hint">Cần thiết để luận giải cá nhân hoá theo mệnh chủ.</p>
+          <p class="kd-battu-hint">Cần thiết để luận giải theo mệnh chủ.</p>
           <div class="kd-battu-grid">
             <label class="kd-field">
               <span>Ngày sinh (dương lịch)</span>
@@ -47,10 +70,101 @@
             </label>
             <label class="kd-field">
               <span>Nơi sinh (tuỳ chọn)</span>
-              <input type="text" id="kd-noi-sinh" placeholder="VD: Hà Nội">
+              <select id="kd-noi-sinh">
+                <option value="">— Chọn tỉnh/thành —</option>
+                <optgroup label="Miền Bắc">
+                  <option value="Hà Nội">Hà Nội</option>
+                  <option value="Hải Phòng">Hải Phòng</option>
+                  <option value="Quảng Ninh">Quảng Ninh</option>
+                  <option value="Bắc Ninh">Bắc Ninh</option>
+                  <option value="Hải Dương">Hải Dương</option>
+                  <option value="Hưng Yên">Hưng Yên</option>
+                  <option value="Thái Bình">Thái Bình</option>
+                  <option value="Nam Định">Nam Định</option>
+                  <option value="Ninh Bình">Ninh Bình</option>
+                  <option value="Hà Nam">Hà Nam</option>
+                  <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                  <option value="Thái Nguyên">Thái Nguyên</option>
+                  <option value="Lạng Sơn">Lạng Sơn</option>
+                  <option value="Cao Bằng">Cao Bằng</option>
+                  <option value="Bắc Kạn">Bắc Kạn</option>
+                  <option value="Tuyên Quang">Tuyên Quang</option>
+                  <option value="Hà Giang">Hà Giang</option>
+                  <option value="Lào Cai">Lào Cai</option>
+                  <option value="Yên Bái">Yên Bái</option>
+                  <option value="Phú Thọ">Phú Thọ</option>
+                  <option value="Lai Châu">Lai Châu</option>
+                  <option value="Điện Biên">Điện Biên</option>
+                  <option value="Sơn La">Sơn La</option>
+                  <option value="Hòa Bình">Hòa Bình</option>
+                </optgroup>
+                <optgroup label="Miền Trung">
+                  <option value="Thanh Hóa">Thanh Hóa</option>
+                  <option value="Nghệ An">Nghệ An</option>
+                  <option value="Hà Tĩnh">Hà Tĩnh</option>
+                  <option value="Quảng Bình">Quảng Bình</option>
+                  <option value="Quảng Trị">Quảng Trị</option>
+                  <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                  <option value="Đà Nẵng">Đà Nẵng</option>
+                  <option value="Quảng Nam">Quảng Nam</option>
+                  <option value="Quảng Ngãi">Quảng Ngãi</option>
+                  <option value="Bình Định">Bình Định</option>
+                  <option value="Phú Yên">Phú Yên</option>
+                  <option value="Khánh Hòa">Khánh Hòa</option>
+                  <option value="Ninh Thuận">Ninh Thuận</option>
+                  <option value="Bình Thuận">Bình Thuận</option>
+                  <option value="Kon Tum">Kon Tum</option>
+                  <option value="Gia Lai">Gia Lai</option>
+                  <option value="Đắk Lắk">Đắk Lắk</option>
+                  <option value="Đắk Nông">Đắk Nông</option>
+                  <option value="Lâm Đồng">Lâm Đồng</option>
+                </optgroup>
+                <optgroup label="Miền Nam">
+                  <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                  <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                  <option value="Bình Dương">Bình Dương</option>
+                  <option value="Bình Phước">Bình Phước</option>
+                  <option value="Đồng Nai">Đồng Nai</option>
+                  <option value="Tây Ninh">Tây Ninh</option>
+                  <option value="Long An">Long An</option>
+                  <option value="Đồng Tháp">Đồng Tháp</option>
+                  <option value="An Giang">An Giang</option>
+                  <option value="Vĩnh Long">Vĩnh Long</option>
+                  <option value="Trà Vinh">Trà Vinh</option>
+                  <option value="Hậu Giang">Hậu Giang</option>
+                  <option value="Kiên Giang">Kiên Giang</option>
+                  <option value="Cần Thơ">Cần Thơ</option>
+                  <option value="Sóc Trăng">Sóc Trăng</option>
+                  <option value="Bạc Liêu">Bạc Liêu</option>
+                  <option value="Cà Mau">Cà Mau</option>
+                  <option value="Bến Tre">Bến Tre</option>
+                  <option value="Tiền Giang">Tiền Giang</option>
+                </optgroup>
+                <option value="Khác">Khác / Nước ngoài</option>
+              </select>
             </label>
           </div>
           <div id="kd-battu-preview" class="kd-battu-preview" hidden></div>
+
+          <details class="kd-battu-faq">
+            <summary>📚 Bát Tự là gì?</summary>
+            <p><b>Bát Tự</b> — còn gọi là <b>Tứ Trụ</b> hay <b>Tử Bình</b> — dùng năm, tháng, ngày, giờ sinh để lập bốn trụ, mỗi trụ một <b>Thiên Can</b> và một <b>Địa Chi</b>, tổng cộng tám chữ. Từ tám chữ đó, lá số cho thấy dòng ngũ hành sinh khắc, <b>nhật chủ</b> mạnh hay yếu và bộ <b>thập thần</b> quanh mình.</p>
+          </details>
+
+          <details class="kd-battu-faq">
+            <summary>☯ Bát Tự khác Tử Vi ở điểm nào?</summary>
+            <p><b>Bát Tự</b> dựa trên Can Chi của bốn trụ giờ – ngày – tháng – năm và dòng sinh khắc của ngũ hành. <b>Tử Vi Đẩu Số</b> thì an các sao vào 12 cung. Đây là hai trường phái mệnh lý lớn của phương Đông; nhiều người xem cả hai để đối chiếu.</p>
+          </details>
+
+          <details class="kd-battu-faq">
+            <summary>📝 Cần thông tin gì để lập lá số?</summary>
+            <p>Cần <b>ngày, tháng, năm sinh dương lịch</b>, <b>giờ sinh</b> và <b>giới tính</b>. Có <b>nơi sinh</b> để hiệu chỉnh giờ mặt trời thật thì lá số càng chuẩn. Thiếu giờ sinh vẫn xem được phần nền, nhưng độ chi tiết về hậu vận và ứng kỳ sẽ giảm.</p>
+          </details>
+
+          <details class="kd-battu-faq">
+            <summary>🔍 Luận giải Bát Tự gồm những gì?</summary>
+            <p>Bản luận giải đi qua <b>nhật chủ mạnh yếu</b>, <b>dụng thần</b>, <b>thập thần</b>, cấu trúc <b>tài – quan – ấn – thực thương</b>, rồi đọc theo <b>đại vận</b> và <b>lưu niên</b> cho từng lĩnh vực: tài lộc, sự nghiệp, tình duyên hoặc vận hạn.</p>
+          </details>
         </fieldset>
 
         <label class="kd-label" for="kd-question">Câu hỏi để suy ngẫm</label>
@@ -70,11 +184,23 @@
       </form>
 
       <section id="kd-result" aria-live="polite"></section>
-
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <p class="kd-version">v2.1510.2026.0359</p>
     </main>
   </div>
 
-  <script src="/static/js/kinh-dich/bundle.js?v=1791986115" defer></script>
+  <script src="/static/js/kinh-dich/bundle.js?v=2.1510.2026.0359" defer></script>
   <script src="/nav.js"></script>
 </body>
 </html>

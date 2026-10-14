@@ -1,0 +1,63 @@
+{
+  "que_so": 42,
+  "title": "QUẺ 42: PHONG LÔI ÍCH",
+  "ten_han": "益",
+  "ten_viet": "yì",
+  "thoan_tu": {
+    "han": "益: 利有攸往, 利涉大川．",
+    "han_viet": "",
+    "dich": "Tăng lên: tiến lên thì lợi làm (làm việc ích) thì lợi, qua sông lớn thì lợi (có gian nan nguy hiểm gì cũng vượt được).",
+    "giang": "Quẻ này trái với quẻ Tổn. Ngoại quái vốn là Càn, bớt một hào dương, thành quẻ Tốn; nội quái vốn là quẻ Khôn, được một hào dương quẻ Càn thêm vào, thành quẻ Chấn. Vậy là bớt ở trên thêm (ích) cho dưới; còn quẻ Tốn là bớt ở dưới thêm cho trên."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "利用為大作, 元吉, 无咎．",
+      "han_viet": "Sơ cửu: Lợi dụng vi đại tác, nguyên cát, vô cữu.",
+      "dich": "Hào 1, dương: Lợi dụng (sự giúp đỡ của người) mà làm việc lớn; nhưng phải khéo tính toán, hành động cho đúng, hoàn thiện (nguyên cát) thì mới không có lỗi. Sở dĩ khuyên như vậy vì hào này ở địa vị thấp, không nên lãnh việc nặng nề quá (hạ bất hậu sự dã, lời Tiểu Tượng truyện).",
+      "giang": ""
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "或益之十朋之龜 弗克違, 永貞吉．王用享于帝, 吉．",
+      "han_viet": "Lục nhị: Hoặc ích chi thập bằng chi qui, phất khắc vi, vĩnh trinh cát. Vương dụng hưởng vu đế, cát.",
+      "dich": "Hào 2, âm: Thình lình có người giúp cho mình một con rùa lớn đáng giá mười “bằng”, không từ chối được, rất tốt. Nếu là vua dùng đức để tế Thượng Ðế, Thượng Đế cũng hưởng, mà được phúc, tốt.",
+      "giang": "Hào này âm, nhu thuận, trung chính, nên được người trên giúp ích cho nhiều (như cho mình một con rùa quí – coi hào 5 quẻ Tổn ở trên), không từ chối được, cứ giữ vững đức trung chính thì tốt. Ví dụ: là nhà vua mà có được đức trung chính để cầu Trời, thì Trời cũng giúp cho."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "益之用凶事, 无咎．有孚中行, 告公用圭．",
+      "han_viet": "Lục tam: Ích chi dụng hung sự, vô cữu.",
+      "dich": "Hào 3, âm: giúp ích cho bằng cách bắt chịu hoạn nạn (hay trừng phạt) thì không có lỗi. Nếu chân thành sửa lỗi, giữ đạo trung (ví với ngọc khuê) thì được người trên (ví với vị công) chấp nhận.",
+      "giang": "Hào này âm nhu, bất trung, bất chính, đáng lẽ không được giúp ích, nhưng ở vào thời ích thì cũng được giúp; có điều là giúp cho bằng cách bắt chịu hoạn nạn (dụng hung sự) để mà mở mắt ra thành người tốt; cũng như trừng trị để sửa lỗi cho vậy."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "中行, 告公從．利用為依遷國．",
+      "han_viet": "Lục tứ: Trung hành, cáo công tòng; lợi dụng vi y thiên quốc.",
+      "dich": "Hào 4, âm: Rán theo đạo trung mà thưa với bậc “công” thì bậc “công” sẽ theo; lợi dụng đạo trung đó làm chỗ tựa thì dù việc lớn như dời đô cũng làm nỗi.",
+      "giang": "Hào này lên tới ngoại quái rồi, có địa vị cao, trách nhiệm quan trọng, thân cận với vua, nhưng kém đức trung nên Hào từ khuyên rán theo đạo trung mà cáo với bề trên (bậc vương công) thì bề trên sẽ nghe mà có thể làm được việc như dời quốc đo."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "有孚, 惠心, 勿周, 元吉．有孚, 惠我德．",
+      "han_viet": "Cửu ngũ: Hữu phu, huê tâm, vật vấn, nguyên cát.",
+      "dich": "Hào 5, dương: có lòng chí thành làm ân đức, thì chẳng cần hỏi, cũng biết là rất tốt rồi. Thiên hạ ai cũng tin vào đức ban ân huệ của 5.",
+      "giang": "Hào này là ông vua có tài đức, vừa trung vừa chính, có lòng chí thành ban ơn đức cho dân, cho nên rất tốt. Dân do đó rất tin vào đức của vua (chữ ngã ở đây trỏ hào 5)."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "莫益之或擊之．立心勿恆, 凶．",
+      "han_viet": "Thượng cửu: Mạc ích chi hoặc kích chi. Lập tâm vật hằng, hung.",
+      "dich": "Hào trên cùng, dương: Không ai làm ích cho mình mà có kẻ đả kích mình nữa, là vì không giữ được hằng tâm (lòng luôn luôn tốt), xấu.",
+      "giang": "Hào này dương cương, ở cuối quẻ ích, là có lòng cầu ích đến cùng cực, tất bị nhiều người oán; như vậy chỉ vì không giữ được hằng tâm."
+    }
+  ],
+  "dai_y": ""
+}

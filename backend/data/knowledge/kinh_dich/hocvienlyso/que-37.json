@@ -1,0 +1,63 @@
+{
+  "que_so": 37,
+  "title": "QUẺ 37: PHONG HỎA GIA NHÂN",
+  "ten_han": "",
+  "ten_viet": "",
+  "thoan_tu": {
+    "han": "家人: 利女貞．",
+    "han_viet": "",
+    "dich": "người trong nhà: hễ đàn bà mà chính đáng thì có lợi.",
+    "giang": "Nội quái là Ly, sáng suốt; ngoại quái là Tốn thuận. Ở trong thì suốt, xử trí không hồ đồ, ở ngoài thì thuận, như vậy việc tề gia sẽ tốt đẹp. Nói rộng ra việc nước cũng vậy, vì người trong một nước lấy nước làm nhà; mà việc thế giới cũng vậy, vì mỗi nước như một người, cả thế giới như một nhà."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "閑有家, 悔亡．",
+      "han_viet": "Sơ cửu: nhàn hữu gia, hối vong.",
+      "dich": "Hào 1, dương: phòng ngừa ngay từ khi mới có nhà thì không hối hận gì cả.",
+      "giang": "Hào này dương cương ở đầu quẻ Gia nhân, chính là lúc mới có nhà, nếu biết đề phòng, ngăn ngừa ngay các tật như lười biếng, xa xỉ thì không có gì phải ăn năn. Ý hào này cũng như tục ngữ của ta: Dạy con từ thuở còn thơ, dạy vợ từ thuở bơ vơ mới về."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "无攸遂, 在中饋, 貞吉．",
+      "han_viet": "Lục nhị: vô du loại, tại trung quĩ, trinh cát.",
+      "dich": "Hào 2, âm: không việc gì mà tự chuyên lấy thành công (nắm hết trách nhiệm), cứ ở trong nhà lo việc nấu nướng, giữ đạo chính thì tốt.",
+      "giang": "Hào này âm nhu mà ở vị âm, đắc trung đắc chính là người dâu hay con gái thuận tòng, nhún nhường, nhưng bất tài, ở địa vị thấp, nên không gánh vác nổi việc trị gia, không lãnh trách nhiệm lớn được, chỉ nên lo việc nấu nướng ở trong nhà thôi."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "家人嗃嗃, 悔厲, 吉．婦子嘻嘻, 終吝．",
+      "han_viet": "Cửu tam: Gia nhân hác hác, hối lệ, cát; phụ tử hi hi, chung lận.",
+      "dich": "Hào 3, dương: người chủ nhà nghiêm khắc, tuy hối hận, có nguy nhưng lại tốt; (nếu quá khoan để cho) dâu con nhí nhảnh chơi đùa thì lại hối tiếc.",
+      "giang": "Hào này là dương ở vị dương, đắc chính nhưng không đắc trung, quá nghiêm khắc, tuy có lúc phải hối hận, gặp nguy, nhưng kết quả lại tốt vì nhà có trật tự, trái lại nếu quá dễ dãi để cho dâu con luông tuồng, thì nhà sẽ suy loạn mà phải hối tiếc."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "富家, 大吉．",
+      "han_viet": "Lục tứ: phú gia, đại cát.",
+      "dich": "Hào 4, âm: Làm giàu thịnh cho nhà, rất rốt.",
+      "giang": "Hào này âm nhu, đắc chính ở vào ngoại quái Tốn, ở địa vị cao, như bà mẹ có trách nhiệm làm cho nhà giàu thịnh lên."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "王假有家, 勿恤, 吉．",
+      "han_viet": "Cửu ngũ: Vương cách hữu gia, vật tuất, cát.",
+      "dich": "Hào 5 dương : vua (hoặc gia chủ) rất khéo về việc trị gia (cách là rất tốt không có gì phải lo, tốt.",
+      "giang": "Chữ vương ở đây có thể hiểu là vua trong nước hay gia chủ, nếu hiểu là vua thì “trị gia” phải hiểu là “trị quốc”"
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "有孚, 威如, 終吉．",
+      "han_viet": "Thượng cửu: Hữu phu, uy như, chung cát.",
+      "dich": "Hào trên cùng, dương: (người trên) có lòng chí thành và thái độ uy nghiêm (không lờn) thì cuối cùng sẽ tốt.",
+      "giang": "Hào này ở trên cùng quẻ Gia nhân, tức lúc gia đạo đã hoàn thành. Người trên chỉ cần thành tín là người dưới tin, lại nghiêm trang thì đạo được tốt đẹp lâu dài."
+    }
+  ],
+  "dai_y": ""
+}

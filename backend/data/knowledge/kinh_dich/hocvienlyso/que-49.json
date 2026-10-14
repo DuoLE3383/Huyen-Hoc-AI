@@ -1,0 +1,63 @@
+{
+  "que_so": 49,
+  "title": "QUẺ 49: TRẠCH HỎA CÁCH",
+  "ten_han": "革",
+  "ten_viet": "gé",
+  "thoan_tu": {
+    "han": "革: 已日乃孚, 元亨 利貞．悔亡．",
+    "han_viet": "Cách: Dĩ nhật nãi phu, nguyên hanh lợi trinh. Hối vong.",
+    "dich": "Thay đổi: Phải lâu ngày người ta mới tin được; phải rất hanh thông, hợp chính đạo (thì người ta mới phục). Ðược vậy thì không phải ăn năn.",
+    "giang": "Theo tượng quẻ, chằm (Đoài) ở trên, lửa (Ly) ở dưới; lửa đốt thì nước cạn, nước xối vào thì lửa tắt; hai thứ đo tranh nhau thì có sự thay đổi, cho nên gọi là quẻ Cách."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "鞏用黃牛之革．",
+      "han_viet": "Sơ cửu: củng dụng hoàng ngưu chi cách.",
+      "dich": "Hào 1, dương: bó chặt bằng da con bò vàng.",
+      "giang": "người nào muốn làm việc cải cách lớn thì phải có thời (hợp thời), có địa vị có tài. Hào 1 này mới ở vào buổi đầu của thời Cách (thay đổi), còn lỡ dở, thế là chưa có thời, địa vị lại thấp, tuy dương cương nhưng bất trung thế là tài đức còn kém, trên không có người ứng viện (hào 4 cũng là dương); làm việc cải cách tất hỏng; chỉ nên giữ vững (bó chặt bằng) đạo trung (tượng trưng bằng màu vàng); thuận (đức của loài bò), thì mới khỏi bị lỗi."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "已日乃革之, 征吉, 无咎．",
+      "han_viet": "Lục nhị: Dĩ nhật nãi cách chi, chinh cát, vô cữu.",
+      "dich": "Hào 2, âm: chuẩn bị lâu ngày rồi cải cách, tiến đi thì tốt, không lỗi.",
+      "giang": "Hào này nhu thuận, đắc trung đắc chính, ở giữa nội quái Ly là sáng suốt, ở trên có hào 5 dương cương, trung chính, vị cao, ứng viện cho, đủ tư các, hoàn cảnh thuận tiện để cải cách (vì vị 2 này là cơ hội cải cách đã tới) cho nên cứ việc mà đi miễn là chuẩn bị cho kỹ, để cho người trên kẻ dưới đều tin mình."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "征凶, 貞厲, 革言三就, 有孚．",
+      "han_viet": "Cửu tam: chính hung, trinh lệ, cách ngôn tam tựu, hữu phu.",
+      "dich": "hảo, dương: hăng hái tiến liều thì xấu, bền vững giữ đạo và thận trọng lo lắng, tính toán sắp đặt kế hoạch tới 3 lần thì kết quả mới chắc chắn.",
+      "giang": "Hào này dương cương , bất trung, có tính nóng nảy, muốn làm liều, hăng hái tiến tới, hỏngviệc (chinh hung). Phải giữ vững (trinh) đạo chính, thận trọng, lo lắng(lệ); phải sắp đặt, tính toán kế hoạch đến 3 lần, chắc không có gì khuyết điểm, thì kết quả mới chắc chắn (phu ở đây nghĩa là chắc chắn)."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "悔亡, 有孚, 改命, 吉．",
+      "han_viet": "Cửu tứ: Hối vong, hữu phu, cải mệnh, cát.",
+      "dich": "Hào 4, dương: Hối hận tiêu hết, có lòng chí thành, trên dưới đều tin theo, đổi mệnh (cải cách lớn) được, tốt.",
+      "giang": "Hào này dương ở vị âm, đáng lẽ có điều ăn năn, nhưng ở vào thời cải cách, không nên cương quá, cho nên tính cương mà vị nhu, vừa cương vừa nhu là tốt, không phải ân hận. Nếu có đủ lòng chí thành khiến người trên kẻ dưới đều tin mình, thì cứ việc tiến hành việc cách mệnh, tốt."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "大人, 虎變．未占有孚．",
+      "han_viet": "Cửu ngũ: Đại nhân, hổ biến; vị chiêm hữu phu.",
+      "dich": "Hào 5 dương: Bậc đại nhân làm cho xã hội thay đổi như con hổ thay lông (mướt, đẹp hơn) chưa bói cũng đã tin như vậy rồi.",
+      "giang": "Hào này có đủ cả thời (công cuộc cải cách đã được tám chín phần mười rồi, vị ở ngôi chí tôn), tài đức (dương cương, trung chính, đúng là một đại nhân) cho nên thành công mỹ mãn, làm cho xã hội thay đổi, tốt đẹp, mới mẻ lên như con hổ thay lông, dân chúng sẳn lòng in như vậy từ khi chưa bói."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "君子豹變, 小人革面. 征凶, 居貞, 吉．",
+      "han_viet": "Thượng lục: Quân tử báo biến, tiểu nhân cách diện. Chính hung, cư trinh, cát.",
+      "dich": "Người quân tử (thực hiểu và theo sự cải cách như) con báo thay lông; kẻ tiểu nhân miễn cưỡng theo ngoài mặt. Công việc cải cách đến đây đã xong, nên ngừng lại, tiến nữa thì xấu, cứ giữ vững chính đạo thì tốt.",
+      "giang": "Hào này ở cuối cùng thời cách, công việc cải cách đã xong. Kết quả là hạng người từ bậc trung trở lên, sáng suốt (quân tử) thực tâm tự thay cũ mà theo mới, còn người tư cách thấm kém (tiểu nhân) chỉ thay đổi bề ngoài thôi. Như vậy là kết quả tốt đẹp rồi, đừng cải cách hoài nữa mà sinh hậu hoạn, nên giữ chính đạo."
+    }
+  ],
+  "dai_y": ""
+}

@@ -1,0 +1,63 @@
+{
+  "que_so": 59,
+  "title": "QUẺ 59: PHONG THỦY HOÁN",
+  "ten_han": "渙",
+  "ten_viet": "huàn",
+  "thoan_tu": {
+    "han": "",
+    "han_viet": "",
+    "dich": "Lìa tan: hanh thông. Vua tới nhà Thái miếu, vượt qua sông lớn thì lợi, giữ đạo chính thì lợi.",
+    "giang": "Trên là gió, dưới là nước (Khảm cũng có thể hiểu là mây – như quẻ Thủy lôi Truân, cũng gọi là Vân Lôi truân); gió thổi trên nước (hay mây) làm nước tung tóe ra (hay mây tan rã ra), cho nên đặt tên quẻ là Hoán."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "用拯, 馬壯, 吉",
+      "han_viet": "Sơ lục: Dụng chứng, mã tráng, cát.",
+      "dich": "Hào 1, âm: Dùng con ngựa mạnh để cứu vớt, tốt.",
+      "giang": "Ở đầu thời ly tán, còn có thể gom lại được; hào này âm nhu, kém tài, không đủ sức, nhưng trên có hào 2 dương cương đắc trung, ỷ thác vào được, như đi đường xa có con ngựa khỏe, cho nên tốt."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "渙,奔其机, 悔亡．",
+      "han_viet": "Cửu nhị: Hoán, bôn kì kỉ, hối vong.",
+      "dich": "Hào 2, dương: Lúc ly tán, nên đựa vào hào 1 làm ghế ngồi thì hối hận mất đi.",
+      "giang": ""
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "渙其躬, 无悔．",
+      "han_viet": "Lục tam: Hoán kì cung, vô hối.",
+      "dich": "Hào 3, âm: đánh tan lòng riêng tây của mình đi thì không hối hận.",
+      "giang": "Hào này âm nhu, bất trung ,bất chính, là người có lòng vị kỉ, nhưng ở vị dương lại được hào trên cùng chính ứng với nó, mà có lòng lo việc đời (vì là dương cương); nếu 3 bỏ tính vị kỉ đi, lo gánh việc đời với hào trên cùng, thì sẽ không hối hận."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "渙其群, 元吉．渙有丘, 匪夷所思．",
+      "han_viet": "Lục tứ: hoán kì quần, nguyên cát. Hoán kì khâu, phỉ di sở tư.",
+      "dich": "Hào 4 âm: Giải tán bè phái của mình đi, rất tốt. Vì như vậy là giải tán cái nhỏ để tập hợp cái lớn lại thành gò đống; điều đó người thường không thể nghĩ tới được.",
+      "giang": "Hào này âm nhu, thuận, giúp đỡ hào 5 vừa cương vừa đắc trung, như vị đại thần giúp một minh quân, mà biết giải tán bè phái của mình đi (sở di nói vậy vì hào 1 ở dưới không ứng viện với 4, cũng như 4 không còn bè phái), để đoàn kết, tập hợp cả quốc dân mà cùng lo cứu nước; như vậy là giải tán cái nhỏ để gom cái lớn lại thành gò đống, rất tốt. Người thường không hiểu được lẽ đó mà chê sao lại giải tán đảng của mình. Muốn vậy phải là người đắc chính (âm ở vị âm) , và đắc trung, cương cường như hào 5."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "渙汗其大號, 渙王居, 无咎．",
+      "han_viet": "Cửu ngũ: Hoán hãn kì đại hiệu, hoán vương cư,vô cữu.",
+      "dich": "Hào 5, dương: Ban bố hiệu lệnh lớn khắp nước như mồ hôi phát ra ở khắp thân thể, phát hết kho lẫm của vua để chu cấp cho dân, không có lỗi.",
+      "giang": "năm chữ “Hoán hãn kì đại hiệu” tối nghĩa. Chu Hi giảng là hủy bỏ các hiệu lệnh trước đi, những hiệu lệnh đó như mồ hôi, chảy ra mà không trở lại”. Chúng tôi theo Phan Bội Châu mà dịch như trên là ban bố hiệu lệnh đi khắp nơi. J Legge và R. WilheLm cũng hiểu như vậy, nhưng giảng là những hiệu lệnh đó cứu nguy được cho dân như người bị bệnh mà phát tán, làm cho mồ hôi toát ra vậy."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "渙其血去, 逖出, 无咎．",
+      "han_viet": "Thượng cửu: hoán kỳ huyết khử, địch xuất, vô cữu.",
+      "dich": "Hào trên cùng, dương: Tan (trừ) được máu )vết thương cũ), thoát khỏi kinh sợ (chữ [逖 ] ở đây nên đổi làm chữ dịch [惕] là kinh sợ), không có lỗi.",
+      "giang": "hào này ở cuối thời ly tán, sắp hết xấu; nó có tài (dương cương), lại được hào 3 ứng viện, cho nên nó thành công, trừ được vết thương ly tán và thoát khỏi cảnh lo sợ."
+    }
+  ],
+  "dai_y": ""
+}

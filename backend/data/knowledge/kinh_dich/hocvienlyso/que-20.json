@@ -1,0 +1,63 @@
+{
+  "que_so": 20,
+  "title": "QUẺ 20: PHONG ĐỊA QUAN",
+  "ten_han": "觀",
+  "ten_viet": "guan1",
+  "thoan_tu": {
+    "han": "觀: 盥而不薦, 有孚顒若．",
+    "han_viet": "Quán: Quán nhi bất tiến, hữu phu ngung nhược.",
+    "dich": "Biểu thị (làm mẫu mực cho người ta thấy) cũng như người chủ tế, lúc sắp tế, rửa tay (quán ) cho tinh khiết, bấy nhiêu cũng đủ rồi, không cần phải bày mâm cỗ dâng lên (tiến); mình chí thành (phu) như vậy thì người khác cũng chí thành tín ngưỡng (ngung) mình.",
+    "giang": "Theo tượng quẻ, Tốn ở trên, Khôn ở dưới là gió thổi trên đất, tượng trưng cho sự cổ động khắp mọi loài, hoặc xem xét (quan) khắp mọi loài."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "童觀, 小人无咎, 君子吝．",
+      "han_viet": "Sơ lục: Đồng quan, tiểu nhân vô cữu, quân tử lận.",
+      "dich": "Hào 1, âm: Trẻ con nhìn lên (không hiểu gì), tiểu nhân thì không đáng trách, quân tử mà như vậy thì hối tiếc.",
+      "giang": "Tên quẻ thì đọc là Quán, người trên (hào 5) biểu thị, làm gương cho người dưới. Nhưng xét từng hào thì đọc là quan, người dưới xem xét tư cách, hành vi của người trên. Hào 5, dương , đắc trung làm chủ quẻ, tượng trưng cho người trên, ông vua."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "闚觀, 利女貞．",
+      "han_viet": "Lục nhị: Khuy quan, lợi nữ trinh.",
+      "dich": "Hào 2, âm: Nhìn lên, chỉ thích hợp với nết trinh của đàn bà thôi.",
+      "giang": "Hào này âm nhu, trung chính, là người con gái có nết trinh, ngó lên hào 5, không thấy được đạo lý của 5, con gái như vậy thì được. Người trượng phu mà như thế thì đáng xấu hổ (khả xú dã – Tiểu tượng truyện.)"
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "觀我生, 進退．",
+      "han_viet": "Lục tam: Quan ngã sinh, tiến thoái.",
+      "dich": "Hào 3, âm: Xét bản thân, hành vi của mình, xem nên tiến lên (theo hào 4) hay nên đứng yên, đừng để phải lui xuống 2.",
+      "giang": "Hào này bất chính (âm mà ở vị dương), lại ở trên cùng nội quái, có thể tiến hay thoái; Hào từ khuyên đừng ngó lên hào 5, cứ tự xét bản thân, hành vi của mình, nếu đối phó được với hoàn cảnh thì tiến lên, không thì thôi, như vậy là chưa sai đường lối."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "觀國之光, 利用 賓于王．",
+      "han_viet": "Lục tứ: Quan quốc chi quang, lợi dụng tân vu vương.",
+      "dich": "Hào 4, âm: Xem cái quang vinh của nước mà lợi dụng địa vị thân cận với vua.",
+      "giang": "Hào này âm, đắc chính, ở ngay dưới hào 5, tức là vị thân cận với vua (quí khách của vua) được vua tín nhiệm, xem xét đức sáng của vua (vua hiền thì nước mới vinh quang, nền vinh quang của nước tức là đức sáng của vua), mà bắt chước, đem tài sức ra giúp đời."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "觀我生君子, 无咎．",
+      "han_viet": "Cửu ngũ: Quan ngã sinh quân tử, vô cữu.",
+      "dich": "Hào 5, dương: Xét bản thân, hành động của ta hợp với đạo quân tử , như vậy là không có lỗi.",
+      "giang": "Hào 5 ngôi chí tôn, cương cường mà trung chính là bậc quân tử làm gương cho 4 hào ở dưới, mọi người đều ngó vào."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "觀其生君子, 无咎．",
+      "han_viet": "Thượng cửu: Quan kỳ sinh quân tử , vô cữu.",
+      "dich": "hào trên cùng, dương: xét bản thân, hành động của hào này hợp với đạo quân tử, như vậy là không có lỗi.",
+      "giang": "Hào từ: hào này y như hào từ 5, chỉ khác hào 5 dùng chữ ngã là ta, mà hào này dùng chữ kỳ là của nó (của hào trên cùng. Là vì hào 5 là vua, nói với hào 4 là cận thần, tự xưng là ta; còn hào này là lời Chu Công nói về hào trên cùng, cũng như đã nói về các hào 1, 2, 3, 5 ở dưới."
+    }
+  ],
+  "dai_y": ""
+}

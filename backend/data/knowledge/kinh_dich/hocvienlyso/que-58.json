@@ -1,0 +1,55 @@
+{
+  "que_so": 58,
+  "title": "QUẺ 58: THUẦN ĐOÀI",
+  "ten_han": "兌",
+  "ten_viet": "duì",
+  "thoan_tu": {
+    "han": "",
+    "han_viet": "",
+    "dich": "Vui thì hanh thông. Hợp đạo chính thì lợi.",
+    "giang": "Đoài là chằm, cũng là thiếu nữ. Nước chằm làm cho cây cỏ vui tươi, sinh vật vui thích; thiếu nữ làm cho con trai vui thích. Vui thích thì hanh thông, miễn là phải hợp với đạo chính; phải ngay thẳng, thành thực, đoan chính. Đoài có hai hào dương ở phía trong, một hào âm ở ngoài, nghĩa là trong lòng phải thành thực rồi ngoài mặt nhu hoà, như vậy là hợp với đạo chính, tốt."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "和兌吉．",
+      "han_viet": "Sơ cửu: Hoà đoái, cát.",
+      "dich": "Hào 1, dương: Hoà thuận, vui vẻ, tốt.",
+      "giang": "dương ở dưới cùng quẻ đoài là quân tử mà khiêm hạ, ở trên lại không tư tình với ai (vì 4 cũng là dương, không phải là âm, tiểu nhân), nên chỉ dùng đạo chính mà hoà thuận vui vẻ với mọi người, tốt."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "來兌凶．",
+      "han_viet": "Lục tam: Lai đoài, hung.",
+      "dich": "Hào 3, âm: Quay lại cầu vui với người ở dưới, xấu.",
+      "giang": "Âm nhu, bất trung bất chính, là hạng tiểu nhân tìm vui mà không giữ đạo; là phận gái ở giữa bốn người con trai (4 hào dương, 2 ở trên, 2 ở dưới), cầu vui với 2 người ở trên, thì không dám vì phận thấp, phải quay lại cầu với 2 người ở dưới, nhưng họ cũng không thèm, vì hào 1 cương trực mà chính, hào 2 cương trực mà trung, kết quả là xấu."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "商兌, 未寧, 介疾,有喜．",
+      "han_viet": "",
+      "dich": "Hào 4, dương: cân nhắc xem nên cầu vui ở phía nào mà chưa quyết định được rồi sau theo chính bỏ tà, đáng mừng.",
+      "giang": "Dương cương mà ở vị âm, chưa thật là quân tử, ở trên thừa tiếp hào 5 vừa trung vừa chính, nhưng ở dưới lại gần hào 3, tiểu nhân, cho nên mới đầu do dự, cân nhắc xem nên hướng về phía nào; nhưng nhờ có đức dương cương, đồng đức với 5, nên sau hướng về 5, quyết tâm bỏ tà theo chính, thật đáng mừng."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "孚于剝, 有厲．",
+      "han_viet": "Cửu ngũ : Phu vu bác, hữu lệ.",
+      "dich": "Hào 5, dương: Nếu tin kẻ tiểu nhân mà tiêu mòn (bác) hết đức trung chính của mình thì nguy.",
+      "giang": "Hào này dương cương, trung chính, địa vị chí tôn, ở vào thời Đoái mà thân cận với hào trên cùng âm nhu là kẻ tiêu nhân làm chủ sự vui, rồi ham vui bậy bạ thì nguy; đây là lời răn kẻ trị nước."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "引兌．",
+      "han_viet": "Thượng lục: Dẫn đoài.",
+      "dich": "Hào trên cùng, âm: Đem sự vui thú tới.",
+      "giang": "Ở trên cùng quẻ Đoài mà âm nhu là kẻ chuyên siểm nịnh, dụ dỗ người ta tìm vui một cách bất chính. Tất nhiên là xấu rồi, chẳng cần nói."
+    }
+  ],
+  "dai_y": ""
+}

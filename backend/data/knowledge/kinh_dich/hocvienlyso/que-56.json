@@ -1,0 +1,63 @@
+{
+  "que_so": 56,
+  "title": "QUẺ 56: HỎA SƠN LỮ",
+  "ten_han": "旅",
+  "ten_viet": "lu3",
+  "thoan_tu": {
+    "han": "旅: 小亨. 旅貞, 吉．",
+    "han_viet": "Lữ: tiểu hanh, Lữ trinh, cát.",
+    "dich": "Ở đậu; hơi hanh thông. Đi ở đậu mà giữ đạo chính thì tốt.",
+    "giang": "chỗ ở của lửa là mặt trời hay lò, chứ không phải ở trên núi: trên núi lâu lâu vẫn có đám lửa cháy rừng hay đốt rừng, nhưng chỉ một thời gian ngắn thôi. Cho nên dùng các tượng lửa (ly) ở trên núi Cấn để chỉ cảnh bỏ nhà mà đi ở đậu quê người."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "旅瑣瑣, 斯其所取災．",
+      "han_viet": "Sơ lục: Lữ toả toả, tư kì sở thủ tai.",
+      "dich": "Hào 1, âm: Ở đậu mà tư cách nhỏ nhen, tẳn mẳn tức là tự chuốc lấy hoạ.",
+      "giang": "hào này âm nhu, ở vị thấp nhất, ví với người chí đã cùng, tư cách hèn hạ đối với chủ nhà mình ở đậu mà tham lam, tẳn mẳn, khiến người ta ghét, như vậy là tự rước hoạ vào mình."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "旅即次, 懷其資, 得童僕, 貞．",
+      "han_viet": "Lục nhị: Lữ tức thứ, hoài kì tư, đắc đồng bộc, trinh.",
+      "dich": "Hào 2, âm: Ở đất khách, được chỗ trọn an lành, giữ được tiền bạc, lại có đầy tớ tín cẩn.",
+      "giang": "Ở đất khách nên nhu thuận, mà hào này âm nhu, đắc trung, đắc chính, trên lại ứng với hào 5, cũng âm nhu, đắc trung mà lại văn minh (ở ngoại quái Ly), như gặp được chủ nhà tốt, mình có chỗ trọn an lành, lại giữ được tiền, có đầy tớ tín cẩn, mọi việc đều tốt cả."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "旅, 焚其次, 喪其童僕, 貞, 厲．",
+      "han_viet": "Cửu tam: Lữ, phần kì thứ, táng kì đồng bộc, trinh, lệ.",
+      "dich": "Hào 3, dương: Ở đất khách, mà (tự mình) đốt chỗ trọ, mất đầy tớ, dù chính đáng cũng nguy.",
+      "giang": "Hào này quá cương (dương ở vị dương), bất trung, ở đất khách như vậy không tốt, vị lại khá cao, có ý tự cao, bị chủ nhà trọ đuổi, như vậy không khác gì tự đốt chỗ trọ của mình, đầy tớ cũng không ưa mình, mất lòng cả người trên kẻ dưới, dù mình có chính đáng, cũng nguy."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "旅于處, 得其資斧, 我心不快．",
+      "han_viet": "Cửu tứ: Lữ vu xử, đắc kì tư phủ, ngã tâm bất khoái.",
+      "dich": "Hào 4, dương: tới đất khách, được chỗ ở tạm, có tiền của và đồ hộ thân (tượng trưng bằng cái búa), nhưng trong lòng không vui.",
+      "giang": "tuy dương cương nhưng ở vị âm, lại ở dưới cùng ngoại quái, là biết mềm mỏng, tự hạ, tức biết xử thế, cho nên được chỗ ở tạm, có tiền của, vật liệu để phòng thân, nhưng ở trên, hào 5 âm nhu không giúp đỡ gì được 4, ở dưới, hào 1, ứng với 4 âm nhu, lại thấp hèn, cũng chẳng giúp đỡ 4 được gì, vì vậy là lòng 4 không vui."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "射雉, 一矢亡, 終以譽命．",
+      "han_viet": "Lục ngũ: Xạ trĩ, nhất thỉ vong, chung dĩ dự mệnh.",
+      "dich": "",
+      "giang": "Thường hào 5 trỏ ngôi vua, nhưng nếu vua là làm lữ khách thì là vua mất nước, cho nên chỉ nên coi là một lữ khách thôi, một lữ khách văn mình (ở ngoại quái ly), nhũn nhặn, mềm mỏng (âm nhu) được lòng mọi người (đắc trung) , như vậy tất được tốt đẹp như bắn được con trĩ (một loài chim đẹp – tượng quẻ Ly) tốn hao không mấy mà được tiếng khen, và phúc lộc."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "鳥焚其巢, 旅人先 笑, 後號咷, 喪牛于易, 凶．",
+      "han_viet": "Thượng cửu: điểu phần kì sào, lữ nhân tiên tiếu, hậu hào đào, táng ngưu vu dị, hung.",
+      "dich": "Hào trên cùng, dương: con chim cháy mất tổ, người lữ hành trước cười, sau kêu khóc, vì láu táu (vô ý) đánh mất con bò (đức nhu thuận), xấu.",
+      "giang": "thân phận ở đậu mà lại ở trên chủ nhà, đã là nghịch cảnh rồi, đã vậy lại quá cương (hào dương), mất lòng người, tất bị đuổi đi, như con chim cháy mất tổ. Mới đầu hớn hở, vì được ở trên người, sau phải kêu khóc vì mất chỗ trọ. Sở dĩ vậy vì khinh dị đánh mất đức nhu thuận (tượng bằng con bò) rất cần ở thời ở đậu."
+    }
+  ],
+  "dai_y": ""
+}

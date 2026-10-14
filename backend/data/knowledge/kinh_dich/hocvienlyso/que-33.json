@@ -1,0 +1,63 @@
+{
+  "que_so": 33,
+  "title": "QUẺ 33: THIÊN SƠN ĐỘN",
+  "ten_han": "遯",
+  "ten_viet": "dùn",
+  "thoan_tu": {
+    "han": "遯: 亨, 小利貞．",
+    "han_viet": "Độn: Hanh, tiểu lợi trinh.",
+    "dich": "Trốn lánh đi thì hanh thông; trong các việc nhỏ, giữ được điều chính thì có lợi.",
+    "giang": "Trên là trời, dưới là núi: ở chân núi thì thấy đỉnh núi là trời, nhưng càng lên càng thấy trời lùi lên cao nữa, tới đỉnh núi thấy trời mù mịt tít vời, như trời trốn lánh núi, cho nên đặt tên quẻ là Độn."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "遯尾, 厲, 勿用有攸往．",
+      "han_viet": "Sơ lục: độn vĩ, lệ, vật dụng hữu du vãng.",
+      "dich": "Hà 1, âm: Trốn sau cùng, như cái đuôi, nguy đấy, đừng làm gì cả.",
+      "giang": "Hào ở dưới cùng, nên ví với cái đuôi ở lại sau cùng. Nó là âm, nhu nhược, hôn ám, không trốn theo kịp người, còn rù rờ ở sau, nên bảo là nguy."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "執之用黃牛之革, 莫之勝說．",
+      "han_viet": "Lục nhị: chấp chi dụng hoàng ngưu chi cách, mạc chi thăng thoát.",
+      "dich": "Hào 2, âm: Hai bên (hào 5 và hào 2) khăng khít (bền chặt) với nhau như buộc vào nhau bằng da bò vàng, không thể nào cởi được.",
+      "giang": "hào 2 âm, đắc trung đắc chính, ứng với hào 5 dương cũng đắc trung đắc chính, cho nên tương đắc, khắng khít với nhau, không thể rời nhau được, 2 không thể bỏ 5 mà trốn được."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "係遯, 有疾厲, 畜臣妾, 吉．",
+      "han_viet": "Cửu tam: Hệ độn, hữu tật lệ, súc thần thiếp, cát.",
+      "dich": "Hào 3, dương, lúc phải trốn mà bịn rịn tư tình thì nguy; nhưng nuôi kẻ tôi tớ trai gái thì tốt.",
+      "giang": "Hào dương này ở gần hào 2 âm, có vẻ bịn rịn tư tình với hào đó, không thể trốn mau được, như bị bệnh mà nguy; có tư tình đó thì không làm được việc lớn, chỉ nuôi bọn tôi tớ trai gái mình tốt với họ thì họ vui lòng mà dễ sai khiến, được việc cho mình."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "好遯, 君子吉, 小人否．",
+      "han_viet": "Cửu tứ: Hiếu độn, quân tử cát, tiểu nhân phủ.",
+      "dich": "Hào 4 dương: Có hệ lụy với người, nhưng trốn được, quân tử thì tốt, tiểu nhân thì không.",
+      "giang": "Hào này cũng tối nghĩa; chữ 好 có người đọc là hảo , chữ 否 có người đọc là bĩ, vì vậy có nhiều cách hiểu, với hào 1 âm nhu, có tình thân thiết (hệ lụy) với nhau; nhưng 4 là quân tử, 1 là tiểu nhân , 4 cắt được tư tình mà trốn đi, theo lệ phải (chính nghĩa); chỉ hạng quân tử mới làm vậy được, tiểu nhân thì không ."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "嘉遯, 貞吉．",
+      "han_viet": "Cửu ngũ: gia độn, trinh cát.",
+      "dich": "Hào 5, dương, trốn mà theo điều chính cho nên tốt.",
+      "giang": "Hà 5, dương có đức trung chính, ứng với hào 2 cũng trung chính, ở thời Độn, cả 2 hào trung chính dắt nhau trốn bọn tiểu nhân, giữ được điều chính, cho nên tốt."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "肥遯, 无不利．",
+      "han_viet": "Thượng cửu: Phi độn, vô bất lợi.",
+      "dich": "Hào trên cùng, dương: trốn mà ung dung, đàng hoàng, không có gì là không lợi.",
+      "giang": "Vào lúc cuối thời Độn, càng trốn được xa càng được tự do. Hào này dương cương quân tử, không bịn rịn với hào nào cả (vì hào 3 cũng là dương), có thể ung dung, đàng hoàng trốn được, không nghi ngại gì cả."
+    }
+  ],
+  "dai_y": ""
+}

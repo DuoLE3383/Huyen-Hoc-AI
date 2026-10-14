@@ -175,6 +175,49 @@ LANG_GUARD = (
     "Nếu cần từ chuyên môn, dùng từ Hán-Việt."
 )
 
+
+# ═══ Nguyên tắc luận giải Kinh Dịch (áp dụng cho mọi prompt) ═══
+NGUYEN_TAC_LUAN_GIAI = '''
+NGUYÊN TẮC LUẬN GIẢI KINH DỊCH (BẮT BUỘC):
+
+1. LUẬN QUẺ TRƯỚC, KẾT LUẬN SAU, LỜI KHUYÊN CUỐI.
+   Trình tự: (a) hiểu câu hỏi → (b) đọc quẻ chủ → (c) phân tích hào động → (d) đọc quẻ biến → (e) tổng hợp → (f) kết luận → (g) lời khuyên.
+
+2. MỌI KẾT LUẬN PHẢI CÓ CĂN CỨ.
+   Không được kết luận CÁT/HUNG/TĨNH mà không chỉ rõ: tên quẻ, tượng quái, hào động, ngũ hành sinh/khắc với nhật chủ.
+
+3. KHÔNG BỊA.
+   Không bịa hào, can chi, dữ liệu gieo quẻ, nguồn trích dẫn, hay quy tắc trường phái. Nếu thiếu dữ liệu → nêu rõ 'Không có dữ liệu X'.
+
+4. PHÂN BIỆT BIỂU TƯỢNG VỚI SỰ KIỆN.
+   Kinh Dịch cho xu hướng và bài học ứng xử, KHÔNG phải dự đoán sự kiện chắc chắn. Không dùng văn phong quyết đoán để che giấu thiếu căn cứ.
+
+5. NẾU CÁC CÁCH LUẬN KHÁC NHAU.
+   Nêu rõ sự khác biệt, không tùy tiện chọn một kết luận.
+
+6. KHÔNG TỰ ĐẶT THỜI HẠN.
+   Không ghi '7 ngày', '30 ngày', 'tháng 11' nếu không suy ra được từ can chi ngày/quẻ.
+
+7. TÀI CHÍNH / SỨC KHỎE / PHÁP LÝ.
+   Luận quẻ là tham khảo văn hóa, không thay thế bằng chứng thực tế hoặc tư vấn chuyên môn.
+
+8. TRẢ LỜI TRỰC TIẾP, TRÁNH LẶP Ý.
+   Ưu tiên cấu trúc rõ ràng, dứt khoát, không văn hoa sáo rỗng.
+
+9. ĐỊNH DẠNG OUTPUT PHẢI ĐÚNG SCHEMA.
+   Các trường mô tả "2-4 câu", "1-2 câu" PHẢI trả về 1 CHUỖI STRING, KHÔNG phải array/list.
+   Các trường "bullet points" PHẢI trả về array các string (mỗi bullet là 1 string).
+
+10. KIỂM TRA HÀO ĐỘNG TRƯỚC KHI VIẾT.
+    Trong "Thông tin quẻ" PHẦN ĐẦU có khung "⚡ HÀO ĐỘNG: [danh sách]".
+    Nếu danh sách KHÔNG rỗng → PHẢI phân tích từng hào đó (tên hào, tính chất, nội dung).
+    TUYỆT ĐỐI KHÔNG được viết "Không có hào động" nếu danh sách có phần tử.
+
+11. TRƯỜNG "luan_giai_hao_dong" — BẮT BUỘC.
+    Nếu "⚡ HÀO ĐỘNG" ở đầu "Thông tin quẻ" có giá trị (VD: [3]) → PHẢI viết 3-5 câu phân tích hào 3.
+    CHỈ ghi "Không có hào động" khi khung đó ghi "KHÔNG CÓ HÀO ĐỘNG".
+'''
+
 SYSTEM_JSON = "Bạn là chuyên gia Kinh Dịch. Chỉ trả về JSON object hợp lệ, không markdown, không giải thích."
 
 
@@ -182,34 +225,59 @@ def _build_que_info(result: dict[str, Any]) -> str:
     qc = result["que_chinh"]
     qb = result.get("que_bien")
     hao_dong = [h["vi_tri"] for h in qc.get("hao", []) if h.get("dong")]
-    lines = [
-        f"Quẻ chính: Quẻ {qc['so']} - {qc['ten']} (chủ đề: {qc['chu_de']})",
-        f"Thượng quái: {qc['thuong_quai']['ten']} {qc['thuong_quai']['tuong']}",
-        f"Hạ quái: {qc['ha_quai']['ten']} {qc['ha_quai']['tuong']}",
-    ]
+
+    # ═══ ĐẶT HÀO ĐỘNG LÊN ĐẦU — dễ thấy nhất ═══
+    lines = []
+
     if hao_dong:
-        lines.append(f"Hào động: {hao_dong}")
+        lines.append("╔══════════════════════════════════════════╗")
+        lines.append(f"║  ⚡ HÀO ĐỘNG: {hao_dong}  ({len(hao_dong)} hào chuyển)  ║")
+        lines.append("║  → PHẢI phân tích từng hào này!         ║")
+        lines.append("╚══════════════════════════════════════════╝")
     else:
-        lines.append("Không có hào động")
+        lines.append("⚡ KHÔNG CÓ HÀO ĐỘNG — quẻ ở trạng thái tĩnh")
+
+    lines.append("")
+    lines.append(f"### Quẻ chính: Quẻ {qc['so']} - {qc['ten']} (chủ đề: {qc['chu_de']})")
+    lines.append(f"- Thượng quái: {qc['thuong_quai']['ten']} {qc['thuong_quai']['tuong']}")
+    lines.append(f"- Hạ quái: {qc['ha_quai']['ten']} {qc['ha_quai']['tuong']}")
+
     if qb:
-        lines.append(f"Quẻ biến: Quẻ {qb['so']} - {qb['ten']} (chủ đề: {qb['chu_de']})")
+        lines.append("")
+        lines.append(f"### Quẻ biến: Quẻ {qb['so']} - {qb['ten']} (chủ đề: {qb['chu_de']})")
     else:
-        lines.append("Không có quẻ biến (6 hào tĩnh)")
+        lines.append("")
+        lines.append("### Quẻ biến: Không có (6 hào tĩnh)")
+
     return "\n".join(lines)
 
 
 async def _prompt_1_core(question: str, que_info: str, context: str) -> str:
     time_ctx = build_time_context()
+
+    # Tính 7 ngày tới để LLM có dữ liệu cụ thể
+    from datetime import datetime, timedelta
+    today = datetime.now()
+    days_str = "\n".join([
+        f"- {(today + timedelta(days=i)).strftime('%d/%m/%Y (%A)')}"
+        for i in range(0, 8)
+    ])
+
     prompt = f"""{LANG_GUARD}
+
+{NGUYEN_TAC_LUAN_GIAI}
 
 {time_ctx}
 
-Bạn luận giải Kinh Dịch cho người dùng Việt Nam. Trả lời CỤ THỂ, có ngày tháng, không chung chung.
+## 7 NGÀY TỚI (dùng ĐÚNG ngày này, KHÔNG bịa):
+{days_str}
 
-QUY TẮC NGHIÊM NGẶT:
-- TUYỆT ĐỐI KHÔNG dùng từ tiếng Anh (no "simplicity", "balance", "investment"…). Dùng tiếng Việt hoặc Hán-Việt.
-- KHÔNG viết tên Hán trong ngoặc như "Tụy (Tài)". Chỉ dùng tên Việt.
-- Dùng NGÀY CỤ THỂ từ thông tin thời gian bên trên.
+## ⛔ QUY LUẬT NGŨ HÀNH — KHÔNG ĐƯỢC SAI:
+- **Tương sinh**: Mộc→Hỏa→Thổ→Kim→Thủy→Mộc
+- **Tương khắc**: Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim, Kim khắc Mộc
+- Nhớ kỹ: **Thổ SINH Kim** (không khắc), **Hỏa KHẮC Kim**
+
+Bạn là học giả Kinh Dịch theo truyền thống Nho gia Việt Nam. Dùng TƯ LIỆU bên dưới (Hán-Việt + Dịch + Giảng của Nguyễn Hiến Lê) để luận giải.
 
 ## Câu hỏi người dùng:
 {question}
@@ -217,80 +285,281 @@ QUY TẮC NGHIÊM NGẶT:
 ## Thông tin quẻ:
 {que_info}
 
-## Tư liệu về 2 quẻ:
+## TƯ LIỆU (Hán-Việt + Dịch + Giảng — CHỈ DÙNG ĐÚNG cái này, KHÔNG bịa):
 {context}
 
-## Yêu cầu:
-Trả về DUY NHẤT JSON object với cấu trúc:
+## ⛔ DỮ LIỆU QUẺ ĐÃ CÓ SẴN — DÙNG ĐÚNG, KHÔNG BỊA:
+
+Trong mục "Thông tin quẻ" bên trên ĐÃ CÓ:
+- **Tên quẻ chủ** + số quẻ (VD: "Quẻ 18 Sơn Phong Cổ")
+- **Tên quẻ biến** + số quẻ (VD: "Quẻ 41 Sơn Trạch Tổn")
+- **Danh sách hào động** (VD: [1, 3])
+- **Thượng quái / Hạ quái**
+
+**QUY TẮC BẮT BUỘC:**
+1. **PHẢI dùng ĐÚNG tên quẻ đã cho** — KHÔNG được bịa tên quẻ khác (VD: không gọi "Sơn Phong Cổ là Tụng").
+2. **PHẢI kiểm tra "hào động" đã cho** — Nếu có hào động → PHẢI phân tích các hào đó. Nếu không có → mới ghi "Không có hào động".
+3. **PHẢI dùng ĐÚNG số quẻ** — "Quẻ 18" không được ghi "Quẻ 6".
+4. **Nếu không chắc về tên quẻ → dùng đúng tên trong "Thông tin quẻ", không tự suy diễn.**
+
+## QUY TẮC NGHIÊM NGẶT KHÁC:
+1. TUYỆT ĐỐI KHÔNG bịa Hán tự, Hán-Việt, hay Pinyin.
+2. Nếu tư liệu có Hán-Việt → trích nguyên văn.
+3. Nếu tư liệu KHÔNG có → để trống field đó, KHÔNG bịa.
+4. **KẾT LUẬN PHẢI DUY NHẤT** — chọn **1 trong 3** trạng thái Kinh Dịch:
+
+   | Trạng thái | Hán | Khi nào chọn |
+   |---|---|---|
+   | **CÁT** | 吉 | Quẻ chủ tốt + ngũ hành quái sinh/trợ nhật chủ + hào động thuận + quẻ biến tích cực → **NÊN TIẾN** |
+   | **HUNG** | 凶 | Quẻ chủ xấu (Tụng, Bĩ, Bác...) hoặc ngũ hành khắc nhật chủ hoặc hào động xấu + quẻ biến tiêu cực → **KHÔNG NÊN HÀNH ĐỘNG** |
+   | **TĨNH** | 靜 | Quẻ chủ trung tính, ngũ hành hỗn hợp, hoặc quẻ khuyên "chờ thời", "giữ chính", "thủ kỷ đãi thời" → **GIỮ NGUYÊN, CHỜ THỜI** |
+
+   - **KHÔNG viết** "vừa nên vừa không nên", "có thể", "tuỳ trường hợp".
+   - Nếu quẻ + ngũ hành không thuận → **HUNG**.
+   - Nếu quẻ khuyên chờ, thủ, đãi → **TĨNH**.
+5. **THỜI ĐIỂM**: CHỈ chọn **1 ngày duy nhất** tốt nhất (không liệt kê 3 ngày).
+   - Nếu kết luận `NÊN` → chọn 1 ngày + giờ cụ thể trong 7 ngày tới.
+   - Nếu kết luận `KHÔNG NÊN` hoặc `CHỜ THÊM` → ghi "Không có — chờ thêm".
+   - Chọn ngày dựa vào can chi ngày đó sinh/trợ nhật chủ (không khắc).
+6. **NGÀY NÊN TRÁNH**: Chỉ 1 ngày xấu nhất. Nếu không có → ghi "Không có".
+7. Dùng ngày tháng cụ thể từ danh sách 7 ngày tôi cung cấp, KHÔNG bịa ngày ngoài danh sách.
+
+## Cấu trúc JSON trả về:
 
 {{
-  "tong_quan": "4-6 câu. Tóm tắt tình huống user theo quẻ chính + quẻ biến. Có thể dùng ngày/quý cụ thể.",
-  "y_nghia_cot_loi": "5-7 câu. Phân tích BIỂU TƯỢNG quẻ chính (nghĩa tên quẻ, tượng quái, hào động). Ví dụ: 'Mông' nghĩa là non nớt, tượng núi che sông...",
-  "xu_huong_bien_hoa": "4-5 câu. Quẻ biến chuyển dịch sang thế nào? Nghĩa tên quẻ biến + hướng đi sắp tới.",
-  "phan_tich_theo_cau_hoi": "6-8 câu. Phân tích TRỰC TIẾP câu hỏi user. Nếu user hỏi tài chính → nói cụ thể về đầu tư/tiết kiệm. Nếu hỏi tình duyên → nói cụ thể về mối quan hệ.",
-  "theo_linh_vuc": {{
-    "tinh_duyen": "2-3 câu (bỏ trống nếu không liên quan)",
-    "su_nghiep": "2-3 câu",
-    "suc_khoe": "2-3 câu",
-    "tai_van": "2-3 câu",
-    "hoc_hanh": "2-3 câu"
-  }}
+  "thoan_tu": {{
+    "han_viet": "Trích Hán-Việt từ tư liệu (nếu có, không bịa)",
+    "dich": "Trích Dịch từ tư liệu (nếu có)",
+    "giang": "Trích Giảng từ tư liệu (nếu có)"
+  }},
+  "tuong_tu": {{
+    "dich": "Tượng từ (nếu có trong tư liệu)",
+    "bai_hoc": "2-3 câu bài học ứng xử"
+  }},
+  "ket_luan": "CHỈ 1 trong 3 giá trị: 'CÁT' 吉 | 'HUNG' 凶 | 'TĨNH' 靜. Dựa trên quẻ + hào động + bát tự.",
+  "ket_luan_y_nghia": "1-2 câu giải thích ngắn ý nghĩa CÁT/HUNG/TĨNH trong ngữ cảnh câu hỏi. VD: 'CÁT — quẻ Tiệm báo đi từng bước sẽ thuận, nên tiến hành nhưng không vội'.",
+  "ly_do": "5-6 câu giải thích CHI TIẾT TẠI SAO. Căn cứ BẮT BUỘC: (a) tên quẻ + chủ đề quẻ chính, (b) ngũ hành thượng/hạ quái sinh/khắc nhật chủ thế nào, (c) hào động chuyển hóa + can chi + ngũ hành so với nhật chủ, (d) quẻ biến cho thấy xu hướng gì. Không bịa.",
+  "thoi_diem_tot_nhat": "1 ngày + giờ cụ thể (VD: 'Thứ Bảy 18/10/2026, buổi sáng 7-9h'). CHỈ chọn 1 thời điểm — nếu kết luận KHÔNG NÊN thì ghi 'Không có — chờ thêm'.",
+  "thoi_diem_nen_tranh": "1 ngày cụ thể nên tránh hành động (VD: 'Thứ Hai 20/10/2026'). Nếu kết luận NÊN thì ghi 'Không có'.",
+  "loi_khuyen": "TRẢ VỀ 1 CHUỖI STRING DUY NHẤT (KHÔNG PHẢI ARRAY/LIST). 2-4 câu khuyến nghị hành động cho câu hỏi user. Bám sát kết luận CÁT/HUNG/TĨNH ở trên. Mỗi câu phải trả lời rõ: NÊN LÀM GÌ, CẦN TRÁNH GÌ, ĐIỀU KIỆN NÀO CẦN ĐÁP ỨNG. Dùng động từ mạnh (TIẾN HÀNH, TẠM HOÃN, DỪNG LẠI, CHUẨN BỊ, DUY TRÌ, GIẢM RỦI RO). Khuyến nghị phải nhất quán với quẻ chủ + hào động + quẻ biến. Không tự đặt thời hạn 7/30 ngày nếu quẻ không hàm ý rõ. Không khẳng định tương lai là chắc chắn. Với tài chính/sức khỏe/pháp lý, không thay thế bằng chứng thực tế bằng luận quẻ.",
+
+  "tom_tat": "1-2 câu tóm tắt kết quả luận quẻ, trả lời TRỰC TIẾP câu hỏi user. Không lặp lại toàn bộ nội dung.",
+  "do_tin_cay": "Mức độ chắc chắn của việc DIỄN GIẢI (không phải xác suất sự kiện xảy ra). 1 trong 3: 'Cao' | 'Trung bình' | 'Thấp'. Kèm 1 câu lý do ngắn (VD: 'Cao — quẻ chủ + hào động + quẻ biến đều nhất quán với câu hỏi').",
+  "luan_giai_que_chu": "3-4 câu phân tích quẻ chủ TRONG BỐI CẢNH câu hỏi user. Không chép nghĩa chung. Nêu: quẻ chủ là gì, tượng quái, ý nghĩa cốt lõi áp dụng vào câu hỏi cụ thể.",
+  "luan_giai_hao_dong": "3-5 câu phân tích TỪNG hào động: vị trí, tính chất (âm/dương, động), nội dung hào từ, vai trò trong kết luận. Nếu không có hào động → ghi 'Không có hào động — quẻ ở trạng thái tĩnh'.",
+  "luan_giai_que_bien": "3-4 câu phân tích quẻ biến: tên quẻ, tượng quái, mối quan hệ với quẻ chủ, xu hướng chuyển biến. Nếu không có quẻ biến → ghi 'Không có quẻ biến'.",
+  "luan_cu": "Liệt kê 3-5 căn cứ CHÍNH (bullet points). Mỗi căn cứ gồm: yếu tố cụ thể + giải thích nó hỗ trợ kết luận như thế nào.",
+  "thuan_loi": "2-3 yếu tố thuận lợi, cơ hội hoặc điều kiện hỗ trợ (bullet points).",
+  "bat_loi": "2-3 rủi ro, trở ngại hoặc giới hạn của cách diễn giải (bullet points).",
+  "dieu_kien_hanh_dong": "2-3 điều kiện THỰC TẾ cần kiểm tra trước khi thực hiện khuyến nghị (bullet points).",
+  "canh_bao": "1-3 điểm chưa rõ, giới hạn dữ liệu, hoặc rủi ro cần lưu ý (bullet points).",
 }}"""
     return prompt
 
 
-async def _prompt_2_tam_hop(question: str, que_info: str) -> str:
+async def _prompt_2_tam_hop(
+    question: str,
+    que_info: str,
+    cast: dict[str, Any] | None = None,
+    bat_tu: dict[str, Any] | None = None,
+) -> str:
+    # ═══ Tính Nạp Giáp chính xác nếu có cast + bát tự ═══
+    nap_giap_ctx = ""
+    if cast and bat_tu:
+        try:
+            from bat_tu.nap_giap import format_nap_giap_cho_prompt
+            nhat_chu_hanh = bat_tu.get("nhat_chu_hanh", "")
+            if nhat_chu_hanh:
+                nap_giap_ctx = format_nap_giap_cho_prompt(cast["que_chinh"], nhat_chu_hanh)
+        except Exception:
+            pass
+
     prompt = f"""{LANG_GUARD}
 
-Phân tích Tam Hợp (Thiên Thời - Địa Lợi - Nhân Hòa) cho câu hỏi sau. Trả lời CỤ THỂ, có ngày/quý.
+{NGUYEN_TAC_LUAN_GIAI}
+
+## ⛔ QUY LUẬT NGŨ HÀNH — KHÔNG ĐƯỢC SAI:
+- **Tương sinh**: Mộc → Hỏa → Thổ → Kim → Thủy → Mộc
+  (Nghĩa là: Mộc sinh Hỏa, Hỏa sinh Thổ, **Thổ sinh Kim**, Kim sinh Thủy, Thủy sinh Mộc)
+- **Tương khắc**: Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, **Hỏa khắc Kim**, Kim khắc Mộc
+
+**Ví dụ đúng**:
+- Hào Thổ + Nhật chủ Kim → **Thổ SINH Kim** (không phải khắc)
+- Hào Hỏa + Nhật chủ Kim → **Hỏa KHẮC Kim**
+- Hào Kim + Nhật chủ Kim → **tỷ hòa**
+
+**Nếu viết sai quy luật → kết quả vô giá trị.**
+
+---
+
+Bạn là chuyên gia Kinh Dịch. Luận giải "Hào Chuyển" — CHỈ các hào động.
 
 ## Câu hỏi: {question}
-## Quẻ: {que_info}
+## Thông tin quẻ: {que_info}
 
-Trả về DUY NHẤT JSON object:
+## Nạp Giáp (DỮ LIỆU CHÍNH XÁC — KHÔNG được bịa):
+{nap_giap_ctx if nap_giap_ctx else "(Không có — chỉ luận theo tên hào và ý nghĩa)"}
+
+## QUY TẮC BẮT BUỘC:
+1. Mỗi hào động PHẢI có **can + chi** lấy **CHÍNH XÁC** từ bảng Nạp Giáp trên.
+2. **KHÔNG tự bịa can chi** — nếu bảng không có → để trống.
+3. Phân tích **ngũ hành của can** so với nhật chủ:
+   - Tương sinh: Mộc→Hỏa→Thổ→Kim→Thủy→Mộc
+   - Tương khắc: Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim, Kim khắc Mộc
+4. VD đúng: "Hào 3 = Tân Tỵ. Can Tân = Kim, Chi Tỵ = Hỏa. Kim tỷ hòa nhật chủ Canh (Kim) → đồng khí."
+5. VD sai: "Hào 3 = Dậu. Kim tỷ hòa" (Dậu là chi, không phải can).
+6. **KHÔNG viết field "dịch" cho hào** — chỉ có "han_viet" (Hán-Việt) và "giang".
+7. **"giang" KHÔNG được lặp lại tên hào** — VD sai: "Thất là hào chuyển...". Đúng: "Hào này dương cương, ở vị trí... khuyên..."
+8. **Nếu bảng Nạp Giáp không có can/chi cho hào → ghi "Không có dữ liệu nạp giáp"**, KHÔNG tự bịa.
+9. **KHÔNG tự mâu thuẫn**: nếu nói "Hỏa khắc Kim" thì không được nói "Hỏa sinh Thổ" trong cùng câu trừ khi giải thích rõ 2 quan hệ khác nhau.
+
+## Cấu trúc:
+
+### 1. Khái niệm hào động
+1-2 câu
+
+### 2. Từng hào động (MỖI hào trong "hao_dong"):
+- Tên hào + tính chất chuyển hóa
+- **Hán** / **Phiên âm** / **Dịch** / **Giảng**
+- **Ứng Bát Tự**: can chi hào + sinh khắc với nhật chủ
+
+### 3. Tổng hợp
+2-3 câu
+
+Trả về DUY NHẤT JSON:
 {{
-  "thien_dia_nhan": {{
-    "thien_thoi": "4-5 câu. Thời cơ hiện tại có thuận không? Dùng ngày/quý/năm cụ thể.",
-    "dia_loi": "4-5 câu. Môi trường, không gian, vị trí có lợi/thất lợi cho user?",
-    "nhan_hoa": "4-5 câu. Cần gì từ bản thân và người khác? Nội lực + quan hệ.",
-    "tong_ket": "2 câu. Yếu tố nào mạnh/yếu, tập trung vào đâu."
-  }}
+  "khai_niem": "...",
+  "hao_dong": [
+    {{"ten": "Sơ Lục", "chuyen_hoa": "Lão Âm → Dương", "han_viet": "Sơ lục: ...", "giang": "2-3 câu giải nghĩa hào theo Nguyễn Hiến Lê (KHÔNG lặp tên hào)", "ung_bat_tu": "3-4 câu: nêu can+chi CHÍNH XÁC từ bảng Nạp Giáp, ngũ hành can+chi, quan hệ sinh/khắc với nhật chủ, khuyên tiến/lui.", "do_tin_cay": "Cao | Trung bình | Thấp — kèm 1 câu lý do", "luan_cu": "2-3 bullet: căn cứ cụ thể cho phân tích hào"}}
+  ],
+  "tong_hop": "..."
 }}"""
     return prompt
 
 
-async def _prompt_3_action(question: str, que_info: str) -> str:
+async def _prompt_3_action(
+    question: str,
+    que_info: str,
+    bat_tu: dict[str, Any] | None = None,
+) -> str:
+    bat_tu_ctx = ""
+    if bat_tu:
+        try:
+            from bat_tu.lap_tu_tru import format_bat_tu_context
+            bat_tu_ctx = format_bat_tu_context(bat_tu)
+        except Exception:
+            pass
+
     prompt = f"""{LANG_GUARD}
 
-Bạn là chuyên gia Kinh Dịch. Luận giải HÀNH ĐỘNG CỤ THỂ, có thể làm ngay.
+{NGUYEN_TAC_LUAN_GIAI}
+
+Bạn là chuyên gia Kinh Dịch. Viết "Quẻ Biến" — luận giải xu hướng tương lai.
 
 ## Câu hỏi: {question}
-## Quẻ: {que_info}
+## Thông tin quẻ: {que_info}
+{bat_tu_ctx}
 
-## BẮT BUỘC phân tích 4 khía cạnh:
+## Cấu trúc:
 
-1. **THỜI GIAN**: Bao nhiêu ngày/tuần/tháng thì nên làm? Mốc nào nên tránh?
-2. **MÙA / TIẾT KHÍ**: Quẻ hợp mùa nào (Xuân/Hạ/Thu/Đông)? Tháng âm lịch nào tốt?
-3. **HƯỚNG / VỊ TRÍ**: Hướng nào tốt (Đông/Tây/Nam/Bắc/Đông Nam/Tây Bắc...)? Nên làm ở đâu (nhà/công ty/quán)?
-4. **ĐỐI TƯỢNG**: Ai là người đồng hành? Nên tránh ai?
+### 1. Xu Hướng Tương Lai
+4-5 câu: quẻ biến cho biết tình hình sẽ diễn biến ra sao sau khi hào động hoàn tất
 
-Trả về DUY NHẤT JSON object:
+### 2. Lời Khuyên
+2-3 câu: nên làm gì để đón xu hướng
+
+### 3. Diệu Nghĩa Cá Nhân (8-12 câu, chia 4 phần rõ ràng)
+
+**(a) Nhật chủ và Quẻ biến** (2-3 câu):
+- Nhật chủ mệnh chủ hành gì, vượng/yếu ra sao?
+- Quẻ biến hành gì? Sinh/khắc/trợ nhật chủ thế nào?
+- Ý nghĩa tương tác này cho câu hỏi cụ thể.
+
+**(b) Hào động chuyển hóa** (2-3 câu):
+- Hào động chuyển sang ngũ hành gì?
+- Can chi của hào sinh/khắc nhật chủ không?
+- Dấu hiệu cát/hung cụ thể.
+
+**(c) Dụng thần và Ứng kỳ** (2-3 câu):
+- Dụng thần/Hỷ thần của mệnh chủ là hành gì?
+- Quẻ có trợ dụng thần không?
+- Thời điểm nào (tháng/quý) thuận lợi? Mùa nào cần tránh?
+
+**(d) Khuyến nghị cá nhân hoá** (2-3 câu):
+- Hướng hành động cụ thể (làm gì, ở đâu, với ai)
+- Điều cần tránh trong 30 ngày tới
+- Lời khuyên cho câu hỏi "{question}" cụ thể.
+
+Trả về DUY NHẤT JSON:
 {{
-  "goi_y_hanh_dong": [
-    "Hành động 1 — kèm thời điểm cụ thể (VD: 'Trong 7 ngày tới, liên hệ X')",
-    "Hành động 2 — kèm hướng/vị trí (VD: 'Gặp đối tác tại hướng Đông Nam')",
-    "Hành động 3 — kèm người (VD: 'Nhờ người thân tư vấn')",
-    "Hành động 4"
-  ],
-  "thoi_gian_cu_the": "2-3 câu: bao lâu thì nên hành động, mốc cần tránh.",
-  "mua_tiet_khi": "1-2 câu: mùa/tháng âm lịch nào tốt cho việc này.",
-  "vi_tri_huong": "1-2 câu: hướng và không gian nên làm.",
-  "diem_can_can_nhac": [
-    "Rủi ro 1 (kèm dấu hiệu nhận biết)",
-    "Rủi ro 2",
-    "Rủi ro 3"
-  ],
-  "loi_khuyen_thoi_diem": "2-3 câu tổng kết: khi nào nên bắt đầu, khi nào nên dừng."
+  "xu_huong": "4-5 câu phân tích xu hướng tương lai",
+  "loi_khuyen": "TRẢ VỀ 1 CHUỖI STRING DUY NHẤT (KHÔNG PHẢI ARRAY/LIST). 2-3 câu khuyến nghị hành động theo XU HƯỚNG TƯƠNG LAI dựa trên quẻ biến. Nếu quẻ biến thuận → xác định cơ hội cụ thể và điều kiện để tận dụng. Nếu quẻ biến bất lợi → chỉ rõ rủi ro và biện pháp giảm thiểu. Nếu quẻ biến trung tính → nêu điều kiện chuyển sang hành động. Dùng động từ mạnh, câu khẳng định, súc tích. Không dùng 'có thể', 'tùy trường hợp', 'nên cân nhắc'.",
+  "do_tin_cay": "Cao | Trung bình | Thấp — kèm 1 câu lý do ngắn về độ chắc chắn của phân tích xu hướng.",
+  "dieu_kien_hanh_dong": "2-3 điều kiện thực tế cần kiểm tra trước khi thực hiện hành động đề xuất (bullet points).",
+  "canh_bao": "1-3 điểm chưa rõ, giới hạn dữ liệu, hoặc rủi ro khi diễn giải quẻ biến (bullet points).",
+  "dieu_nghia_ca_nhan": "8-12 câu với markers (a)(b)(c)(d) — phần này SẼ BỊ ẨN cho đến khi user xem ads"
+}}"""
+    return prompt
+
+
+
+
+async def _prompt_4_dieu_nghia(
+    question: str,
+    que_info: str,
+    bat_tu: dict[str, Any] | None = None,
+) -> str:
+    """Prompt riêng cho Diệu Nghĩa Cá Nhân — phần paywall."""
+    bat_tu_ctx = ""
+    if bat_tu:
+        try:
+            from bat_tu.lap_tu_tru import format_bat_tu_context
+            bat_tu_ctx = format_bat_tu_context(bat_tu)
+        except Exception:
+            pass
+
+    prompt = f"""{LANG_GUARD}
+
+{NGUYEN_TAC_LUAN_GIAI}
+
+Bạn là chuyên gia Kinh Dịch + Tử Bình. Viết "Diệu Nghĩa Cá Nhân" —
+phần luận giải riêng cho câu hỏi của user, dựa trên quẻ + bát tự.
+
+## Câu hỏi: {question}
+## Thông tin quẻ: {que_info}
+{bat_tu_ctx}
+
+## QUY TẮC VĂN PHONG:
+- **LỜI KHUYÊN PHẢI MẠNH MẼ, DỨT KHOÁT** — dùng động từ mệnh lệnh: **NÊN / PHẢI / ĐỪNG / TRÁNH / HÃY**
+- KHÔNG dùng: "có thể", "có lẽ", "tùy trường hợp", "nên cân nhắc", "bạn có thể xem xét"
+- Câu khẳng định, câu mệnh lệnh. VD: "PHẢI chờ tới tháng 11 dương lịch" thay vì "có thể chờ"
+- Không viết văn hoa, sáo rỗng. Đi thẳng vào hành động cụ thể.
+
+## Yêu cầu: Viết 8-12 câu, chia 4 phần rõ ràng:
+
+**(a) Nhật chủ & Quẻ** (2-3 câu):
+- Nhật chủ hành gì? Quẻ biến hành gì?
+- Sinh/khắc/trợ nhật chủ thế nào?
+- Ý nghĩa cho câu hỏi cụ thể.
+
+**(b) Hào động** (2-3 câu):
+- Hào động chuyển sang ngũ hành gì?
+- Can chi hào sinh/khắc nhật chủ không?
+- Dấu hiệu cát/hung cụ thể.
+
+**(c) Dụng thần & Ứng kỳ** (2-3 câu):
+- Dụng thần của mệnh chủ là hành gì?
+- Quẻ có trợ dụng thần không?
+- Thời điểm nào (tháng/quý) thuận lợi?
+
+**(d) Khuyến nghị** (2-3 câu):
+- Hướng hành động cụ thể (làm gì, ở đâu, với ai)
+- Điều cần tránh trong 30 ngày tới
+- Lời khuyên cho câu hỏi "{question}"
+
+Trả về DUY NHẤT JSON:
+{{
+  "dieu_nghia_ca_nhan": "8-12 câu với markers (a)(b)(c)(d), viết liền mạch"
 }}"""
     return prompt
 
@@ -364,7 +633,7 @@ async def luan_giai_que(
             pass
 
     p1 = await _prompt_1_core(question, que_info, context)
-    p2 = await _prompt_2_tam_hop(question, que_info)
+    p2 = await _prompt_2_tam_hop(question, que_info, cast=result, bat_tu=bat_tu)
     p3 = await _prompt_3_action(question, que_info)
 
     r1, r2, r3 = await asyncio.gather(

@@ -1,0 +1,55 @@
+{
+  "que_so": 46,
+  "title": "QUẺ 46: ĐỊA PHONG THĂNG",
+  "ten_han": "升",
+  "ten_viet": "sheng1",
+  "thoan_tu": {
+    "han": "升: 元亨, 用見大人, 勿恤, 南征, 吉．",
+    "han_viet": "Thăng: nguyên hanh, dụng kiến đại nhân, vật tuất, nam chinh, cát.",
+    "dich": "Lên: rất hanh thông, phải dùng người có tài đức (đại nhân), không có gì là lo ngại, cứ tiến về phía trước thì tốt.",
+    "giang": "Tốn là gió mà cũng là cây. Ở đây hiểu là cây. Cây mọc ở dưới đất, mỗi ngày mỗi đâm lên cao, cho nên gọi là quẻ Thăng."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "允升, 大吉",
+      "han_viet": "Sơ lục: Doãn thăng, đại cát.",
+      "dich": "Hào 1, âm : có lòng tin mà tiến lên, rất tốt.",
+      "giang": "Hào này âm nhu, ở dưới cùng, làm chủ nội quái Tốn, là có đức khiêm tốn, nhu thuận, theo sau hai hào dương (2 và 3) mà nhờ 2 hào đó dắt lên, rất tốt. “Doãn” nghĩa là tin, 1 tin 2 và 3, mà 2 và 3 cũng tin 1. Tiểu tượng truyện gọi như vậy là hợp chí nhau."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "孚, 乃利用禴, 无咎．",
+      "han_viet": "Cửu nhị: Phu, nãi lợi dụng thược, vô cữu.",
+      "dich": "Hào 2, dương: tin nhau có lòng chí thành thì dùng lễ nhỏ cũng được, không có lỗi.",
+      "giang": "Hào 2, này dương cương mà ở dưới, hào 5 âm nhu mà ở vị cao, hai bên khác nhau như vậy mà ứng với nhau là rất tin nhau bằng lòng chí thành, hợp tác với nhau làm nên sự nghiệp ở thời “Thăng”. Đã có lòng chí thành thì lễ vật rất đơn sơ cũng được, không có lỗi."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "升, 虛邑．",
+      "han_viet": "Cửu tam: Thăng, như ấp.",
+      "dich": "Hào 3, dương: lên dễ dàng như vào cái ấp không người .",
+      "giang": "Hào này đắc chính, có tài, ở trên cùng nội quái là Tốn, có đức thuận theo ba hào âm ở trên, được 3 hào dắt lên một một cách dễ dàng, như vào một cái ấp không có ai ngăn cản, không có gì ngại cả."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "王用亨于岐山, 吉, 无咎．",
+      "han_viet": "Lục tứ: Vương dụng hanh vu Kì sơn, cát, vô cữu.",
+      "dich": "Hào 4, âm: vua Văn Vương dùng đạo mà hanh thịnh ở núi Kì sơn, tốt, không có lỗi.",
+      "giang": "Hào này nhu thuận, đắc chính, ở ngay dưới hào 5, như vua một nước chư hầu, giúp thiên tử, dắt các người hiền cùng tiến lên; đó là trường hợp vua Văn Vương, một chư hầu dưới thời nhà Ân, lập nên sự nghiệp ở Kì Sơn."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "冥升, 利于不息之貞．",
+      "han_viet": "Thượng lục: Minh thăng, lợi vu vật tức chi trinh.",
+      "dich": "Hào trên cùng, âm:Hôn ám cứ muốn lên hoài, nếu sửa đức cho hợp đạo chính, không bao giờ nghỉ thì có lợi.",
+      "giang": ""
+    }
+  ],
+  "dai_y": ""
+}

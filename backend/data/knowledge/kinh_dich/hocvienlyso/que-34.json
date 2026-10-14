@@ -1,0 +1,63 @@
+{
+  "que_so": 34,
+  "title": "QUẺ 34: LÔI THIÊN ĐẠI TRÁNG",
+  "ten_han": "",
+  "ten_viet": "",
+  "thoan_tu": {
+    "han": "大壯: 利貞．",
+    "han_viet": "",
+    "dich": "Lớn mạnh, theo điều chính thì lợi.",
+    "giang": "Quẻ này có 4 nét dương ở dưới, hai nét âm ở trên; dương đã lớn mạnh mà âm sắp bị diệt hết. Quẻ Càn ở trong, quẻ Chấn ở ngoài, thế là có đức dương cương mà động. Lại có thể giảng là sấm vang động ở trên trời, tiếng rất lớn, vang rất xa."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "壯于趾, 征凶, 有孚．",
+      "han_viet": "Sơ cửu: Tráng vu chỉ, chinh hung, hữu phu.",
+      "dich": "Hào 1, dương: mạnh ở ngón chân, đi lên thì xấu, có thể tin chắc như vậy (hữu phu ở đây không có nghĩa là có đức tin như những nơi khác).",
+      "giang": "Hào này ở dưới cùng, dương cương, cho nên ví với ngón chân, ở địa vị thấp mà hăng hái muốn tiến, sẽ vấp, xấu."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "貞吉．",
+      "han_viet": "Cửu nhị: Trinh cát.",
+      "dich": "Hào 2, dương : có đức chính ,tốt.",
+      "giang": "Hào này dương cương, ở vị nhu, tuy không đắc chính, nhưng đắc trung, mà trung thì không bao giờ bất chính, vậy cũng là tốt."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "小人用壯, 君子用罔．貞厲, 羝羊觸藩, 羸其角．",
+      "han_viet": "Cửu tam: Tiểu nhân dụng tráng, quân tử dụng võng.",
+      "dich": "Hào 3, dương: tiểu nhân dùng sức mạnh, quân tử không; dù giữ điều chính cũng nguy, như con cừu đực húc vào cái dậu, bị thương cái sừng.",
+      "giang": "Hào này dương cương, ở vào vị dương (lẻ) trong quẻ Đại tráng, lại ở cuối nội quái Càn, thế là cực kì hung mạnh, dù giữ được chính đáng cũng nguy; quân tử biết vậy mà không hành động, chỉ tiểu nhân mới hung hăng như con cừu đực, húc vào cái dậu."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "貞吉, 悔亡, 藩決不羸．壯于大輿之輹．",
+      "han_viet": "Cửu tứ: Trinh cát, hối vong, phiên quyết bất luy, tráng vu đại dư chi phúc.",
+      "dich": "Hào 4, dương : theo điều chính thì tốt, hối hận mất hết; dậu đã mở không khốn nữa, mạnh mẽ tiến lên, như ngồi cỗ xe lớn mà trục xe vững vàng.",
+      "giang": "Hào này dương cương, qua khỏi nội quái là Càn, mà lên ngoại quái là Chấn, là tráng thịnh đến cực điểm; nó ở trên hết các hào dương, làm lãnh tụ đám quân tử, sợ nó hăng quá mà lầm đường nên dặn kĩ: giữ điều chính thì mới tốt, khỏi ân hận."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "喪羊于易, 无悔．",
+      "han_viet": "Lục ngũ: táng dương vu dị, vô hối.",
+      "dich": "Hào 5, âm: làm mất sự hung hăng của bầy cừu bằng cách vui vẻ dễ dại, thì sẽ không ân hận.",
+      "giang": "Hào này ở vị chí tôn, nhưng vốn âm nhu, không thể áp đảo được 4 hào dương ở dưới, phải vui vẻ dễ dãi với họ thì họ sẽ hết hung hăng. Bốn hào dương đó ví như bầy dê hung hăng. Sở dĩ phải có thái độ đó vì ngôi của 5 quá cao đối với tư cách âm nhu của nó."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "羝羊觸 藩, 不能退, 不能遂, 无攸利, 艱則吉．",
+      "han_viet": "Thượng lục: đề dương xúc phiên, bất năng thoái, bất năng toại, vô du lợi, gian tắc cát.",
+      "dich": "Hào trên cùng, âm: Cừu đực húc vào dậu, mắc kẹt, lui không được, tiến cho toại ý cũng không được, không có lợi gì cả; chịu khó nhọc thì tốt.",
+      "giang": "hào này ở trên cùng quẻ Đại tráng là hết thời lớn mạnh, mà cũng ở trên cùng ngoại quái Chấn, là rất ham động mà bất lực (âm nhu); như con cừu đực hung hăng húc vào dậu, mắc kẹt, lui không được, tiến lên cho toại ý cũng không được, không lợi ở chỗ nào cả. Nếu bỏ tính hung hăng húc quàng đi mà chịu khó nhọc thì tốt."
+    }
+  ],
+  "dai_y": ""
+}

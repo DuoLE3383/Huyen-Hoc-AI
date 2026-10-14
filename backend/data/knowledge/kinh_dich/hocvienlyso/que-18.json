@@ -1,0 +1,63 @@
+{
+  "que_so": 18,
+  "title": "QUẺ 18: SƠN PHONG CỔ",
+  "ten_han": "蠱",
+  "ten_viet": "gu3",
+  "thoan_tu": {
+    "han": "蠱: 元亨, 利涉大川．先甲三日, 後甲三日．",
+    "han_viet": "Cổ: Nguyên hanh, lợi thiệp đại xuyên Tiên giáp tam nhật, hậu giáp tam nhật.",
+    "dich": "Đổ nát mà làm lại mới thì rất tốt, vượt qua sông lớn thì lợi. Ba ngày trước ngày giáp (nghĩa là phải tìm nguyên nhân từ trước), ba ngày sau ngày giáp (phải nghĩ đến tương lai nên thể nào).",
+    "giang": "Quẻ này trên là núi, dưới là gió, gió đụng núi, quật lại, đó là tượng loạn, không yên, tất phải có công việc."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "幹父之蠱, 有子, 考无咎, 厲, 終吉．",
+      "han_viet": "Sơ lục: Cán phụ chi cổ, hữu tử, khảo vô cữu , lệ, chung cát.",
+      "dich": "Hào 1, âm: Sửa sang sự đổ nát của cha; nhờ con mà cha không lỗi; nhưng cũng có thể nguy đấy, phải biết răn sợ, sau mới tốt.",
+      "giang": ""
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "幹母之蠱, 不可貞．",
+      "han_viet": "Cửu nhị: Cán mẫu chi cổ, bất khả trinh.",
+      "dich": "Hào 2, dương : Sửa sang sự đổ nát của mẹ, không nên cố chấp (trinh)",
+      "giang": "Hào này dương cương, đắc trung, trên ứng với hào 5 âm nhu, nên ví như con (2) với mẹ (5). Hào 2 có tài, sửa sang được, nhưng tính cương cường, có thể xung đột với 5, cho nên Hào từ khuyên đừng cố chấp mà phải mềm dẻo."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "幹父之蠱, 小有悔, 无大咎．",
+      "han_viet": "Cửu tam: Cán phụ chi cổ, tiểu hữu hối, vô đại cữu.",
+      "dich": "Hào 3, dương: sửa sang sự đổ nát của cha, có chút hối hận những không có lỗi lớn.",
+      "giang": "Hào này là dương lại ở vị dương, là quá cương, nóng nảy, không hợp đạo trung cho nên làm vài việc đáng ăn năn; nhưng làm nổi việc, đắc chính, nên không đến nỗi có lỗi lớn."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "裕父之蠱, 往見吝．",
+      "han_viet": "Lục tứ: Dụ phụ chi Cổ, vãng kiến lận.",
+      "dich": "Hào 4, âm: (Vì dùng dằng mà chỉ) kéo dài sự đổ nát của cha, nếu cứ như vậy hoài thì sẽ hối tiếc.",
+      "giang": "Hào âm, nhu lại ở vị âm, là người thiếu nghị lực, nhút nhát, không dám cương quyết sửa sự đổ nát của cha, để cho nó kéo dài hoài thì xấu cho cả gia đình mà phải hối hận."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "幹 父之蠱, 用譽．",
+      "han_viet": "Lục ngũ: Cán phụ chi cổ, dụng dự",
+      "dich": "Hào 5, âm: sửa sự đổ nát cho cha, mà được tiếng khen.",
+      "giang": "Âm nhu ở ngôi chí tôn, không đủ tài sáng nghiệp, nhưng nhờ có đức trung mà ở dưới ứng với hào 2, dương cương là người có tài, sửa sự đổ nát được, rốt cuộc thành công, cả hai được tiếng khen."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "不事王侯, 高尚 其事．",
+      "han_viet": "Thượng cửu: Bất sự vương hầu, cao thượng kỳ sự.",
+      "dich": "Hào trên cùng, dương : Không xu phụ bậc vương hầu, mà nêu cao tư cách (đức của mình.)",
+      "giang": "Hào này dương cương ở trên hào 5, như một vị hiền nhân quân tử cao khiết, ở ngoài mọi việc, không màng phú quí, không xu phụ vương hầu, giữ chí hướng của mình làm phép tắc trong thiên hạ."
+    }
+  ],
+  "dai_y": ""
+}

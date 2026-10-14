@@ -1,0 +1,63 @@
+{
+  "que_so": 24,
+  "title": "QUẺ 24: ĐỊA LÔI PHỤC",
+  "ten_han": "復",
+  "ten_viet": "fù",
+  "thoan_tu": {
+    "han": "復: 亨, 出入无疾, 朋來无咎．",
+    "han_viet": "Phục: Hanh, Xuất nhập vô tật, bằng lai vô cữu. Phản phục kì đạo, thất nhật lai phục, lợi hữu du vãng.",
+    "dich": "Trở lại: Hanh thông. Ra vào không gặp tai nạn, bạn bè sẽ lần lượt tới, không lầm lỗi nữa. Vận trời phản phục (tráo đi trở lại), cứ bảy ngày thì trở lại, hành động việc gì cũng có lợi.",
+    "giang": "Khí dương bây giờ trở lại, cho nên hanh thông. Người quân tử (dương) ra vào tự do, không bị tai nạn; rồi sẽ có các hào dương khác kéo nhau tới, cũng như bạn bè tới, không còn lầm lỗi nữa (ý muốn nói; sau quẻ này sẽ tới quẻ Lâm, có hai hào dương ở dưới, rồi tới quẻ Thái, có ba hào dương ở dưới, tới quẻ Đại tráng (4 hào dương) quẻ Quải, (5 hào dương) quẻ Càn (cả 6 hào đều dương), thế là sáu quẻ dương cứ tăng lần. đó là vận phản phục của trời đất, cứ bảy ngày thì trở lại. Chữ nhật (ngày) ở đây thay cho chữ hào; bảy ngày mới trở lại vì sau quẻ Càn, tới quẻ Cấu, một hào âm sinh ở dưới 5 hào dương, ngược lại với quẻ Phục (một hào dương ở dưới 5 hào âm), lúc đó mới hết một vòng (1)."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "不遠復, 无祇悔, 元吉．",
+      "han_viet": "Sơ cửu: Bất viễn phục, vô kì hối, nguyên cát.",
+      "dich": "Hào 1, dương. Tuy lầm lỗi nhưng thời gian chẳng xa, trở lại tốt lành ngay, thì không đến nỗi ăn năn lớn; rất tốt (chữ Kì ở đây có nghĩa là lớn).",
+      "giang": "Hào 1, dương cương, ở đầu quẻ Phục, có nghĩa là người đầu tiên trở lại đạo, biết tu thân, nên rất tốt."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "休復, 吉．",
+      "han_viet": "Lục nhị: Hưu phục, cát.",
+      "dich": "Hào 2, âm: Trở lại đẹp đẽ (hữu), tốt.",
+      "giang": "Hào này âm nhu đắc trung, chính, vốn tốt rồi, mà lại ở gần hào 1 là người quân tử, tức là người biết khắc kỉ, trở lại đạo nhân nghĩa; cho nên tuy là âm mà tốt lành."
+    },
+    {
+      "so": 3,
+      "ten_han": "六三",
+      "han": "頻復, 厲, 无咎．",
+      "han_viet": "Lục tam: Tần phục, lệ, vô cửu.",
+      "dich": "hào 3, âm (Mắc lỗi nhưng) sửa lại nhiều lần, tuy đáng nguy, mà kết quả không có lỗi.",
+      "giang": "Hào này bất trung, bất chính, lại ở thời cuối cùng của nội quái Chấn (có nghĩa là động), ví như người không bền chí, theo điều thiện không được lâu, sửa lỗi rồi lại mắc lỗi trở lại, như thế là đáng nguy (lệ), nhưng lại biết phục thiện sửa đi sửa lại nhiều lần, nên rốt cuộc không có lỗi."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "中行, 獨復．",
+      "han_viet": "Lục tứ: Trung hành, độc phục.",
+      "dich": "Hào 4, âm: ở giữa các tiểu nhân (các hào âm: 2,3 và 5,6 ) mà một mình trở lại theo quân tử (hào 1), tức theo đạo.",
+      "giang": "hào này âm nhu, đắc chính ở giữa các hào âm, nhưng chỉ một mình nó ứng với hào 1 là dương, quân tử, cho nên Hào từ khen là một mình nó biết theo người thiện."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "敦復, 无悔．",
+      "han_viet": "Lục ngũ: Đôn phục, vô hối.",
+      "dich": "Hào 5, âm: Có đức dày trở lại điều thiện, không có gì hối hận.",
+      "giang": "Hào này nhu thuận, đắc trung lại ở vị tôn quí, như một người có đức dày phục thiện (trở lại điều thiện), biết tự sửa mình, cho nên không hối hận."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "迷復, 凶．有災眚．用行師, 終有大敗, 以其國君凶, 至于十年, 不克征．",
+      "han_viet": "Thượng lục: Mê phục, hung, hữu tai sảnh,",
+      "dich": "Hào trên cùng, âm: Mê muội, không trở lại, sẽ bị tai vạ từ ngoài đưa đến (tai) và tự mình gây nên (sảnh); đã vậy lại cậy võ lực mà dùng quân đàn áp người, rốt cuộc sẽ đại bại, làm cho quốc quân cũng bị khốn nạn (hung), tới mười năm (tới chung cục) cũng không khá được.",
+      "giang": "hào này ở trên cùng, như kẻ tiểu nhân hôn mê đến cùng cực, không biết trở lại, cho nên bị đủ thứ tai vạ. Nó có thế lực nhất trong các hào âm (đám tiểu nhân ) vì ở trên cùng, muốn dùng võ lực đàn áp người, rốt cuộc sẽ đại bại, gây vạ lây cho nước nó, không bao giờ khá được. Chữ thập (số 10) là số cuối cùng (số 1 là số đầu) cho nên thập niên ở đây có nghĩa là tới cùng, chớ không nhất định là 10 năm."
+    }
+  ],
+  "dai_y": ""
+}

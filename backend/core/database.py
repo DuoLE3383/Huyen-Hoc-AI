@@ -406,3 +406,92 @@ def init_db(database_engine: Engine = engine) -> None:
                     "ON action_advice_logs (xem_ngay)"
                 )
             )
+
+# ═══════════════════════════════════════════════════════════
+# Paywall cache — Diệu nghĩa cá nhân chờ unlock
+# ═══════════════════════════════════════════════════════════
+
+def _ensure_personal_insights_table(engine: Engine = engine) -> None:
+    """Tạo bảng cache nếu chưa có."""
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS personal_insights_cache (
+                session_id TEXT PRIMARY KEY,
+                content TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                unlocked INTEGER NOT NULL DEFAULT 0,
+                unlocked_at DATETIME
+            )
+        """))
+
+
+def cache_personal_insight(session_id: str, content: str) -> None:
+    """Lưu diệu nghĩa cá nhân chờ unlock."""
+    _ensure_personal_insights_table()
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+                INSERT OR REPLACE INTO personal_insights_cache
+                (session_id, content, unlocked, created_at)
+                VALUES (:sid, :content, 0, CURRENT_TIMESTAMP)
+            """),
+            {"sid": session_id, "content": content},
+        )
+
+
+def unlock_personal_insight(session_id: str, ttl_hours: int = 48) -> str | None:
+    """
+    Đánh dấu đã unlock, trả về content.
+    Session hết hạn sau ttl_hours giờ.
+    Cho phép unlock nhiều lần (idempotent) — trả về content mỗi lần.
+    """
+    _ensure_personal_insights_table()
+    with engine.begin() as conn:
+        # Kiểm tra tồn tại + chưa hết hạn
+        row = conn.execute(
+            text("""
+                SELECT content, created_at,
+                       CAST((julianday('now') - julianday(created_at)) * 24 AS INTEGER) AS age_hours
+                FROM personal_insights_cache
+                WHERE session_id = :sid
+            """),
+            {"sid": session_id},
+        ).fetchone()
+
+        if not row:
+            return None
+
+        content, _created, age_hours = row
+        if age_hours is not None and age_hours > ttl_hours:
+            # Hết hạn — xoá
+            conn.execute(
+                text("DELETE FROM personal_insights_cache WHERE session_id = :sid"),
+                {"sid": session_id},
+            )
+            return None
+
+        # Đánh dấu unlock (idempotent)
+        conn.execute(
+            text("""
+                UPDATE personal_insights_cache
+                SET unlocked = 1, unlocked_at = CURRENT_TIMESTAMP
+                WHERE session_id = :sid
+            """),
+            {"sid": session_id},
+        )
+        return content
+
+
+def cleanup_old_insights(days: int = 7) -> int:
+    """Xoá cache cũ hơn N ngày. Trả về số dòng đã xoá."""
+    _ensure_personal_insights_table()
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("""
+                DELETE FROM personal_insights_cache
+                WHERE created_at < datetime('now', :delta)
+            """),
+            {"delta": f"-{days} days"},
+        )
+        return result.rowcount
+

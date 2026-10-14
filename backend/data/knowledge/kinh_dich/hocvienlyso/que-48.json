@@ -1,0 +1,63 @@
+{
+  "que_so": 48,
+  "title": "QUẺ 48: THỦY PHONG TỈNH",
+  "ten_han": "井",
+  "ten_viet": "jing3",
+  "thoan_tu": {
+    "han": "井: 改邑不改井, 无喪无得, 往來井井．汔至, 亦未繘井, 羸其瓶, 凶．",
+    "han_viet": "Tỉnh: Cải ấp bất cải tỉnh, vô táng vô đắc, vãng lai tỉnh tỉnh. Ngật chí, diệc vị duật tỉnh, luy kì bình, hung.",
+    "dich": "giếng: đổi ấp chứ không đổi giếng, nước giếng không kiệt mà cũng không thêm; người qua người lại để múc nước giếng. Gần đến nơi (đến giếng), chưa kịp thòng dây gàu xuống mà bể cái bình đựng nước, thì xấu.",
+    "giang": "Theo tượng quẻ, trên là nước (Khảm), dưới là gỗ (Tốn ở đây không hiểu là gió mà hiểu là cây, là đồ bằng gỗ – trỏ cái gàu), có nghĩa là thòng cái gàu xuống nước để múc lên."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "井泥不食．舊井无禽．",
+      "han_viet": "Sơ lục: tỉnh nê, bất thực, cựu tỉnh vô cầm.",
+      "dich": "Hào 1, âm: Giếng lầy bùn, không ai lại lấy nước; không có con vật nào lại một giếng cũ.",
+      "giang": "Hào 1 âm nhu, ở địa vị thấp nhất, hào 4 ở trên cũng không giúp gì nó, chính là hạng người vô dụng, bất tài, nên ví như cái giếng không có mạch, bị bùn, không ai lại lấy nước, chim muông cũng không tới."
+    },
+    {
+      "so": 2,
+      "ten_han": "九二",
+      "han": "井谷, 射鮒, 甕敝漏．",
+      "han_viet": "Cửu nhị: Tỉnh cốc, xạ phụ, ủng tệ lậu.",
+      "dich": "Hào 2, dương: giếng ở trong hang (có người hiểu là giếng có cái hang), nước chỉ lách tách ít giọt bắn vào con giếc, như cái chum nứt, nước dỉ ra.",
+      "giang": "Hào này dương cương, có tài hơn hào 1, nhưng địa vị cũng thấp, trên cũng không có người ứng viện cho, nên cũng không làm nổi việc đời, ví như cái giếng nước tuy trong, nhưng nước mạch ít, chỉ dỉ ra đủ nuôi con giếc, chứ không có người tới múc. Hào này khác hào 1 ở chỗ 1 vì bất tài mà vô dụng, hào này vì hoàn cảnh mà hoá vô dụng."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "井渫不食, 為我心惻．可用汲. 王明, 並受其福．",
+      "han_viet": "Cửu tam: tỉnh tiết bất thực, vi ngã tâm trắc.",
+      "dich": "Hào 3, dương: giếng trong mà chẳng ăn, để lòng ta thương xót, có thể dùng mà múc lên được; gặp ông vua sáng suốt thì mọi người đều được phúc.",
+      "giang": "Hào dương này đắc chính, là người có tài, muốn giúp đời, nhưng địa vị còn ở thấp (nội quái), không được dùng, ví như cái giếng nước trong mà không ai múc. Nếu được ông vua sáng suốt dùng, thì người đó sẽ giúp cho mọi người được nhờ."
+    },
+    {
+      "so": 4,
+      "ten_han": "六四",
+      "han": "井甃, 无咎．",
+      "han_viet": "Lục tứ: Tỉnh trứu, vô cữu.",
+      "dich": "Hào 4, âm: Giếng mà thành và đáy xếp đá, không có lỗi.",
+      "giang": "Hào này âm nhu, tài tầm thường, nhưng đắc chính, ở gần hào 5 chí tôn, nên nhờ 5 mà làm được việc nhỏ, không có lỗi, ví như cái giếng mạch không nhiều, nhưng xếp đá ở thành và đáy, thì nước mạch thấm vào, lóng lại, cũng tạm dùng được."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "井洌, 寒泉食．",
+      "han_viet": "Cửu ngũ: Tỉnh liệt, hàn tuyền thực.",
+      "dich": "Hào 5, dương: Nước giếng trong, lạnh, múc lên ăn được.",
+      "giang": "Hào nay dương cương, đắc trung, ở ngôi chí tôn, có ân trạch với dân chúng, nên ví với nước giếng vừa trong, vừa mát, lại múc lên được."
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "井收, 勿幕, 有孚, 元吉．",
+      "han_viet": "Thượng lục: Tỉnh thu, vật mạc, hữu phu, nguyên cát.",
+      "dich": "Hào trên cùng, âm: Nước giếng múc lên rồi, đừng che đậy, cứ mãi mãi như vậy, không thay đổi thì rất tốt.",
+      "giang": "Hào trên cùng này tuy là âm nhu, nhưng ở cuối cùng quẻ Tỉnh, nó có cái tượng nước giếng đã múc lên rồi, nên để cho mọi người dùng, chứ đừng che đậy, và cứ như vậy giúp đời mãi thì không gì tốt bằng."
+    }
+  ],
+  "dai_y": ""
+}

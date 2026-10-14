@@ -1,0 +1,63 @@
+{
+  "que_so": 31,
+  "title": "QUẺ 31: TRẠCH SƠN HÀM",
+  "ten_han": "咸",
+  "ten_viet": "xián",
+  "thoan_tu": {
+    "han": "咸: 亨, 利貞, 取女吉．",
+    "han_viet": "Hàm: Hanh, lợi trinh, thú nữ cát.",
+    "dich": "giao cảm thì hanh thông, giữ đạo chính thì lợi, lấy con gái thì tốt.",
+    "giang": "đoài là thiếu nữ ở trên, Cấn là thiếu nam ở dưới (1). Cảm nhau thân thiết không gì bằng thiếu nam, thiếu nữ. Cảm nhau thì tất hanh thông."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初六",
+      "han": "咸其拇．",
+      "han_viet": "Sơ lục: Hàm kì mẫu.",
+      "dich": "Hào 1, âm: Như cảm ngón chân cái.",
+      "giang": "Hào từ lấy thân người làm thí dụ. Hào 1 ở dưới cùng. Nó ứng với hào 4, thấp mà cảm với trên cao, sức cảm còn nhỏ, chưa động được lòng người, mới hơi động được ngón chân thôi. Không khen cũng không chê."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "咸其腓, 凶; 居吉．",
+      "han_viet": "Lục nhị: Hàm kì phì, hung; cư cát.",
+      "dich": "Hào 2, âm: Cảm được bắp chân, xấu; ở yên thì tốt.",
+      "giang": "Hào 2, cao hơn một chút, ví như bắp chân. Nó ứng với hào 5, nhưng nó là âm, phận gái, mà còn ở dưới thấp, nếu nóng lòng cầu thân với 5 thì xấu. Nó nên giữ nết trung chính (vì là hào 2 đắc trung, đắc chính) của nó thì mới tốt, như vậy mới hợp đạo lý."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "咸其股, 執其隨, 往吝．",
+      "han_viet": "Cửu tam: Hàm kì cổ, chấp kì tùy, vãng lận.",
+      "dich": "Hào 3, dương : cảm được tới đùi, chỉ muốn theo người, cứ như vậy mà tíến thì xấu.",
+      "giang": "Hào này ở trên cùng nội quái, nên ví với bắp đùi. Nó là dương cương, ham tiến, muốn theo hào 4 cũng dương cương ở trên nó; trong thời Hàm, nên tĩnh mà nó động, lại động theo người nữa, đáng chê."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "貞吉悔亡; 憧憧往來, 朋從爾思．",
+      "han_viet": "Cửu tứ: Trinh cát hối vong; đồng đồng vãng lai, bằng tòng nhĩ tư.",
+      "dich": "Hào 4, dương: hễ chính đáng thì tốt, mà mất hết những điều đáng ăn năn. Nhược bằng nếu lăng xăng tính toán có qua có lại với nhau thì những người qua lại với anh chỉ là những người anh nghĩ tới mà thôi (ý nói: số bạn không đông, đoàn thể không lớn).",
+      "giang": "Hào này đã lên ngoại quái, dương cương, lại ở quẻ đoài (vui vẻ), tức là có tình hoà duyệt, nặng về cảm tính, cho nên ví với trái tim (tấm lòng). Tình cảm phải chính đáng, chí công vô tư, như vậy mới tốt, không phải ăn năn. Nếu có óc tính toán, tốt với người để mong người tốt lại với mình, có đi có lại thì số bạn không được đông."
+    },
+    {
+      "so": 5,
+      "ten_han": "九五",
+      "han": "咸其脢, 无悔．",
+      "han_viet": "Cửu ngũ: Cảm kì mỗi, vô hối.",
+      "dich": "Hào 5, dương : Cảm tới bắp thịt ở trên lưng, không hối hận.",
+      "giang": "Bắp thịt ở trên lưng, cao hơn tim (hay lòng) mà trái với tim, không cảm được vật. Không cảm được vật mà cũng không có tư tâm, tư ý, nên cũng không có gì hối hận. Có lẽ vì hào 5 này dương cương, ở vị rất cao, trung, chính, cách biệt dân chúng quá, cho nên Chu Hi bảo là “không cảm được vật” chẳng?"
+    },
+    {
+      "so": 6,
+      "ten_han": "上六",
+      "han": "咸其輔, 頰, 舌．",
+      "han_viet": "Thượng lục: Hàm kì phụ, giáp, thiệt.",
+      "dich": "Hào trên cùng, âm: Cảm người bằng mép, má, lưỡi.",
+      "giang": "Hào này ở trên cùng Hàm, nên ví với mép, má, lưỡi. Nó là âm nhu ở trong ngoại quái Đoài (vui vẻ), ham cảm người ta bằng miệng lưỡi, không thành thực. Chẳng cần nói cũng biết là đáng chê rồi."
+    }
+  ],
+  "dai_y": "Tóm lại, Thoán từ cho rằng trai gái cảm nhau phải chân thành, tự nhiên, vì nết, vì tài thì mới tốt; mà khi cảm nhau rồi phải tự chủ, giữ lễ, đừng để đến nỗi hóa ra bất chánh."
+}

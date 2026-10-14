@@ -1,0 +1,63 @@
+{
+  "que_so": 30,
+  "title": "QUẺ 30: THUẦN LY",
+  "ten_han": "離",
+  "ten_viet": "lí",
+  "thoan_tu": {
+    "han": "離: 利貞, 亨．畜牝牛, 吉．",
+    "han_viet": "Ly: lợi trinh, hanh. Súc tẫn ngưu, cát.",
+    "dich": "Dựa, lệ thuộc: chính đáng thì lợi, hanh thông. Nuôi bò cái thì tốt.",
+    "giang": "Dựa vào chỗ chính đáng, chẳng hạn vào người quân tử thì hanh thông. Dựa vào người thì phải sáng suốt, và thuận theo người, vậy phải nuôi đức thuận, đức của con bò cái (loài này dễ bảo nhất) thì mới tốt."
+  },
+  "hao_tu": [
+    {
+      "so": 1,
+      "ten_han": "初九",
+      "han": "履錯然, 敬之, 无咎．",
+      "han_viet": "Sơ cửu: Lý thác nhiên, kính chi, vô cửu.",
+      "dich": "Hào 1, dương : Dẫm bậy bạ; phải thận trọng thì không có lỗi.",
+      "giang": "hào dương này có nghĩa nóng nảy, cầu tiến qua, mà còn non nớt, chưa có kinh nghiệm, như đứa trẻ vội vàng dẫm bậy bạ (Phan Bội Châu hiểu là sỏ giày nhố nhăng), tất có lầm lỗi, nên khuyên phải thận trọng (kính chi)."
+    },
+    {
+      "so": 2,
+      "ten_han": "六二",
+      "han": "黃離, 元吉．",
+      "han_viet": "Lục nhị: Hoàng ly, nguyên cát.",
+      "dich": "Hào 2, âm : Sắc vàng phụ vào ở giữa, rất tốt.",
+      "giang": "hào này ở quẻ Ly có đức văn minh, lại đắc trung, đắc chính, trên ứng với hào 5 cũng văn minh, đắc trung, nên rất tốt. Vì ở giữa, văn minh, nên ví với sắc vàng, đẹp, sắc của trưng ương như đã giảng ở hào 5 quẻ Khôn và hào 5 quẻ Phệ hạp."
+    },
+    {
+      "so": 3,
+      "ten_han": "九三",
+      "han": "日昃之離, 不鼓 缶而歌, 則大耋之嗟, 凶．",
+      "han_viet": "Cửu tam: Nhật trắc chi Ly, bất cổ phẩu nhi ca, tắc đại diệt chi ta, hung.",
+      "dich": "Hào 3, dương : mặt trời xế chiều lặn, (ý nói người già, tính tình thất thường, không đáng vui mà vui. Không đáng buồn mà buồn). Khi thì gõ cái phẫu (vò bằng đất, đựng rượu mà cũng dùng làm nhạc khí) mà hát, lúc lại than thân già nua; xấu , (Hồi xưa khi hát thì gõ nhịp bằng cái phẫu).",
+      "giang": "Hào 3 này ở trên cùng nội quái ly, như mặt trời sắp lặn mà chưa lên ngoại quái Ly, chưa tới lúc mặt trời mọc (sáng hôm sau)."
+    },
+    {
+      "so": 4,
+      "ten_han": "九四",
+      "han": "突如, 其來如, 焚如, 死如, 棄如．",
+      "han_viet": "Cửu tứ: Đột như, kì lai như, phần như, tử như, khí như.",
+      "dich": "Hào 4, dương: thình lình chạy tới, như muốn đốt người ta vậy, thì sẽ chết, bị mọi người bỏ.",
+      "giang": "Hão này dương cương, nóng nảy, bất chính, bất trung, mới ở nội quái lên, gặp hào 5 âm nhu, muốn lấn át 5, như một người ở đâu thình lình tới, lồn lộn lên muốn đốt người ta (hào 5) , táo bạo, vụng về như vậy làm sao khỏi chết, có ai dung được nó đâu."
+    },
+    {
+      "so": 5,
+      "ten_han": "六五",
+      "han": "出涕沱若, 戚嗟若, 吉．",
+      "han_viet": "Lục ngũ: xuất thế đà nhược, thích ta nhược, cát.",
+      "dich": "Hào 5, âm: Nước mắt ròng ròng, nhưng biết buồn lo than thở, nên tốt.",
+      "giang": "Hào này âm nhu, ở ngôi tôn, trung những không chính, bị ép giữa hào hào dương, mắc vào hoàn cảnh khó khăn, cho nên bảo là “nước mắt ròng ròng”; nhưng nhờ đức văn minh của quẻ Ly, nên là người biết lo tính, than thở, tìm cách đối pó với hoàn cảnh được, cho nên rồi sẽ tốt."
+    },
+    {
+      "so": 6,
+      "ten_han": "上九",
+      "han": "王用出征, 有嘉; 折首, 獲匪其醜, 无咎．",
+      "han_viet": "Thượng cửu: Vương dụng xuất chinh,",
+      "dich": "Hào trên cùng, dương: vua dùng (người có tài, tức hào này) để ra quân chinh phạt, có công tốt đẹp, giết đầu đảng mà bắt sống kẻ xấu đi thì thôi, như vậy thì không có lỗi.",
+      "giang": "Hào này dương cương lại ở trên cùng quẻ Ly, thế là vừa cương quyết vừa sáng suốt đến cực điểm, vua dùng tài ấy để trừ kẻ gian tà thì thành công lớn."
+    }
+  ],
+  "dai_y": ""
+}
