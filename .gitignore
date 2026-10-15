@@ -70,3 +70,9 @@ tatus --short
 *.pre_refactor_*
 *.bak.*
 *.broken.*
+
+# Backups
+.backups/
+*.bak_*
+*.broken
+*.syntax_broken
