@@ -2098,51 +2098,95 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
         )
 
         async def _run_p1():
+            import time as _t
+            _t0 = _t.time()
             try:
                 r = await _ollama.generate(
                     p1, system=SYSTEM, temperature=0.3, json_mode=True,
-                    timeout=180.0, num_predict=500, base_url=_URL_7B,
+                    timeout=300.0, num_predict=1200, base_url=_URL_3B,
                 )
                 parsed = _safe_parse(r)
                 if not parsed.get("ket_luan"):
                     parsed["ket_luan"] = "TĨNH"
                     parsed["ket_luan_y_nghia"] = parsed.get("ket_luan_y_nghia") or "Quẻ ở trạng thái tĩnh — cần quan sát thêm."
-                if not parsed.get("luan_giai_hao_dong"):
-                    parsed["luan_giai_hao_dong"] = parsed.get("ly_do") or "Không có hào động."
+                tt = parsed.get("tuong_tu")
+                if not tt or not isinstance(tt, dict) or not tt.get("bai_hoc"):
+                    parsed["tuong_tu"] = {
+                        "dich": (tt or {}).get("dich", "") if isinstance(tt, dict) else "",
+                        "bai_hoc": (parsed.get("ly_do") or "Cần quan sát thêm.")[:300],
+                    }
+                tdn = parsed.get("thoi_diem_tot_nhat", "")
+                if not tdn or "PHẢI là ngày" in tdn or tdn.strip() in ("1 ngày", "một ngày"):
+                    parsed["thoi_diem_tot_nhat"] = "Tham khảo 3 ngày gần nhất"
+                tdt = parsed.get("thoi_diem_nen_tranh", "")
+                if not tdt or "PHẢI là ngày" in tdt or tdt.strip() in ("1 ngày", "một ngày"):
+                    parsed["thoi_diem_nen_tranh"] = "Không cần tránh"
+                print(f"[time] p1 done in {_t.time()-_t0:.1f}s", flush=True)
                 return ("core", parsed)
             except Exception as e:
                 return ("core", {"error": str(e)})
 
         async def _run_p2():
+            import time as _t
+            _t0 = _t.time()
             try:
                 r = await _ollama.generate(
-                    p2, system=SYSTEM, temperature=0.7, json_mode=True,
-                    timeout=600.0, num_predict=500, base_url=_URL_3B,
+                    p2, system=SYSTEM, temperature=0.6, json_mode=True,
+                    timeout=300.0, num_predict=800, base_url=_URL_3B,
                 )
+                print(f"[time] p2 done in {_t.time()-_t0:.1f}s", flush=True)
                 return ("hao_chuyen", _safe_parse(r))
             except Exception as e:
                 return ("hao_chuyen", {"error": str(e)})
 
         async def _run_p3():
+            import time as _t
+            _t0 = _t.time()
             try:
-                r = await _ollama.generate(
-                    p3, system=SYSTEM, temperature=0.7, json_mode=True,
-                    timeout=600.0, num_predict=600, base_url=_URL_3B,
+                from divination.kinh_dich import _prompt_3_action_short
+                p3s = await _prompt_3_action_short(data.cau_hoi, que_info)
+                r3 = await _ollama.generate(
+                    p3s, system=SYSTEM, temperature=0.5, json_mode=True,
+                    timeout=300.0, num_predict=800, base_url=_URL_3B,
                 )
-                return ("que_bien", _safe_parse(r))
+                parsed = _safe_parse(r3) if isinstance(r3, str) else {}
+                print(f"[time] p3 done in {_t.time()-_t0:.1f}s", flush=True)
+                return ("que_bien", parsed)
             except Exception as e:
-                return ("que_bien", {"error": str(e)})        # Chạy p1, p2 song song trên 2 server (7B + 3B)
+                return ("que_bien", {"error": str(e)})
+
+        async def _run_p4():
+            import time as _t
+            _t0 = _t.time()
+            try:
+                from divination.kinh_dich import _prompt_4_dieu_nghia
+                p4 = await _prompt_4_dieu_nghia(data.cau_hoi, que_info, bat_tu)
+                r4 = await _ollama.generate(
+                    p4, system=SYSTEM, temperature=0.5, json_mode=True,
+                    timeout=300.0, num_predict=1500, base_url=_URL_3B,
+                )
+                parsed4 = _safe_parse(r4) if isinstance(r4, str) else {}
+                dnn = parsed4.get("dieu_nghia_ca_nhan", "")
+                print(f"[time] p4 done in {_t.time()-_t0:.1f}s ({len(str(dnn))} ky tu)", flush=True)
+                return ("personal", parsed4)
+            except Exception as e:
+                return ("personal", {"error": str(e)})
+
+        # Chạy p1, p2, p3, p4 SONG SONG
         _batch1 = [
-            asyncio.create_task(_run_p1()),   # 7B
-            asyncio.create_task(_run_p2()),   # 3B (đổi URL)
+            asyncio.create_task(_run_p1()),
+            asyncio.create_task(_run_p2()),
+            asyncio.create_task(_run_p3()),
+            asyncio.create_task(_run_p4()),
         ]
+        _p4_payload = None
         for _coro in asyncio.as_completed(_batch1):
             _evt, _payload = await _coro
+            if _evt == "personal":
+                _p4_payload = _payload
+                continue  # không yield ngay
             yield _sse_event(_evt, _payload)
-
-        # p3 trên 3B
-        _evt, _payload = await _run_p3()
-        yield _sse_event(_evt, _payload)
+        _payload = _p4_payload or {}
 
         # Lưu diệu nghĩa cá nhân vào DB để unlock sau
         import uuid as _uuid
@@ -2161,8 +2205,16 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             if isinstance(_personal, dict):
                 _parts = []
                 for _k, _v in _personal.items():
-                    _parts.append(f"**{_k}**\n{_v}")
-                _personal = "\n\n".join(_parts)
+                    _parts.append(f"({_k}) {_v}")
+                _personal = " ".join(_parts)
+            elif isinstance(_personal, str) and _personal.strip().startswith("{"):
+                try:
+                    import ast as _ast
+                    _d = _ast.literal_eval(_personal)
+                    if isinstance(_d, dict):
+                        _personal = " ".join(f"({k}) {v}" for k, v in _d.items())
+                except Exception:
+                    pass
             elif not isinstance(_personal, str):
                 _personal = str(_personal)
             if _personal.strip():
@@ -2201,6 +2253,20 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
                     has_ket = bool(parsed.get("ket_luan", "").strip())
                     has_hao = bool(parsed.get("luan_giai_hao_dong", "").strip())
                     if has_ket and has_hao:
+                        # Fallback tuong_tu neu LLM bo field
+                        tt = parsed.get("tuong_tu")
+                        if not tt or not isinstance(tt, dict) or not tt.get("bai_hoc"):
+                            parsed["tuong_tu"] = {
+                                "dich": (tt or {}).get("dich", "") if isinstance(tt, dict) else "",
+                                "bai_hoc": (parsed.get("ly_do") or "Cần quan sát thêm trước khi hành động.")[:300],
+                            }
+                        # Fallback thoi_diem neu placeholder
+                        tdn = parsed.get("thoi_diem_tot_nhat", "")
+                        if not tdn or "PHẢI là ngày" in tdn or tdn.strip() in ("1 ngày", "một ngày"):
+                            parsed["thoi_diem_tot_nhat"] = "Tham khảo 3 ngày gần nhất"
+                        tdt = parsed.get("thoi_diem_nen_tranh", "")
+                        if not tdt or "PHẢI là ngày" in tdt or tdt.strip() in ("1 ngày", "một ngày"):
+                            parsed["thoi_diem_nen_tranh"] = "Không cần tránh"
                         print(f"[p1] OK attempt {attempt+1}: ket_luan={parsed['ket_luan']}", flush=True)
                         return ("core", parsed)
                     print(f"[p1] attempt {attempt+1} fail: ket={has_ket} hao={has_hao}", flush=True)
@@ -2216,11 +2282,14 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             })
 
         async def _run_p2():
+            import time as _t
+            _t0 = _t.time()
             try:
                 r = await _ollama.generate(
-                    p2, system=SYSTEM, temperature=0.7, json_mode=True,
-                    timeout=600.0, num_predict=500, base_url=_URL_7B,
+                    p2, system=SYSTEM, temperature=0.6, json_mode=True,
+                    timeout=300.0, num_predict=800, base_url=_URL_3B,
                 )
+                print(f"[time] p2 done in {_t.time()-_t0:.1f}s", flush=True)
                 return ("hao_chuyen", _safe_parse(r))
             except Exception as e:
                 return ("hao_chuyen", {"error": str(e)})

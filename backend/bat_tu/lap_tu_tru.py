@@ -144,49 +144,15 @@ def lap_tu_tru(ngay_sinh: str, gio_sinh: str, gioi_tinh: str = "nam") -> dict[st
 
 
 def format_bat_tu_context(bt: dict[str, Any]) -> str:
-    """Format bát tự thành context ngắn cho prompt — có Dụng Thần, Thập Thần, Cách cục."""
+    """Format bát tự gọn — chỉ nhật chủ + dụng thần + hào động cần thiết."""
     tt = bt["tu_tru"]
-    hc = bt["hanh_count"]
     dt = bt.get("dung_than", {})
-    cc = bt.get("cach_cuc", {})
-    tht = bt.get("thap_than", {})
-    nhp = bt.get("ngu_hanh_percent", {})
-
     lines = [
-        "### Bát Tự mệnh chủ",
-        f"- Dương lịch: {bt['am_duong_lich']['duong']}",
-        f"- Âm lịch: {bt['am_duong_lich']['am']}",
-        f"- Giới tính: {'Nam' if bt['gioi_tinh'] == 'nam' else 'Nữ'}",
-        f"- Tứ Trụ: {tt['nam']['full']} / {tt['thang']['full']} / {tt['ngay']['full']} / {tt['gio']['full']}",
-        f"- Nhật chủ: {bt['nhat_chu']} ({bt['nhat_chu_hanh']})",
-        f"- Ngũ hành (đếm): Kim={hc['Kim']} Mộc={hc['Mộc']} Thủy={hc['Thủy']} Hỏa={hc['Hỏa']} Thổ={hc['Thổ']}",
+        f"Bát Tự: {tt['nam']['full']} / {tt['thang']['full']} / {tt['ngay']['full']} / {tt['gio']['full']}",
+        f"Nhật chủ: {bt['nhat_chu']} ({bt['nhat_chu_hanh']})",
     ]
-
-    if nhp:
-        lines.append(f"- Ngũ hành (%): " + " ".join(f"{k}={v}%" for k, v in nhp.items()))
-
-    # Dụng Thần
     if dt.get("dung_than"):
-        lines.append("")
-        lines.append("### Dụng Thần (đã tính — KHÔNG bịa)")
-        lines.append(f"- Dụng Thần: {dt.get('dung_than')}")
-        lines.append(f"- Hỉ thần: {dt.get('hy_than', '?')}")
-        lines.append(f"- Kỵ thần: {dt.get('ky_than', '?')}")
-        if dt.get("ly_do"):
-            lines.append(f"- Lý do: {dt['ly_do']}")
-
-    # Cách cục
-    if cc.get("loai"):
-        lines.append("")
-        lines.append("### Cách cục")
-        if cc["loai"] == "hoa_cach":
-            lines.append(f"- Hóa cách {cc.get('cap_hoa')} → {cc.get('hanh_moi')} (vị trí: {cc.get('vi_tri')})")
-
-    # Thập Thần
-    if tht:
-        lines.append("")
-        lines.append("### Thập Thần")
-        for tru, tt_name in tht.items():
-            lines.append(f"- Trụ {tru}: {tt_name}")
-
+        lines.append(f"Dụng Thần: {dt['dung_than']} | Hỉ: {dt.get('hy_than','?')} | Kỵ: {dt.get('ky_than','?')}")
     return "\n".join(lines)
+
+

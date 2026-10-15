@@ -194,7 +194,7 @@ QUAI_NGU_HANH = {
 
 
 def format_quai_ngu_hanh(que: dict[str, Any], nhat_chu_hanh: str) -> str:
-    """Format ngũ hành thượng/hạ quái + quan hệ với nhật chủ."""
+    """Format gọn: ngũ hành 2 quái + quan hệ nhật chủ."""
     thuong = que.get("thuong_quai", {}).get("ten", "")
     ha = que.get("ha_quai", {}).get("ten", "")
     hanh_thuong = QUAI_NGU_HANH.get(thuong, "?")
@@ -202,7 +202,7 @@ def format_quai_ngu_hanh(que: dict[str, Any], nhat_chu_hanh: str) -> str:
 
     def _qh(a: str, b: str) -> str:
         if a == b:
-            return f"{a} tỷ hòa {b} → đồng khí"
+            return f"{a} tỷ hòa {b}"
         if TUONG_SINH.get(a) == b:
             return f"{a} sinh {b} → trợ lực"
         if TUONG_SINH.get(b) == a:
@@ -211,21 +211,12 @@ def format_quai_ngu_hanh(que: dict[str, Any], nhat_chu_hanh: str) -> str:
             return f"{a} khắc {b} → áp chế"
         if TUONG_KHAC.get(b) == a:
             return f"{a} bị {b} khắc → bất lợi"
-        return f"{a} và {b} không rõ quan hệ"
+        return f"{a}/{b}"
 
-    lines = [
-        "### Ngũ hành quẻ (BẮT BUỘC dùng đúng — KHÔNG bịa)",
-        f"- Thượng quái {thuong}: **{hanh_thuong}**",
-        f"- Hạ quái {ha}: **{hanh_ha}**",
-        f"- Nhật chủ: **{nhat_chu_hanh}**",
-        "",
-        "**Quan hệ với nhật chủ:**",
-        f"- Thượng quái: {_qh(hanh_thuong, nhat_chu_hanh)}",
-        f"- Hạ quái: {_qh(hanh_ha, nhat_chu_hanh)}",
-        "",
-        "**QUY LUẬT NGŨ HÀNH (không được sai):**",
-        "- Tương sinh: Mộc→Hỏa→Thổ→Kim→Thủy→Mộc",
-        "- Tương khắc: Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim, Kim khắc Mộc",
-    ]
-    return "\n".join(lines)
+    return (
+        f"Thượng {thuong}={hanh_thuong}, Hạ {ha}={hanh_ha}, Nhật chủ={nhat_chu_hanh}. "
+        f"Thượng: {_qh(hanh_thuong, nhat_chu_hanh)}; Hạ: {_qh(hanh_ha, nhat_chu_hanh)}. "
+        f"(Sinh: Mộc→Hỏa→Thổ→Kim→Thủy→Mộc; Khắc: Kim khắc Mộc, Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim)"
+    )
+
 
