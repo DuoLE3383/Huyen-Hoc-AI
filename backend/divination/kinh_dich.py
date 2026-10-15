@@ -530,7 +530,7 @@ Viết "Diệu Nghĩa Cá Nhân" — luận giải riêng cho câu hỏi user.
 
 Trả về DUY NHẤT JSON. QUAN TRỌNG: `dieu_nghia_ca_nhan` PHẢI là 1 STRING LIỀN MẠCH, KHÔNG phải object/dict, KHÔNG dùng dấu ngoặc nhọn bên trong:
 {{
-  "dieu_nghia_ca_nhan": "(a) ... (b) ... (c) ... (d) ... — 12-20 câu viết liền mạch, KHÔNG chia nhỏ thành object"
+  "dieu_nghia_ca_nhan": "(a) ... \n\n(b) ... \n\n(c) ... \n\n(d) ... — 12-20 câu, mỗi phần cách nhau bằng dòng trống, KHÔNG phải object"
 }}"""
     return prompt
 

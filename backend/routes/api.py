@@ -2103,7 +2103,7 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             try:
                 r = await _ollama.generate(
                     p1, system=SYSTEM, temperature=0.3, json_mode=True,
-                    timeout=300.0, num_predict=1200, base_url=_URL_3B,
+                    timeout=300.0, num_predict=1800, base_url=_URL_3B,
                 )
                 parsed = _safe_parse(r)
                 if not parsed.get("ket_luan"):
