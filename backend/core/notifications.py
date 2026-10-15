@@ -262,5 +262,5 @@ async def polling_loop() -> None:
         except asyncio.CancelledError:
             raise
         except (httpx.HTTPError, RuntimeError, ValueError, SQLAlchemyError) as exc:
-            logger.error("Telegram polling failed (%s).", type(exc).__name__)
+            logger.debug("Telegram polling failed (%s).", type(exc).__name__)
             await asyncio.sleep(5)

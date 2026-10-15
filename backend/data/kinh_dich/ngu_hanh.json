@@ -1,0 +1,127 @@
+{
+  "Kim_khac_Moc": {
+    "y_nghia": "Kim khắc Mộc — áp chế, kiểm soát, cản trở",
+    "loi_khuyen": "Tránh đầu tư mạo hiểm, giữ nguyên hiện trạng, đề phòng mất mát",
+    "cat_hung": "Bất lợi"
+  },
+  "Kim_khac_Kim": {
+    "y_nghia": "Kim tỷ hòa Kim — đồng khí, cộng hưởng",
+    "loi_khuyen": "Nên hợp tác với người cùng chí hướng, củng cố nội lực",
+    "cat_hung": "Trung tính"
+  },
+  "Kim_sinh_Thuy": {
+    "y_nghia": "Kim sinh Thủy — hao tổn sinh lực cho việc khác",
+    "loi_khuyen": "Cho đi có kiểm soát, tránh bị lợi dụng",
+    "cat_hung": "Trung tính"
+  },
+  "Kim_bi_Hoa_khac": {
+    "y_nghia": "Hỏa khắc Kim — bị áp chế, tổn thất",
+    "loi_khuyen": "Đề phòng tiểu nhân, tránh xung đột, chờ thời",
+    "cat_hung": "Bất lợi"
+  },
+  "Kim_duoc_Tho_sinh": {
+    "y_nghia": "Thổ sinh Kim — được trợ lực, có quý nhân",
+    "loi_khuyen": "Nên mở rộng, tận dụng cơ hội từ người lớn tuổi",
+    "cat_hung": "Cát"
+  },
+  "Moc_khac_Tho": {
+    "y_nghia": "Mộc khắc Thổ — áp chế, kiểm soát",
+    "loi_khuyen": "Nên chủ động, quyết đoán, nắm thế chủ động",
+    "cat_hung": "Cát"
+  },
+  "Moc_khac_Moc": {
+    "y_nghia": "Mộc tỷ hòa Mộc — đồng khí",
+    "loi_khuyen": "Hợp tác với người cùng chí hướng, chia sẻ nguồn lực",
+    "cat_hung": "Trung tính"
+  },
+  "Moc_sinh_Hoa": {
+    "y_nghia": "Mộc sinh Hỏa — sinh lực dồi dào, phát triển",
+    "loi_khuyen": "Nên đầu tư, mở rộng, đón cơ hội mới",
+    "cat_hung": "Cát"
+  },
+  "Moc_bi_Kim_khac": {
+    "y_nghia": "Kim khắc Mộc — bị áp chế",
+    "loi_khuyen": "Chờ thời, tránh đối đầu, tập trung nội lực",
+    "cat_hung": "Bất lợi"
+  },
+  "Moc_duoc_Thuy_sinh": {
+    "y_nghia": "Thủy sinh Mộc — được nuôi dưỡng",
+    "loi_khuyen": "Nên phát triển, học hỏi, tích lũy",
+    "cat_hung": "Cát"
+  },
+  "Thuy_khac_Hoa": {
+    "y_nghia": "Thủy khắc Hỏa — áp chế thành công",
+    "loi_khuyen": "Nên quyết đoán, dập tắt mầm mống xấu sớm",
+    "cat_hung": "Cát"
+  },
+  "Thuy_khac_Thuy": {
+    "y_nghia": "Thủy tỷ hòa Thủy — đồng khí",
+    "loi_khuyen": "Hợp tác nhóm, chia sẻ rủi ro",
+    "cat_hung": "Trung tính"
+  },
+  "Thuy_sinh_Moc": {
+    "y_nghia": "Thủy sinh Mộc — nuôi dưỡng, tăng trưởng",
+    "loi_khuyen": "Nên đầu tư dài hạn, chăm sóc mối quan hệ",
+    "cat_hung": "Cát"
+  },
+  "Thuy_bi_Tho_khac": {
+    "y_nghia": "Thổ khắc Thủy — bị cản trở, tắc nghẽn",
+    "loi_khuyen": "Kiên nhẫn, tìm cách vượt rào cản",
+    "cat_hung": "Bất lợi"
+  },
+  "Thuy_duoc_Kim_sinh": {
+    "y_nghia": "Kim sinh Thủy — được hỗ trợ",
+    "loi_khuyen": "Tận dụng sự giúp đỡ, mở rộng quan hệ",
+    "cat_hung": "Cát"
+  },
+  "Hoa_khac_Kim": {
+    "y_nghia": "Hỏa khắc Kim — áp chế, thử thách",
+    "loi_khuyen": "Quyết đoán, dùng nhiệt huyết để vượt qua",
+    "cat_hung": "Cát"
+  },
+  "Hoa_khac_Hoa": {
+    "y_nghia": "Hỏa tỷ hòa Hỏa — đồng khí bùng nổ",
+    "loi_khuyen": "Kiểm soát cảm xúc, tránh xung đột",
+    "cat_hung": "Trung tính"
+  },
+  "Hoa_sinh_Tho": {
+    "y_nghia": "Hỏa sinh Thổ — tạo nền tảng, tích lũy",
+    "loi_khuyen": "Xây dựng nền móng, đầu tư bất động sản",
+    "cat_hung": "Cát"
+  },
+  "Hoa_bi_Thuy_khac": {
+    "y_nghia": "Thủy khắc Hỏa — bị dập tắt",
+    "loi_khuyen": "Đề phòng mất mát, tránh hành động liều lĩnh",
+    "cat_hung": "Bất lợi"
+  },
+  "Hoa_duoc_Moc_sinh": {
+    "y_nghia": "Mộc sinh Hỏa — được nuôi dưỡng, bùng nổ",
+    "loi_khuyen": "Đón cơ hội, hành động dứt khoát",
+    "cat_hung": "Cát"
+  },
+  "Tho_khac_Thuy": {
+    "y_nghia": "Thổ khắc Thủy — ngăn chặn thành công",
+    "loi_khuyen": "Kiểm soát tình hình, chặn đứng rủi ro",
+    "cat_hung": "Cát"
+  },
+  "Tho_khac_Tho": {
+    "y_nghia": "Thổ tỷ hòa Thổ — đồng khí vững chắc",
+    "loi_khuyen": "Củng cố nền tảng, hợp tác nhóm",
+    "cat_hung": "Trung tính"
+  },
+  "Tho_sinh_Kim": {
+    "y_nghia": "Thổ sinh Kim — trợ lực, quý nhân",
+    "loi_khuyen": "Mở rộng, tận dụng quan hệ người lớn tuổi",
+    "cat_hung": "Cát"
+  },
+  "Tho_bi_Moc_khac": {
+    "y_nghia": "Mộc khắc Thổ — bị áp chế",
+    "loi_khuyen": "Phòng thủ, giữ nguyên hiện trạng",
+    "cat_hung": "Bất lợi"
+  },
+  "Tho_duoc_Hoa_sinh": {
+    "y_nghia": "Hỏa sinh Thổ — được nuôi dưỡng",
+    "loi_khuyen": "Tích lũy, xây dựng nền tảng vững chắc",
+    "cat_hung": "Cát"
+  }
+}

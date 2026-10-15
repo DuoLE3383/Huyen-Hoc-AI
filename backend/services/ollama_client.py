@@ -8,6 +8,8 @@ import httpx
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434").rstrip("/")
 LLAMA_SERVER_URL = (os.getenv("LLAMA_SERVER_URL") or "").rstrip("/")
+LLAMA_SERVER_URL_7B = (os.getenv("LLAMA_SERVER_URL_7B") or LLAMA_SERVER_URL).rstrip("/")
+LLAMA_SERVER_URL_3B = (os.getenv("LLAMA_SERVER_URL_3B") or LLAMA_SERVER_URL).rstrip("/")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
 OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 if not 512 <= OLLAMA_NUM_CTX <= 32768:
@@ -142,18 +144,18 @@ class OllamaClient:
         temperature: float = 0.7,
         json_mode: bool = False,
         timeout: float | httpx.Timeout = 120.0,
+        num_predict: int | None = None,
+        base_url: str | None = None,
     ) -> str:
-        # ── Ưu tiên llama-server (Vulkan) nếu có ──
-        # Không thêm time context vì llama-server đã có trong system prompt riêng
-        if LLAMA_SERVER_URL:
+        url = (base_url or LLAMA_SERVER_URL).rstrip("/")
+        if url:
             return await self._generate_llama_server(
-                prompt, system, temperature, json_mode, timeout
+                prompt, system, temperature, json_mode, timeout, num_predict, url
             )
 
         # ── Ollama fallback (có time context) ──
         prompt, system = _with_time_context(prompt, system)
 
-        # ── Fallback Ollama ──
         payload: dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,
@@ -161,6 +163,8 @@ class OllamaClient:
             "stream": False,
             "options": {"temperature": temperature, "num_ctx": self.num_ctx},
         }
+        if num_predict:
+            payload["options"]["num_predict"] = num_predict
         if json_mode:
             payload["format"] = "json"
         async with httpx.AsyncClient(timeout=timeout) as client:
@@ -179,6 +183,8 @@ class OllamaClient:
         temperature: float,
         json_mode: bool,
         timeout: float | httpx.Timeout,
+        num_predict: int | None = None,
+        base_url: str | None = None,
     ) -> str:
         """Gọi llama-server (OpenAI-compatible) — nhanh hơn Ollama với GPU."""
         # Force Vietnamese-only + safety
@@ -195,7 +201,7 @@ class OllamaClient:
         payload: dict[str, Any] = {
             "messages": messages,
             "temperature": temperature,
-            "max_tokens": 4096,
+            "max_tokens": num_predict or 1500,
             "stream": False,
             "repeat_penalty": 1.1,      # Tránh lặp từ
             "top_p": 0.9,
@@ -207,10 +213,11 @@ class OllamaClient:
 
         async with httpx.AsyncClient(
             timeout=timeout,
-            limits=httpx.Limits(max_connections=1, max_keepalive_connections=1),
+            limits=httpx.Limits(max_connections=8, max_keepalive_connections=8),
         ) as client:
+            _url = (base_url or LLAMA_SERVER_URL).rstrip("/")
             response = await client.post(
-                f"{LLAMA_SERVER_URL}/v1/chat/completions", json=payload
+                f"{_url}/v1/chat/completions", json=payload
             )
             response.raise_for_status()
             result = response.json()

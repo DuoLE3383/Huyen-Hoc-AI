@@ -1,0 +1,52 @@
+{
+  "Kim": {
+    "thoi_diem_tot": "Tháng Thân, Dậu (mùa Thu), giờ Thân-Dậu",
+    "thoi_diem_xau": "Tháng Dần, Mão (mùa Xuân), giờ Dần-Mão",
+    "huong_tot": "Tây, Tây Bắc",
+    "huong_xau": "Đông, Đông Nam",
+    "mau_sac": "Trắng, vàng kim, bạc",
+    "so": "4, 9",
+    "nghe_nghiep": "Kim loại, tài chính, cơ khí, y tế, công nghệ",
+    "loi_khuyen": "Cứng rắn, quyết đoán nhưng không cực đoan"
+  },
+  "Moc": {
+    "thoi_diem_tot": "Tháng Dần, Mão (mùa Xuân), giờ Dần-Mão",
+    "thoi_diem_xau": "Tháng Thân, Dậu (mùa Thu), giờ Thân-Dậu",
+    "huong_tot": "Đông, Đông Nam",
+    "huong_xau": "Tây, Tây Bắc",
+    "mau_sac": "Xanh lá, xanh lục",
+    "so": "3, 8",
+    "nghe_nghiep": "Giáo dục, nông nghiệp, gỗ, dệt may, xuất bản",
+    "loi_khuyen": "Linh hoạt, mềm dẻo, phát triển bền vững"
+  },
+  "Thuy": {
+    "thoi_diem_tot": "Tháng Tý, Hợi (mùa Đông), giờ Tý-Hợi",
+    "thoi_diem_xau": "Tháng Tỵ, Ngọ (mùa Hạ), giờ Tỵ-Ngọ",
+    "huong_tot": "Bắc",
+    "huong_xau": "Nam",
+    "mau_sac": "Đen, xanh dương đậm",
+    "so": "1, 6",
+    "nghe_nghiep": "Thủy sản, vận tải, du lịch, truyền thông, tài chính",
+    "loi_khuyen": "Linh hoạt, thích nghi, chảy theo dòng"
+  },
+  "Hoa": {
+    "thoi_diem_tot": "Tháng Tỵ, Ngọ (mùa Hạ), giờ Tỵ-Ngọ",
+    "thoi_diem_xau": "Tháng Tý, Hợi (mùa Đông), giờ Tý-Hợi",
+    "huong_tot": "Nam",
+    "huong_xau": "Bắc",
+    "mau_sac": "Đỏ, hồng, tím",
+    "so": "2, 7",
+    "nghe_nghiep": "Năng lượng, marketing, giải trí, ẩm thực, nghệ thuật",
+    "loi_khuyen": "Nhiệt huyết, bùng nổ, nhưng tránh cực đoan"
+  },
+  "Tho": {
+    "thoi_diem_tot": "Tháng Thìn, Tuất, Sửu, Mùi (mùa chuyển tiếp), giờ Thìn-Tuất",
+    "thoi_diem_xau": "Tháng Dần, Mão (mùa Xuân), giờ Dần-Mão",
+    "huong_tot": "Trung tâm, Đông Bắc, Tây Nam",
+    "huong_xau": "Đông, Đông Nam",
+    "mau_sac": "Vàng, nâu, cam đất",
+    "so": "5, 10",
+    "nghe_nghiep": "Bất động sản, xây dựng, nông nghiệp, gốm sứ",
+    "loi_khuyen": "Vững chắc, ổn định, tích lũy lâu dài"
+  }
+}

@@ -677,7 +677,7 @@ async def health(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     return {
         "status": "healthy",
         "checks": {"api": "ok", "db": "ok", "ollama": ollama_status},
-        "version": app.version,
+        "version": "1.0.0",
     }
 
 
@@ -2052,8 +2052,9 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             try:
                 from knowledge.hocvienlyso_cache import format_for_prompt as nhl_prompt
                 context = nhl_prompt(que_chinh_so)
-                if que_bien_so != que_chinh_so:
-                    context += "\n\n---\n" + nhl_prompt(que_bien_so)
+                # Giới hạn 1500 chars (~500 tokens) — đủ cho luận giải
+                if len(context) > 1500:
+                    context = context[:1500] + "..."
             except Exception:
                 pass
 
@@ -2088,6 +2089,169 @@ async def api_kinh_dich_stream(data: KinhDichInput) -> StreamingResponse:
             return
 
         SYSTEM = "Bạn là chuyên gia Kinh Dịch. Chỉ trả về JSON object hợp lệ."
+
+        import asyncio
+        from services.ollama_client import (
+            ollama as _ollama,
+            LLAMA_SERVER_URL_7B as _URL_7B,
+            LLAMA_SERVER_URL_3B as _URL_3B,
+        )
+
+        async def _run_p1():
+            try:
+                r = await _ollama.generate(
+                    p1, system=SYSTEM, temperature=0.3, json_mode=True,
+                    timeout=180.0, num_predict=500, base_url=_URL_7B,
+                )
+                parsed = _safe_parse(r)
+                if not parsed.get("ket_luan"):
+                    parsed["ket_luan"] = "TĨNH"
+                    parsed["ket_luan_y_nghia"] = parsed.get("ket_luan_y_nghia") or "Quẻ ở trạng thái tĩnh — cần quan sát thêm."
+                if not parsed.get("luan_giai_hao_dong"):
+                    parsed["luan_giai_hao_dong"] = parsed.get("ly_do") or "Không có hào động."
+                return ("core", parsed)
+            except Exception as e:
+                return ("core", {"error": str(e)})
+
+        async def _run_p2():
+            try:
+                r = await _ollama.generate(
+                    p2, system=SYSTEM, temperature=0.7, json_mode=True,
+                    timeout=600.0, num_predict=500, base_url=_URL_3B,
+                )
+                return ("hao_chuyen", _safe_parse(r))
+            except Exception as e:
+                return ("hao_chuyen", {"error": str(e)})
+
+        async def _run_p3():
+            try:
+                r = await _ollama.generate(
+                    p3, system=SYSTEM, temperature=0.7, json_mode=True,
+                    timeout=600.0, num_predict=600, base_url=_URL_3B,
+                )
+                return ("que_bien", _safe_parse(r))
+            except Exception as e:
+                return ("que_bien", {"error": str(e)})        # Chạy p1, p2 song song trên 2 server (7B + 3B)
+        _batch1 = [
+            asyncio.create_task(_run_p1()),   # 7B
+            asyncio.create_task(_run_p2()),   # 3B (đổi URL)
+        ]
+        for _coro in asyncio.as_completed(_batch1):
+            _evt, _payload = await _coro
+            yield _sse_event(_evt, _payload)
+
+        # p3 trên 3B
+        _evt, _payload = await _run_p3()
+        yield _sse_event(_evt, _payload)
+
+        # Lưu diệu nghĩa cá nhân vào DB để unlock sau
+        import uuid as _uuid
+        _sid = _uuid.uuid4().hex
+        try:
+            from core.database import cache_personal_insight
+            # p3 trả key "dieu_nghia_ca_nhan" (đúng chính tả trong prompt)
+            _personal = (
+                _payload.get("dieu_nghia_ca_nhan")
+                or _payload.get("dien_nghia_ca_nhan")   # fallback nếu LLM gõ nhầm
+                or _payload.get("personal_insight")
+                or _payload.get("value")
+                or ""
+            )
+            # Nếu là dict → convert thành text
+            if isinstance(_personal, dict):
+                _parts = []
+                for _k, _v in _personal.items():
+                    _parts.append(f"**{_k}**\n{_v}")
+                _personal = "\n\n".join(_parts)
+            elif not isinstance(_personal, str):
+                _personal = str(_personal)
+            if _personal.strip():
+                cache_personal_insight(_sid, _personal)
+                print(f"[unlock] ✅ Đã lưu session {_sid} vào DB ({len(_personal)} ký tự)", flush=True)
+            else:
+                print(f"[unlock] ⚠️ p3 không có dien_nghia_ca_nhan — session {_sid} rỗng", flush=True)
+            yield _sse_event("unlock_token", {"session_id": _sid})
+        except Exception as exc:
+            import traceback
+            traceback.print_exc()
+            print(f"[unlock] ❌ LỖI cache session: {exc}", flush=True)
+            yield _sse_event("unlock_token", {"error": str(exc)})
+
+        yield _sse_event("done", {"ok": True})
+        return
+
+        import asyncio
+        from services.ollama_client import (
+            ollama as _ollama,
+            LLAMA_SERVER_URL_7B as _URL_7B,
+            LLAMA_SERVER_URL_3B as _URL_3B,
+        )
+
+        async def _run_p1():
+            last_err = None
+            for attempt in range(3):
+                try:
+                    temp = 0.3 + attempt * 0.15
+                    r = await _ollama.generate(
+                        p1, system=SYSTEM, temperature=temp, json_mode=True,
+                        timeout=600.0, num_predict=800, base_url=_URL_7B,
+                    )
+                    parsed = _safe_parse(r)
+                    # Validate: cần ket_luan + luan_giai_hao_dong có data thật
+                    has_ket = bool(parsed.get("ket_luan", "").strip())
+                    has_hao = bool(parsed.get("luan_giai_hao_dong", "").strip())
+                    if has_ket and has_hao:
+                        print(f"[p1] OK attempt {attempt+1}: ket_luan={parsed['ket_luan']}", flush=True)
+                        return ("core", parsed)
+                    print(f"[p1] attempt {attempt+1} fail: ket={has_ket} hao={has_hao}", flush=True)
+                except Exception as e:
+                    last_err = e
+                    print(f"[p1] attempt {attempt+1} error: {e}", flush=True)
+            # Fallback cuối cùng
+            return ("core", {
+                "ket_luan": "TĨNH",
+                "ket_luan_y_nghia": "Không đủ dữ liệu để kết luận — cần tham khảo thêm.",
+                "luan_giai_hao_dong": "Không có hào động hoặc LLM không trả về dữ liệu.",
+                "error": str(last_err) if last_err else "3 lần thử đều thất bại",
+            })
+
+        async def _run_p2():
+            try:
+                r = await _ollama.generate(
+                    p2, system=SYSTEM, temperature=0.7, json_mode=True,
+                    timeout=600.0, num_predict=500, base_url=_URL_7B,
+                )
+                return ("hao_chuyen", _safe_parse(r))
+            except Exception as e:
+                return ("hao_chuyen", {"error": str(e)})
+
+        async def _run_p3():
+            try:
+                r = await _ollama.generate(
+                    p3, system=SYSTEM, temperature=0.7, json_mode=True,
+                    timeout=600.0, num_predict=600, base_url=_URL_3B,
+                )
+                return ("que_bien", _safe_parse(r))
+            except Exception as e:
+                return ("que_bien", {"error": str(e)})
+
+        _tasks = [
+            asyncio.create_task(_run_p1()),
+            asyncio.create_task(_run_p2()),
+            asyncio.create_task(_run_p3()),
+        ]
+        for _coro in asyncio.as_completed(_tasks):
+            _evt, _payload = await _coro
+            yield _sse_event(_evt, _payload)
+
+        try:
+            _token = _save_session(cast, bat_tu, data.cau_hoi)
+            yield _sse_event("unlock_token", {"token": _token})
+        except Exception as exc:
+            yield _sse_event("unlock_token", {"error": str(exc)})
+
+        yield _sse_event("done", {"ok": True})
+        return
 
         async def run_one(label: str, prompt: str, temp: float):
             try:
