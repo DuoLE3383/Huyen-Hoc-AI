@@ -216,6 +216,28 @@ NGUYÊN TẮC LUẬN GIẢI KINH DỊCH (BẮT BUỘC):
 11. TRƯỜNG "luan_giai_hao_dong" — BẮT BUỘC.
     Nếu "⚡ HÀO ĐỘNG" ở đầu "Thông tin quẻ" có giá trị (VD: [3]) → PHẢI viết 3-5 câu phân tích hào 3.
     CHỈ ghi "Không có hào động" khi khung đó ghi "KHÔNG CÓ HÀO ĐỘNG".
+
+12. TÊN HÀO CHUẨN — KHÔNG BỊA.
+    Tên hào chỉ có 6 dạng theo vị trí 1-6:
+      - Hào 1: Sơ Lục (âm) | Sơ Cửu (dương)
+      - Hào 2: Lục Nhị (âm) | Cửu Nhị (dương)
+      - Hào 3: Lục Tam (âm) | Cửu Tam (dương)
+      - Hào 4: Lục Tứ (âm) | Cửu Tứ (dương)
+      - Hào 5: Lục Ngũ (âm) | Cửu Ngũ (dương)
+      - Hào 6: Thượng Lục (âm) | Thượng Cửu (dương)
+    TUYỆT ĐỐI KHÔNG dùng "Thất Lục", "Bát Lục", "Ngũ Lục"... (không tồn tại).
+    Quy tắc: [vị trí] + [âm/dương của hào đó].
+
+13. DỤNG THẦN — PHẢI TÍNH, KHÔNG BỊA.
+    Nhật chủ hành gì → dụng thần/hỷ thần suy ra theo:
+      - Nhật chủ Mộc → dụng thần: Thủy (Ấn), Hỏa (Thực/Thương)
+      - Nhật chủ Hỏa → dụng thần: Mộc (Ấn), Thổ (Thực/Thương)
+      - Nhật chủ Thổ → dụng thần: Hỏa (Ấn), Kim (Thực/Thương)
+      - Nhật chủ Kim → dụng thần: Thổ (Ấn), Thủy (Thực/Thương)
+      - Nhật chủ Thủy → dụng thần: Kim (Ấn), Mộc (Thực/Thương)
+    Nếu quẻ có hào/quái cùng hành với dụng thần → trợ lực.
+    Nếu quẻ khắc dụng thần → bất lợi. KHÔNG tự bịa dụng thần khác.
+    Nếu không đủ dữ liệu → ghi "Không đủ dữ liệu xác định dụng thần".
 '''
 
 SYSTEM_JSON = "Bạn là chuyên gia Kinh Dịch. Chỉ trả về JSON object hợp lệ, không markdown, không giải thích."

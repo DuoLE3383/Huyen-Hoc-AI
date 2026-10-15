@@ -29,9 +29,35 @@ NAP_AM = [
 ]
 
 
-def tinh_can_chi_nam(year: int) -> str:
-    """Tính Can Chi theo năm dương lịch; chưa hiệu chỉnh theo Tết âm lịch."""
-    return f"{CAN[(year - 4) % 10]} {CHI[(year - 4) % 12]}"
+def tinh_can_chi_nam(year: int, month: int = 1, day: int = 1) -> str:
+    """Tính Can Chi năm theo ÂM LỊCH (đã xét Tết). Mặc định 01/01 dương lịch → có thể là năm trước đó.
+    
+    VD: 03/03/1983 dương lịch → Tết Quý Hợi là 13/02/1983, nên 03/03 vẫn là năm Quý Hợi.
+    Nhưng 15/01/1983 dương lịch → vẫn là năm Nhâm Tuất (1982).
+    """
+    try:
+        from datetime import datetime
+        import cnlunar
+        d = datetime(year, month, day)
+        a = cnlunar.Lunar(d, godType="8char")
+        # a.year8Char là Can Chi năm đã xét Tết
+        can_han, chi_han = a.year8Char[0], a.year8Char[1]
+        can = CAN_HAN_VIET.get(can_han, can_han)
+        chi = CHI_HAN_VIET.get(chi_han, chi_han)
+        return f"{can} {chi}"
+    except Exception:
+        # Fallback: dùng cách cũ (có thể sai với người sinh trước Tết)
+        return f"{CAN[(year - 4) % 10]} {CHI[(year - 4) % 12]}"
+
+
+CAN_HAN_VIET = {
+    "甲": "Giáp", "乙": "Ất", "丙": "Bính", "丁": "Đinh", "戊": "Mậu",
+    "己": "Kỷ", "庚": "Canh", "辛": "Tân", "壬": "Nhâm", "癸": "Quý",
+}
+CHI_HAN_VIET = {
+    "子": "Tý", "丑": "Sửu", "寅": "Dần", "卯": "Mão", "辰": "Thìn", "巳": "Tỵ",
+    "午": "Ngọ", "未": "Mùi", "申": "Thân", "酉": "Dậu", "戌": "Tuất", "亥": "Hợi",
+}
 
 
 def tinh_so_chu_dao(day: int, month: int, year: int) -> int:
@@ -124,7 +150,12 @@ def phan_tich_gio_sinh(day: int, month: int, year: int, hour: int) -> dict[str, 
     """Return a traditional two-hour branch and stem from the entered local clock hour."""
     if not 0 <= hour <= 23:
         raise ValueError("Giờ sinh phải nằm trong khoảng 0–23.")
-    can_day, _ = ngay_can_chi(date(year, month, day))
+    # Giờ Tý (23h-24h) tính sang ngày hôm sau theo quy ước Bát Tự
+    from datetime import timedelta
+    base_date = date(year, month, day)
+    if hour == 23:
+        base_date = base_date + timedelta(days=1)
+    can_day, _ = ngay_can_chi(base_date)
     branch_index = 0 if hour in (23, 0) else ((hour + 1) // 2) % 12
     branch, time_range = HOUR_BRANCHES[branch_index]
     stem_index = (HOUR_STEM_STARTS[CAN.index(can_day)] + branch_index) % len(CAN)
